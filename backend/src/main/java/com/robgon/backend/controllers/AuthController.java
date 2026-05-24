@@ -1,14 +1,13 @@
 package com.robgon.backend.controllers;
 
-import com.robgon.backend.dto.LoginRequest;
-import com.robgon.backend.models.UserModel;
+import com.robgon.backend.dto.LoginInputDTO;
+import com.robgon.backend.dto.LoginOutputDTO;
+import com.robgon.backend.dto.RegisterInputDTO;
 import com.robgon.backend.services.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -18,23 +17,15 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserModel user){
-        try{
-            UserModel newUser = authService.register(user);
-            return ResponseEntity.ok(newUser);
-        }catch (RuntimeException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterInputDTO registerInputDTO){
+        authService.register(registerInputDTO);
+        return ResponseEntity.ok("");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
-        try{
-            String token = authService.login(loginRequest.getEmail(), loginRequest.getPassword());
-            return ResponseEntity.ok(Map.of("token", token));
-        }catch (RuntimeException e){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
+    public ResponseEntity<?> login(@Valid @RequestBody LoginInputDTO loginInputDTO){
+        String token = authService.login(loginInputDTO.getEmail(), loginInputDTO.getPassword());
+        return ResponseEntity.ok(new LoginOutputDTO(token));
     }
 
 }

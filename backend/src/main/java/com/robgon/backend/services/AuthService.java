@@ -1,5 +1,6 @@
 package com.robgon.backend.services;
 
+import com.robgon.backend.dto.RegisterInputDTO;
 import com.robgon.backend.models.UserModel;
 import com.robgon.backend.repositories.IUserRepository;
 import com.robgon.backend.utils.JwtUtil;
@@ -20,17 +21,6 @@ public class AuthService
     @Autowired
     private JwtUtil jwtUtil;
 
-    public UserModel register(UserModel user){
-        if(userRepository.existsByUsername(user.getUsername()))
-            throw new RuntimeException("Username already exists");
-
-        if(userRepository.existsByEmail(user.getEmail()))
-            throw new RuntimeException("Email already exists");
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
-    }
-
     public String login(String email, String password){
         UserModel user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -41,4 +31,12 @@ public class AuthService
         return jwtUtil.generateToken(email);
     }
 
+    public void register(RegisterInputDTO registerInputDTO){
+        UserModel user = new UserModel();
+        user.setUsername(registerInputDTO.getUsername());
+        user.setEmail(registerInputDTO.getEmail());
+        user.setPassword(passwordEncoder.encode(registerInputDTO.getPassword()));
+
+        userRepository.save(user);
+    }
 }

@@ -1,8 +1,6 @@
 package com.robgon.backend.models;
 
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -22,8 +20,6 @@ public class UserModel {
 
     @Column(unique = true, nullable = false)
     private String email;
-
-
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CarModel> cars;

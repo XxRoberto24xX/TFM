@@ -7,7 +7,7 @@ import com.robgon.backend.repositories.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,8 +22,18 @@ public class CarService {
         return carRepository.findById(id);
     }
 
-    public CarModel saveCar(CarModel car, String username){
-        Optional<UserModel> sqlResponse = userRepository.findByUsername(username);
+    public List<CarModel> getListUserCars(String email){
+        Optional<UserModel> sqlResponse = userRepository.findByEmail(email);
+
+        if(sqlResponse.isEmpty())
+            return null;
+
+        UserModel user = sqlResponse.get();
+        return carRepository.findByUser_Id(user.getId());
+    }
+
+    public CarModel saveCar(CarModel car, String email){
+        Optional<UserModel> sqlResponse = userRepository.findByEmail(email);
 
         if(sqlResponse.isEmpty())
             return null;

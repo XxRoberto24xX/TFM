@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
     public interface ICarRepository extends JpaRepository<CarModel, String> {
-    List<CarModel> findByUser_Id(Long userId);
+    List<CarModel> findByUser_Email(String userEmail);
 }

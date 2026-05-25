@@ -10,7 +10,7 @@ public class CarModel {
     private String plate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_email", nullable = false)
     @JsonBackReference
     private UserModel user;
 

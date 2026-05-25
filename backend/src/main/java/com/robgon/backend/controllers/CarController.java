@@ -1,16 +1,14 @@
 package com.robgon.backend.controllers;
 
-import com.robgon.backend.models.CarModel;
+import com.robgon.backend.dto.DeleteCarInputModel;
+import com.robgon.backend.dto.SaveCarInputDTO;
+import com.robgon.backend.dto.GetCarInputDTO;
 import com.robgon.backend.services.CarService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.webauthn.api.AuthenticationExtensionsClientInput;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/cars")
@@ -19,44 +17,25 @@ public class CarController {
     @Autowired
     private CarService carService;
 
-    @GetMapping("/{id}")
-    public Optional<CarModel> getCarWithId(@PathVariable("id") String id){
-        return carService.getCarWithId(id);
+    @PostMapping("/getCar")
+    public ResponseEntity<?> getCar(@Valid @RequestBody GetCarInputDTO getCarInputDTO){
+        return ResponseEntity.ok(carService.getCar(getCarInputDTO));
     }
 
     @GetMapping("/listUserCars")
     public ResponseEntity<?> getListUserCars(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-
-        List<CarModel> userCars = carService.getListUserCars(email);
-
-        if(userCars == null){
-            return ResponseEntity.badRequest().body("User not found");
-        }else{
-            return ResponseEntity.ok(userCars);
-        }
+        return ResponseEntity.ok(carService.getListUserCars());
     }
 
-    @PostMapping("/addCar")
-    public CarModel saveCar(@RequestBody CarModel car){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        return this.carService.saveCar(car, email);
+    @PostMapping("/saveCar")
+    public ResponseEntity<?> saveCar(@Valid @RequestBody SaveCarInputDTO saveCarInputDTO){
+        carService.saveCar(saveCarInputDTO);
+        return ResponseEntity.ok().build();
     }
 
-    @PatchMapping("/updateCar{id}")
-    public CarModel updateCarWithId(@RequestBody CarModel modCar, @PathVariable("id") String id){
-        return carService.updateCarWithId(modCar, id);
+    @DeleteMapping("/deleteCar")
+    public ResponseEntity<?> deleteCarWithId(@Valid @RequestBody DeleteCarInputModel deleteCarInputModel){
+        carService.deleteCarWithId(deleteCarInputModel);
+        return ResponseEntity.ok().build();
     }
-
-    @DeleteMapping("/deleteCar{id}")
-    public String deleteCarWithId(@PathVariable("id") String id){
-        if(carService.deleteCarWithId(id)){
-            return "Car with plate " + id + " deleted";
-        }else{
-            return "Error deleting the user with id" + id;
-        }
-    }
-
 }

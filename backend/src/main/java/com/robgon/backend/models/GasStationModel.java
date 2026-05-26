@@ -2,8 +2,6 @@ package com.robgon.backend.models;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -14,20 +12,31 @@ public class GasStationModel {
     private Long id;
 
     @Column
+    private String direction;
+
+    @Column
+    private String hours;
+
+    @Column
+    private Double latitude;
+
+    @Column
+    private Double longitude;
+
+    @Column
+    private String sellingType;
+
+    @Column
     private String brand;
 
     @Column
     private String municipality;
 
-    @Column
-    private String direction;
 
 
 
     @ManyToMany(mappedBy = "favoriteGasStations", fetch = FetchType.LAZY)
     private Set<UserModel> usersWhoFavorited;
-
-
 
     public Long getId() {
         return id;
@@ -37,12 +46,36 @@ public class GasStationModel {
         this.id = id;
     }
 
-    public String getBrand() {
-        return brand;
+    public String getDirection() {
+        return direction;
     }
 
-    public void setBrand(String brand) {
-        this.brand = brand;
+    public void setDirection(String direction) {
+        this.direction = direction;
+    }
+
+    public String getHours() {
+        return hours;
+    }
+
+    public void setHours(String hours) {
+        this.hours = hours;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public String getMunicipality() {
@@ -53,12 +86,20 @@ public class GasStationModel {
         this.municipality = municipality;
     }
 
-    public String getDirection() {
-        return direction;
+    public String getBrand() {
+        return brand;
     }
 
-    public void setDirection(String direction) {
-        this.direction = direction;
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public String getSellingType() {
+        return sellingType;
+    }
+
+    public void setSellingType(String sellingType) {
+        this.sellingType = sellingType;
     }
 
     public Set<UserModel> getUsersWhoFavorited() {

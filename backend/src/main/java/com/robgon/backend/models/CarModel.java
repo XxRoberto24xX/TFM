@@ -2,6 +2,8 @@ package com.robgon.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "cars")
@@ -11,7 +13,7 @@ public class CarModel {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_email", nullable = false)
-    @JsonBackReference
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private UserModel user;
 
     @Column

@@ -1,5 +1,6 @@
 package com.robgon.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.Set;
@@ -32,8 +33,8 @@ public class GasStationModel {
     @Column
     private String municipality;
 
-
-
+    @OneToMany(mappedBy = "gasStation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<PricesModel> prices;
 
     @ManyToMany(mappedBy = "favoriteGasStations", fetch = FetchType.LAZY)
     private Set<UserModel> usersWhoFavorited;
@@ -102,6 +103,14 @@ public class GasStationModel {
         this.sellingType = sellingType;
     }
 
+    public Set<PricesModel> getPrices() {
+        return prices;
+    }
+
+    public void setPrices(Set<PricesModel> prices) {
+        this.prices = prices;
+    }
+
     public Set<UserModel> getUsersWhoFavorited() {
         return usersWhoFavorited;
     }
@@ -109,4 +118,6 @@ public class GasStationModel {
     public void setUsersWhoFavorited(Set<UserModel> usersWhoFavorited) {
         this.usersWhoFavorited = usersWhoFavorited;
     }
+
+
 }

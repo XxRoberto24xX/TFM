@@ -3,12 +3,15 @@ package com.robgon.backend.services;
 import com.robgon.backend.dto.*;
 import com.robgon.backend.models.CarModel;
 import com.robgon.backend.models.UserModel;
+import com.robgon.backend.proyections.ICarProyection;
 import com.robgon.backend.repositories.ICarRepository;
 import com.robgon.backend.repositories.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CarService {
@@ -19,7 +22,7 @@ public class CarService {
     IUserRepository userRepository;
 
     public GetCarOutputDTO getCar(GetCarInputDTO getCarInputDTO){
-        CarModel car = carRepository.findById(getCarInputDTO.getPlate())
+        ICarProyection car = carRepository.findByPlate(getCarInputDTO.getPlate())
                 .orElseThrow(() -> new RuntimeException("Car not found"));
 
         return new GetCarOutputDTO(
@@ -33,10 +36,9 @@ public class CarService {
     public GetListCarsOutputDTO getListUserCars(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        UserModel user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        List<ICarProyection> cars = carRepository.findUserCars(authentication.getName());
 
-        return new GetListCarsOutputDTO(user.getCars());
+        return new GetListCarsOutputDTO(cars);
     }
 
     public void saveCar(SaveCarInputDTO saveCarInputDTO){

@@ -1,21 +1,21 @@
 package com.robgon.backend.dto;
 
-import com.robgon.backend.models.CarModel;
+import com.robgon.backend.proyections.ICarProyection;
 
 import java.util.List;
 
 public class GetListCarsOutputDTO {
-    public List<CarModel> cars;
+    public List<ICarProyection> cars;
 
-    public GetListCarsOutputDTO(List<CarModel> cars){
+    public GetListCarsOutputDTO(List<ICarProyection> cars){
         this.cars = cars;
     }
 
-    public List<CarModel> getCars() {
+    public List<ICarProyection> getCars() {
         return cars;
     }
 
-    public void setCars(List<CarModel> cars) {
+    public void setCars(List<ICarProyection> cars) {
         this.cars = cars;
     }
 }

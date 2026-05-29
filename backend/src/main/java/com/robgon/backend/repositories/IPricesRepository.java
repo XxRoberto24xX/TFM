@@ -1,6 +1,7 @@
 package com.robgon.backend.repositories;
 
 import com.robgon.backend.models.PricesModel;
+import com.robgon.backend.proyections.IPriceProyection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -11,10 +12,10 @@ import java.util.Optional;
 @Repository
 public interface IPricesRepository extends JpaRepository<PricesModel, Long> {
     // Obtener precios de una gasolinera ordenados por fecha (histórico)
-    List<PricesModel> findByGasStationIdOrderByDateDesc(Long gasStationId);
+    List<IPriceProyection> findByGasStationIdOrderByDateDesc(Long gasStationId);
 
     // Obtener el último listado de precios registrados de una gasolinera
-    Optional<PricesModel> findFirstByGasStationIdOrderByDateDesc(Long gasStationId);
+    Optional<IPriceProyection> findFirstByGasStationIdOrderByDateDesc(Long gasStationId);
 
     @Query("""
         SELECT p FROM PricesModel p

@@ -1,5 +1,6 @@
 package com.robgon.backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
@@ -20,6 +21,7 @@ public class UserModel {
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"user"})
     private List<CarModel> cars;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -28,6 +30,7 @@ public class UserModel {
             joinColumns = @JoinColumn(name = "user_email"),
             inverseJoinColumns = @JoinColumn(name = "gas_station_id")
     )
+    @JsonIgnoreProperties({"usersWhoFavorited"})
     private Set<GasStationModel> favoriteGasStations;
 
 

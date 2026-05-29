@@ -2,6 +2,7 @@ package com.robgon.backend.services;
 
 import com.robgon.backend.dto.RegisterInputDTO;
 import com.robgon.backend.models.UserModel;
+import com.robgon.backend.proyections.IUserPasswordProyection;
 import com.robgon.backend.repositories.IUserRepository;
 import com.robgon.backend.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,10 @@ public class AuthService
     private JwtUtil jwtUtil;
 
     public String login(String email, String password){
-        UserModel user = userRepository.findByEmail(email)
+        IUserPasswordProyection dbpassword = userRepository.findPasswordByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if(!passwordEncoder.matches(password, user.getPassword()))
+        if(!passwordEncoder.matches(password, dbpassword.getPassword()))
             throw new RuntimeException("Invalid Password");
 
         return jwtUtil.generateToken(email);

@@ -1,6 +1,7 @@
 package com.robgon.backend.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.Set;
@@ -34,9 +35,11 @@ public class GasStationModel {
     private String municipality;
 
     @OneToMany(mappedBy = "gasStation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"gasStation"})
     private Set<PricesModel> prices;
 
     @ManyToMany(mappedBy = "favoriteGasStations", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"favoriteGasStations"})
     private Set<UserModel> usersWhoFavorited;
 
     public Long getId() {

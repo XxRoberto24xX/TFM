@@ -1,6 +1,8 @@
 package com.robgon.backend.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -26,6 +28,7 @@ public class PricesModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gas_station_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnoreProperties({"prices", "usersWhoFavorited"})
     private GasStationModel gasStation;
 
     @Column(nullable = false)

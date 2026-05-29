@@ -6,7 +6,7 @@ public class GetCarOutputDTO {
     public String model;
     public float consumption;
 
-    public GetCarOutputDTO (String plate,String brand, String model, float consumption){
+    public GetCarOutputDTO (String plate, String brand, String model, float consumption){
         this.plate = plate;
         this.brand = brand;
         this.model = model;

@@ -1,0 +1,158 @@
+import { StyleSheet, Dimensions, View, Image, ActivityIndicator } from "react-native";
+import { Colors } from "../constants/Colors";
+import { Link, useRouter } from "expo-router";
+import { useState } from "react";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+
+import { register } from "../services/api";
+import { ApiError } from "../types/types";
+
+import FloatingButton from "../components/FloatingButton";
+import ThemedText from "../components/ThemedText";
+import ThemedTextInput from "../components/ThemedTextInput";
+import ErrorMessage from "../components/ErrorMessage";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+
+export default function Register() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleRegister = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      await register(email, password);
+      router.push("/");
+    } catch (callError) {
+      const apiError = callError as ApiError;
+      console.log("Register: " + apiError.message);
+      setError(apiError.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <KeyboardAwareScrollView
+      contentContainerStyle={styles.container}
+      enableOnAndroid={true}
+      keyboardShouldPersistTaps="handled"
+      extraScrollHeight={30}
+      showsVerticalScrollIndicator={false}>
+      <Image
+        source={require("../assets/fondoLoginPequeno.png")}
+        style={styles.backgroundImage}
+      />
+
+      <ThemedText
+        style={{ marginTop: 35 }}
+        size="h1"
+        color={Colors.textTertiary}
+        weight="bold">
+        Registrarse
+      </ThemedText>
+      <ThemedText
+        size="l"
+        color={Colors.textTertiary}
+        weight="regular">
+        Crea tu nueva cuenta
+      </ThemedText>
+
+      <ThemedTextInput
+        style={{ marginTop: 45 }}
+        placeholder="Correo"
+        value={email}
+        onChangeText={(text) => {
+          setEmail(text);
+        }}
+      />
+
+      <ThemedTextInput
+        style={{ marginTop: 20 }}
+        placeholder="Contraseña"
+        icon={true}
+        hideContent={true}
+        value={password}
+        onChangeText={(text) => {
+          setPassword(text);
+        }}
+      />
+
+      <ThemedTextInput
+        style={{ marginTop: 20 }}
+        placeholder="Contraseña"
+        icon={true}
+        hideContent={true}
+        value={password2}
+        onChangeText={(text) => {
+          setPassword2(text);
+        }}
+      />
+
+      {error ? (
+        <ErrorMessage style={{ marginTop: 20 }}>Las contraseñas no coinciden</ErrorMessage>
+      ) : (
+        <View style={{ height: 36 }}></View>
+      )}
+
+      {loading ? (
+        <ActivityIndicator
+          style={{ marginTop: 45, height: 54 }}
+          size="large"
+          color={Colors.primaryPink}
+        />
+      ) : (
+        <FloatingButton
+          style={{ marginTop: 45 }}
+          text="Crear Cuenta"
+          onPress={() => handleRegister()}
+        />
+      )}
+
+      <View style={styles.inlineMessageCreateAccount}>
+        <ThemedText
+          size="s"
+          color={Colors.textTertiary}
+          weight="regular">
+          ¿Ya tienes cuenta?
+        </ThemedText>
+        <Link
+          asChild
+          href="/">
+          <ThemedText
+            style={{ textDecorationLine: "underline" }}
+            size="s"
+            color={Colors.textTertiary}>
+            Inicia Sesión
+          </ThemedText>
+        </Link>
+      </View>
+    </KeyboardAwareScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+    alignItems: "center",
+    justifyContent: "flex-start",
+    paddingBottom: 30,
+  },
+  backgroundImage: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_WIDTH * 0.66,
+  },
+  inlineMessageCreateAccount: {
+    flexDirection: "row",
+    justifyContent: "center",
+    width: "80%",
+    marginTop: 50,
+    gap: 5,
+  },
+});

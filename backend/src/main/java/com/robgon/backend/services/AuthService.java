@@ -1,5 +1,7 @@
 package com.robgon.backend.services;
 
+import com.robgon.backend.dto.ChangePasswordInputDTO;
+import com.robgon.backend.dto.LoginInputDTO;
 import com.robgon.backend.dto.RegisterInputDTO;
 import com.robgon.backend.models.UserModel;
 import com.robgon.backend.proyections.IUserPasswordProyection;
@@ -22,21 +24,38 @@ public class AuthService
     @Autowired
     private JwtUtil jwtUtil;
 
-    public String login(String email, String password){
-        IUserPasswordProyection dbpassword = userRepository.findPasswordByEmail(email)
+    public String login(LoginInputDTO loginInputDTO){
+        IUserPasswordProyection dbpassword = userRepository.findPasswordByEmail(loginInputDTO.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if(!passwordEncoder.matches(password, dbpassword.getPassword()))
+        if(!passwordEncoder.matches(loginInputDTO.getPassword(), dbpassword.getPassword()))
             throw new RuntimeException("Invalid Password");
 
-        return jwtUtil.generateToken(email);
+        return jwtUtil.generateToken(loginInputDTO.getEmail());
     }
 
     public void register(RegisterInputDTO registerInputDTO){
+        if(userRepository.findByEmail(registerInputDTO.getEmail()).isPresent()){
+            throw new RuntimeException("Email already in use");
+        }
+
         UserModel user = new UserModel();
-        user.setUsername(registerInputDTO.getUsername());
         user.setEmail(registerInputDTO.getEmail());
         user.setPassword(passwordEncoder.encode(registerInputDTO.getPassword()));
+
+        userRepository.save(user);
+    }
+
+    public void changePassword(ChangePasswordInputDTO changePasswordInputDTO){
+        IUserPasswordProyection dbpassword = userRepository.findPasswordByEmail(changePasswordInputDTO.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if(!passwordEncoder.matches(changePasswordInputDTO.getOldPassword(), dbpassword.getPassword()))
+            throw new RuntimeException("Invalid Password");
+
+        UserModel user = new UserModel();
+        user.setEmail(changePasswordInputDTO.getEmail());
+        user.setPassword(passwordEncoder.encode(changePasswordInputDTO.getNewPassword()));
 
         userRepository.save(user);
     }

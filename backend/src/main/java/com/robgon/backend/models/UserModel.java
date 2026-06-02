@@ -14,9 +14,6 @@ public class UserModel {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(unique = true, nullable = false)
-    private String username;
-
     @Column(nullable = false)
     private String password;
 
@@ -33,15 +30,6 @@ public class UserModel {
     @JsonIgnoreProperties({"usersWhoFavorited"})
     private Set<GasStationModel> favoriteGasStations;
 
-
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     public String getPassword() {
         return password;

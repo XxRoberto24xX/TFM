@@ -1,5 +1,6 @@
 package com.robgon.backend.controllers;
 
+import com.robgon.backend.dto.ChangePasswordInputDTO;
 import com.robgon.backend.dto.LoginInputDTO;
 import com.robgon.backend.dto.LoginOutputDTO;
 import com.robgon.backend.dto.RegisterInputDTO;
@@ -24,8 +25,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginInputDTO loginInputDTO){
-        String token = authService.login(loginInputDTO.getEmail(), loginInputDTO.getPassword());
+        String token = authService.login(loginInputDTO);
         return ResponseEntity.ok(new LoginOutputDTO(token));
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordInputDTO changePasswordInputDTO){
+        authService.changePassword(changePasswordInputDTO);
+        return ResponseEntity.ok().build();
     }
 
 }

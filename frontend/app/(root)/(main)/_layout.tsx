@@ -17,7 +17,7 @@ export default function _layout() {
             <LinearGradient
               colors={[Colors.primaryOrange, Colors.primaryPink]}
               start={{ x: 0, y: 1 }}
-              end={{ x: 1, y: 0 }}
+              end={{ x: 1, y: 1 }}
               style={[
                 StyleSheet.absoluteFill,
                 {

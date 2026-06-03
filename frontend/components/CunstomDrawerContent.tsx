@@ -24,7 +24,7 @@ export default function CunstomDrawerContent(props: DrawerContentComponentProps)
       style={styles.gradient}
       colors={[Colors.primaryOrange, Colors.primaryPink]}
       start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 0 }}>
+      end={{ x: 1, y: 1 }}>
       <DrawerContentScrollView {...props}>
         <Image
           style={styles.backgroundImage}

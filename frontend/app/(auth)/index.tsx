@@ -27,12 +27,11 @@ export default function Login() {
     setError("");
 
     try {
-      router.replace("/home");
-      // const response = await login(email, password);
-      // await SecureStore.setItemAsync("token", response.token).then(() => {
-      //   console.log("Token: " + response.token);
-      //   router.push("/home");
-      // });
+      const response = await login(email, password);
+      await SecureStore.setItemAsync("token", response.token).then(() => {
+        console.log("Token: " + response.token);
+        router.replace("/home");
+      });
     } catch (callError) {
       const apiError = callError as ApiError;
       console.log("Login: " + apiError.message);

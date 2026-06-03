@@ -1,37 +1,41 @@
-import { StyleSheet, Dimensions, View, Image, ActivityIndicator } from "react-native";
-import { Colors } from "../constants/Colors";
-import { Link, useRouter } from "expo-router";
+import { ActivityIndicator, Dimensions, Image, StyleSheet, View } from "react-native";
+import { useRouter } from "expo-router";
 import { useState } from "react";
+import { Colors } from "@/constants/Colors";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import * as SecureStore from "expo-secure-store";
 
-import { register } from "../services/api";
-import { ApiError } from "../types/types";
+import FloatingButton from "@/components/FloatingButton";
+import ThemedText from "@/components/ThemedText";
+import ThemedTextInput from "@/components/ThemedTextInput";
+import ErrorMessage from "@/components/ErrorMessage";
 
-import FloatingButton from "../components/FloatingButton";
-import ThemedText from "../components/ThemedText";
-import ThemedTextInput from "../components/ThemedTextInput";
-import ErrorMessage from "../components/ErrorMessage";
+import { login } from "@/services/api";
+import { ApiError } from "@/types/types";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
-export default function Register() {
+export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [password2, setPassword2] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleRegister = async () => {
+  const handleLogin = async () => {
     setLoading(true);
     setError("");
 
     try {
-      await register(email, password);
-      router.push("/");
+      router.replace("/home");
+      // const response = await login(email, password);
+      // await SecureStore.setItemAsync("token", response.token).then(() => {
+      //   console.log("Token: " + response.token);
+      //   router.push("/home");
+      // });
     } catch (callError) {
       const apiError = callError as ApiError;
-      console.log("Register: " + apiError.message);
+      console.log("Login: " + apiError.message);
       setError(apiError.message);
     } finally {
       setLoading(false);
@@ -46,8 +50,8 @@ export default function Register() {
       extraScrollHeight={30}
       showsVerticalScrollIndicator={false}>
       <Image
-        source={require("../assets/fondoLoginPequeno.png")}
         style={styles.backgroundImage}
+        source={require("@/assets/fondoLoginGrande.png")}
       />
 
       <ThemedText
@@ -55,13 +59,13 @@ export default function Register() {
         size="h1"
         color={Colors.textTertiary}
         weight="bold">
-        Registrarse
+        Bienvenido
       </ThemedText>
       <ThemedText
         size="l"
         color={Colors.textTertiary}
         weight="regular">
-        Crea tu nueva cuenta
+        Inicia sesión con tu cuenta
       </ThemedText>
 
       <ThemedTextInput
@@ -74,7 +78,7 @@ export default function Register() {
       />
 
       <ThemedTextInput
-        style={{ marginTop: 20 }}
+        style={{ marginTop: 25 }}
         placeholder="Contraseña"
         icon={true}
         hideContent={true}
@@ -84,22 +88,18 @@ export default function Register() {
         }}
       />
 
-      <ThemedTextInput
-        style={{ marginTop: 20 }}
-        placeholder="Contraseña"
-        icon={true}
-        hideContent={true}
-        value={password2}
-        onChangeText={(text) => {
-          setPassword2(text);
-        }}
-      />
-
-      {error ? (
-        <ErrorMessage style={{ marginTop: 20 }}>Las contraseñas no coinciden</ErrorMessage>
-      ) : (
-        <View style={{ height: 36 }}></View>
-      )}
+      <View style={styles.inlineMessagePassword}>
+        <ThemedText
+          style={{ textDecorationLine: "underline" }}
+          size="s"
+          color={Colors.textTertiary}
+          onPress={() => {
+            router.push("/restorePassword");
+          }}>
+          ¿Olvidaste la contraseña?
+        </ThemedText>
+        {error ? <ErrorMessage style={{ flex: 1 }}>Credenciales Incorrectas</ErrorMessage> : null}
+      </View>
 
       {loading ? (
         <ActivityIndicator
@@ -110,8 +110,8 @@ export default function Register() {
       ) : (
         <FloatingButton
           style={{ marginTop: 45 }}
-          text="Crear Cuenta"
-          onPress={() => handleRegister()}
+          text="Iniciar Sesión"
+          onPress={() => handleLogin()}
         />
       )}
 
@@ -120,18 +120,18 @@ export default function Register() {
           size="s"
           color={Colors.textTertiary}
           weight="regular">
-          ¿Ya tienes cuenta?
+          ¿No tienes cuenta?
         </ThemedText>
-        <Link
-          asChild
-          href="/">
-          <ThemedText
-            style={{ textDecorationLine: "underline" }}
-            size="s"
-            color={Colors.textTertiary}>
-            Inicia Sesión
-          </ThemedText>
-        </Link>
+
+        <ThemedText
+          style={{ textDecorationLine: "underline" }}
+          size="s"
+          color={Colors.textTertiary}
+          onPress={() => {
+            router.push("/register");
+          }}>
+          Creala
+        </ThemedText>
       </View>
     </KeyboardAwareScrollView>
   );
@@ -142,11 +142,17 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingBottom: 30,
+    paddingBottom: 40,
+    backgroundColor: Colors.background,
   },
   backgroundImage: {
     width: SCREEN_WIDTH,
-    height: SCREEN_WIDTH * 0.66,
+    height: SCREEN_WIDTH * 0.8,
+  },
+  inlineMessagePassword: {
+    flexDirection: "row-reverse",
+    width: "80%",
+    marginTop: 20,
   },
   inlineMessageCreateAccount: {
     flexDirection: "row",

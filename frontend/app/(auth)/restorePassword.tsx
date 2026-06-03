@@ -1,20 +1,21 @@
 import { Dimensions, StyleSheet, View, Image, ActivityIndicator } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useState } from "react";
-import { Colors } from "../constants/Colors";
-import { Link } from "expo-router";
+import { Colors } from "@/constants/Colors";
+import { useRouter } from "expo-router";
 
-import { passwordResetEmail } from "../services/api";
-import { ApiError } from "../types/types";
+import { passwordResetEmail } from "@/services/api";
+import { ApiError } from "@/types/types";
 
-import FloatingButton from "../components/FloatingButton";
-import ThemedText from "../components/ThemedText";
-import ThemedTextInput from "../components/ThemedTextInput";
-import ErrorMessage from "../components/ErrorMessage";
+import FloatingButton from "@/components/FloatingButton";
+import ThemedText from "@/components/ThemedText";
+import ThemedTextInput from "@/components/ThemedTextInput";
+import ErrorMessage from "@/components/ErrorMessage";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function RestorePassword() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("sdfafdf");
@@ -42,7 +43,7 @@ export default function RestorePassword() {
       extraScrollHeight={30}
       showsVerticalScrollIndicator={false}>
       <Image
-        source={require("../assets/fondoLoginGrande.png")}
+        source={require("@/assets/fondoLoginGrande.png")}
         style={styles.backgroundImage}
       />
 
@@ -89,17 +90,15 @@ export default function RestorePassword() {
         />
       )}
 
-      <Link
-        asChild
-        href="/"
-        style={styles.link}>
-        <ThemedText
-          style={{ textDecorationLine: "underline" }}
-          size="s"
-          color={Colors.textTertiary}>
-          Volver al inicio de Sesión
-        </ThemedText>
-      </Link>
+      <ThemedText
+        style={styles.link}
+        size="s"
+        color={Colors.textTertiary}
+        onPress={() => {
+          router.back();
+        }}>
+        Volver al inicio de Sesión
+      </ThemedText>
     </KeyboardAwareScrollView>
   );
 }
@@ -110,6 +109,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     paddingBottom: 30,
+    backgroundColor: Colors.background,
   },
   backgroundImage: {
     width: SCREEN_WIDTH,
@@ -117,5 +117,6 @@ const styles = StyleSheet.create({
   },
   link: {
     marginTop: 50,
+    textDecorationLine: "underline",
   },
 });

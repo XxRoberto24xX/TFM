@@ -27,7 +27,11 @@ export default function FloatingButton({ text, onPress, style, ...pressableProps
         colors={[Colors.primaryOrange, Colors.primaryPink]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}>
-        <ThemedText size="xl">{text}</ThemedText>
+        <ThemedText
+          style={{ textAlign: "center" }}
+          size="xl">
+          {text}
+        </ThemedText>
       </LinearGradient>
     </Pressable>
   );

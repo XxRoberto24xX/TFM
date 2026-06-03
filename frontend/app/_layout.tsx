@@ -1,8 +1,7 @@
-import { Slot } from "expo-router";
+import { Stack } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { Platform, StyleSheet, View } from "react-native";
+import { Platform } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { Colors } from "../constants/Colors";
 import { useFonts } from "expo-font";
 import { NavigationBar } from "expo-navigation-bar";
 
@@ -25,17 +24,11 @@ export default function Layout() {
 
   return (
     <SafeAreaProvider>
-      <View style={styles.container}>
-        <StatusBar style="auto" />
-        <Slot />
-      </View>
+      <StatusBar style="light" />
+      <Stack screenOptions={{ headerShown: false, animation: "slide_from_bottom" }}>
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(root)" />
+      </Stack>
     </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-});

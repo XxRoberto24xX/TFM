@@ -4,6 +4,7 @@ import com.robgon.backend.dto.*;
 import com.robgon.backend.models.GasStationModel;
 import com.robgon.backend.models.UserModel;
 import com.robgon.backend.proyections.IGasStationProyection;
+import com.robgon.backend.proyections.IGasStationProyectionWithPrice;
 import com.robgon.backend.proyections.IPriceProyection;
 import com.robgon.backend.repositories.IGasStationRepository;
 import com.robgon.backend.repositories.IPricesRepository;
@@ -13,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -35,6 +35,17 @@ public class GasStationService {
                 .orElseThrow(() -> new RuntimeException("Prices for the give gas station not found"));
 
         return new GetGasStationInfoOutputDTO(gasStationInfo, prices);
+    }
+
+    public GetGasStationsInRangeOutputDTO getGasStationsInRange(GetGasStationsInRangeInputDTO getGasStationsInRangeInputDTO){
+
+        List<IGasStationProyectionWithPrice> listGasStations = gasStationRepository.findStationsInBoundingBox(
+                getGasStationsInRangeInputDTO.getSouth(),
+                getGasStationsInRangeInputDTO.getNorth(),
+                getGasStationsInRangeInputDTO.getWest(),
+                getGasStationsInRangeInputDTO.getEast());
+
+        return new GetGasStationsInRangeOutputDTO(listGasStations);
     }
 
     public GetActualPricesOutputDTO getActualPrices (GetActualPricesInputDTO getActualPricesInputDTO){

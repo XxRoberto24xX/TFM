@@ -1,9 +1,6 @@
 package com.robgon.backend.controllers;
 
-import com.robgon.backend.dto.GetActualPricesInputDTO;
-import com.robgon.backend.dto.GetGasStationInfoInputDTO;
-import com.robgon.backend.dto.GetHistoricalPricesInputDTO;
-import com.robgon.backend.dto.ChangeFavoritesInputDTO;
+import com.robgon.backend.dto.*;
 import com.robgon.backend.services.GasStationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +13,14 @@ public class GasStationController {
     @Autowired
     GasStationService gasStationService;
 
-    @PostMapping("getGasStationInfo")
+    @PostMapping("/getGasStationInfo")
     public ResponseEntity<?> getGasStationInfo(@Valid @RequestBody GetGasStationInfoInputDTO getGasStationInfoInputDTO){
         return ResponseEntity.ok(gasStationService.getGasStationInfo(getGasStationInfoInputDTO));
+    }
+
+    @PostMapping("/getGasStationsInRange")
+    public ResponseEntity<?> getGasStationsInRange(@Valid @RequestBody GetGasStationsInRangeInputDTO getGasStationsInRangeInputDTO){
+        return ResponseEntity.ok(gasStationService.getGasStationsInRange(getGasStationsInRangeInputDTO));
     }
 
     @PostMapping("/getActualPrices")

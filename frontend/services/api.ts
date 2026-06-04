@@ -1,5 +1,5 @@
 import apiClient from "./client";
-import { AuthResponse, gasStation, getListFavoritesModel } from "../types/types";
+import { AuthResponse, getListFavoritesModel, getListGasStationsInRangeModel } from "../types/types";
 
 export async function login(email: string, password: string): Promise<AuthResponse> {
   const response = await apiClient.post<AuthResponse>(
@@ -22,5 +22,20 @@ export async function passwordResetEmail(email: string): Promise<void> {
 
 export async function getListFavorites(): Promise<getListFavoritesModel> {
   const response = await apiClient.get<getListFavoritesModel>("/gasStations/getListFavorites");
+  return response.data;
+}
+
+export async function getGasStationsInRange(
+  north: number,
+  south: number,
+  east: number,
+  west: number,
+): Promise<getListGasStationsInRangeModel> {
+  const response = await apiClient.post<getListGasStationsInRangeModel>("/gasStations/getGasStationsInRange", {
+    north,
+    south,
+    east,
+    west,
+  });
   return response.data;
 }

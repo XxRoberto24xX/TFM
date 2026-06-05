@@ -18,7 +18,6 @@ const BRAND_IMAGES: Record<string, ImageSourcePropType> = {
   SHELL: require("@/assets/brands/shell.png"),
 };
 
-// Imagen por defecto si la marca no coincide
 const DEFAULT_IMAGE = require("@/assets/brands/default.png");
 
 export default function FavoriteCard({ gasStation, onPress, ...pressableProps }: Props) {

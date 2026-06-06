@@ -25,6 +25,16 @@ export async function getListFavorites(): Promise<getListFavoritesModel> {
   return response.data;
 }
 
+export async function addToFavorites(gasStationId: number): Promise<void> {
+  const response = await apiClient.post<void>("/gasStations/addToFavorites", { gasStationId });
+  return response.data;
+}
+
+export async function removeFromFavorites(gasStationId: number): Promise<void> {
+  const response = await apiClient.post<void>("/gasStations/removeFromFavorites", { gasStationId });
+  return response.data;
+}
+
 export async function getGasStationsInRange(
   north: number,
   south: number,

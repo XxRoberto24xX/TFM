@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Animated } from "react-native";
 import { StatusBar } from "expo-status-bar";
 
 import { useState, useEffect, useRef } from "react";
@@ -11,6 +11,8 @@ import * as Location from "expo-location";
 import IconFloatingButton from "@/components/IconFloatingButton";
 import GasOptionsDisplay from "@/components/GasOptionsDisplay";
 import BrandsOptionsDisplay from "@/components/BrandsOptionsDisplay";
+import GasStationPreview from "@/components/GasStationPreview";
+import { useRouter } from "expo-router";
 
 const FILTER_TO_PRICE_KEY: Record<string, keyof Omit<price, "date">> = {
   "E5 95": "gasoline95",
@@ -24,6 +26,7 @@ const FILTER_TO_PRICE_KEY: Record<string, keyof Omit<price, "date">> = {
 
 export default function Home() {
   /* VARIABLES */
+  const router = useRouter();
   const mapRef = useRef<MapView | null>(null);
   const headerHeight = useHeaderHeight();
 
@@ -32,7 +35,19 @@ export default function Home() {
   const [returnedGasStations, setReturnedGasStations] = useState<gasStationWithPrice[]>([]);
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [activeGasFilter, setActiveGasFilter] = useState<string>("E5 95");
-  const [activeBrandFilter, setActiveBrandFilter] = useState<string>("TODOS");
+  const [activeBrandFilter, setActiveBrandFilter] = useState<string>("Todos");
+  const [selectedGasStation, setSelectedGasStation] = useState<gasStationWithPrice | null>(null);
+
+  const [slideAnim] = useState(() => new Animated.Value(300));
+
+  /* ANIMATION EFFECTS */
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: selectedGasStation ? 0 : 300,
+      duration: selectedGasStation ? 300 : 250,
+      useNativeDriver: true,
+    }).start();
+  }, [selectedGasStation, slideAnim]);
 
   /* HANDLERS */
   const centerOnUser = () => {
@@ -102,7 +117,6 @@ export default function Home() {
 
         const hasPrice = station.prices && station.prices[priceKey] !== undefined && station.prices[priceKey] > 0;
 
-        // Para que la gasolinera se quede en la lista final, debe cumplir AMBOS filtros
         return matchesBrand && hasPrice;
       });
 
@@ -152,6 +166,10 @@ export default function Home() {
         provider={PROVIDER_GOOGLE}
         showsUserLocation={true}
         showsMyLocationButton={false}
+        onPress={() => setSelectedGasStation(null)}
+        onPoiClick={() => {
+          setSelectedGasStation(null);
+        }}
         onRegionChangeComplete={(region) => {
           paintGasStationsInRange(region);
         }}
@@ -178,6 +196,10 @@ export default function Home() {
               title={station.direction}
               description={getMarkerGasDisplayInfo(station)}
               pinColor="red"
+              onPress={(e) => {
+                e.stopPropagation();
+                setSelectedGasStation(station);
+              }}
             />
           );
         })}
@@ -187,15 +209,40 @@ export default function Home() {
           selectedFilter={activeBrandFilter}
           onSelectFilter={(filter) => setActiveBrandFilter(filter)}
         />
-        <View style={styles.bottomViewContainer}>
-          <GasOptionsDisplay
-            selectedFilter={activeGasFilter}
-            onSelectFilter={(filter) => setActiveGasFilter(filter)}
-          />
-          <IconFloatingButton
-            icon="locate"
-            onPress={() => centerOnUser()}
-          />
+        <View style={{ marginTop: "auto" }}>
+          <Animated.View
+            style={{
+              transform: [{ translateY: slideAnim }],
+              pointerEvents: selectedGasStation ? "auto" : "none",
+            }}>
+            {/* If there is no gasStation selected we can pass empty elementas ass the "GasStationPreview" is going to be hidden */}
+            <GasStationPreview
+              style={{ margin: 10 }}
+              priceToShow={selectedGasStation ? getMarkerGasDisplayInfo(selectedGasStation) : ""}
+              gasStation={selectedGasStation || ({} as gasStationWithPrice)}
+              listFavorites={favorites}
+              onChangeListFavorites={setFavorites}
+              onPress={(e) => {
+                e.stopPropagation();
+                if (selectedGasStation) {
+                  router.push({
+                    pathname: "[id]",
+                    params: { id: selectedGasStation.id },
+                  });
+                }
+              }}
+            />
+          </Animated.View>
+          <View style={styles.bottomViewContainer}>
+            <GasOptionsDisplay
+              selectedFilter={activeGasFilter}
+              onSelectFilter={(filter) => setActiveGasFilter(filter)}
+            />
+            <IconFloatingButton
+              icon="locate"
+              onPress={() => centerOnUser()}
+            />
+          </View>
         </View>
       </View>
     </View>
@@ -208,15 +255,13 @@ const styles = StyleSheet.create({
   },
   mainViewContainer: {
     flex: 1,
-    alignContent: "center",
     justifyContent: "flex-start",
   },
   bottomViewContainer: {
     flexDirection: "row",
     justifyContent: "flex-start",
-    marginTop: "auto",
     gap: 10,
     marginEnd: 10,
-    marginVertical: 10,
+    marginBottom: 10,
   },
 });

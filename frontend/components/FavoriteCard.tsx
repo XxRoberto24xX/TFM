@@ -34,7 +34,7 @@ export default function FavoriteCard({
   ...pressableProps
 }: Props) {
   const imageSource = BRAND_IMAGES[gasStation?.brand] || DEFAULT_IMAGE;
-  const [isFavorite, setIsFavorite] = useState<boolean>(listFavorites.some((fav) => fav.id === gasStation.id));
+  const isFavorite = listFavorites.some((fav) => fav.id === gasStation.id);
 
   /* HANDLERS */
   const toggleFavorite = async (id: number) => {
@@ -42,11 +42,9 @@ export default function FavoriteCard({
       if (!isFavorite) {
         await addToFavorites(id);
         onChangeListFavorites([...listFavorites, gasStation]);
-        setIsFavorite(true);
       } else {
         await removeFromFavorites(id);
         onChangeListFavorites(listFavorites.filter((fav) => fav.id !== id));
-        setIsFavorite(false);
       }
     } catch (callError) {
       const apiError = callError as ApiError;

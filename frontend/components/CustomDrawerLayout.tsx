@@ -43,8 +43,6 @@ export const CustomDrawerLayout = ({ children }: CustomDrawerLayoutProps) => {
       overlayColor="rgba(0, 0, 0, 0.5)"
       animationSpeed={1}
       edgeWidth={0}>
-      {" "}
-      {/* Avoids the drawer to open grabbing the edge of the screen */}
       {children}
     </ReanimatedDrawerLayout>
   );

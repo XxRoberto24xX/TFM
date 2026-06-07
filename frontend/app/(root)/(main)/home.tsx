@@ -210,6 +210,7 @@ export default function Home() {
             {/* If there is no gasStation selected we can pass empty elementas ass the "GasStationPreview" is going to be hidden */}
             <GasStationPreview
               style={{ margin: 10 }}
+              key={selectedGasStation?.id ?? "empty"}
               priceToShow={selectedGasStation ? getMarkerGasDisplayInfo(selectedGasStation) : ""}
               gasStation={selectedGasStation || ({} as gasStationWithPrice)}
               listFavorites={favorites}

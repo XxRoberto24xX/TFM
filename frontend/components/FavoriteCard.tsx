@@ -6,7 +6,6 @@ import ThemedText from "./ThemedText";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { addToFavorites, removeFromFavorites } from "@/services/api";
-import { blue } from "react-native-reanimated/lib/typescript/Colors";
 
 interface Props extends PressableProps {
   gasStation: gasStation;

@@ -13,6 +13,7 @@ import GasOptionsDisplay from "@/components/GasOptionsDisplay";
 import BrandsOptionsDisplay from "@/components/BrandsOptionsDisplay";
 import GasStationPreview from "@/components/GasStationPreview";
 import { useRouter } from "expo-router";
+import FavoritesBottomSheet from "@/components/FavoritesBottomSheet";
 
 const FILTER_TO_PRICE_KEY: Record<string, keyof Omit<price, "date">> = {
   "E5 95": "gasoline95",
@@ -173,21 +174,12 @@ export default function Home() {
         onRegionChangeComplete={(region) => {
           paintGasStationsInRange(region);
         }}
-        initialRegion={
-          location
-            ? {
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-                latitudeDelta: 0.05,
-                longitudeDelta: 0.05,
-              }
-            : {
-                latitude: 40.4168,
-                longitude: -3.7038,
-                latitudeDelta: 0.05,
-                longitudeDelta: 0.05,
-              }
-        }>
+        initialRegion={{
+          latitude: location?.coords?.latitude ?? 40.4168,
+          longitude: location?.coords?.longitude ?? -3.7038,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        }}>
         {paintedGasStations?.map((station: gasStationWithPrice) => {
           return (
             <Marker
@@ -245,6 +237,10 @@ export default function Home() {
           </View>
         </View>
       </View>
+      <FavoritesBottomSheet
+        listFavorites={favorites}
+        onChangeListFavorites={setFavorites}
+      />
     </View>
   );
 }
@@ -256,6 +252,7 @@ const styles = StyleSheet.create({
   mainViewContainer: {
     flex: 1,
     justifyContent: "flex-start",
+    paddingBottom: 80,
   },
   bottomViewContainer: {
     flexDirection: "row",

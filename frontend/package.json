@@ -4,6 +4,7 @@
   "main": "expo-router/entry",
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
+    "@gorhom/bottom-sheet": "^5.2.14",
     "axios": "^1.16.1",
     "expo": "~56.0.8",
     "expo-constants": "~56.0.16",

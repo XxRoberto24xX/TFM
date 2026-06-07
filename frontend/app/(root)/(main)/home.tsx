@@ -41,14 +41,6 @@ export default function Home() {
 
   const [slideAnim] = useState(() => new Animated.Value(300));
 
-  const [mapKey, setMapKey] = useState(0);
-
-  useFocusEffect(
-    useCallback(() => {
-      setMapKey((k) => k + 1);
-    }, []),
-  );
-
   /* ANIMATION EFFECTS */
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -171,7 +163,6 @@ export default function Home() {
       <StatusBar style="dark" />
       <MapView
         style={StyleSheet.absoluteFill}
-        key={mapKey}
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
         showsUserLocation={true}

@@ -4,6 +4,7 @@ import { Platform } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
 import { NavigationBar } from "expo-navigation-bar";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const isAndroid = Platform.OS === "android";
 
@@ -23,12 +24,14 @@ export default function Layout() {
   }
 
   return (
-    <SafeAreaProvider>
-      <StatusBar style="light" />
-      <Stack screenOptions={{ headerShown: false, animation: "slide_from_bottom" }}>
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(root)" />
-      </Stack>
-    </SafeAreaProvider>
+    <GestureHandlerRootView>
+      <SafeAreaProvider>
+        <StatusBar style="light" />
+        <Stack screenOptions={{ headerShown: false, animation: "slide_from_bottom" }}>
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(root)" />
+        </Stack>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

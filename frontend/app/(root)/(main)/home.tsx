@@ -1,7 +1,7 @@
 import { StyleSheet, View, Animated } from "react-native";
 import { StatusBar } from "expo-status-bar";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ApiError, gasStation, gasStationWithPrice, price } from "@/types/types";
 import { getListFavorites, getGasStationsInRange } from "@/services/api";
 import { useHeaderHeight } from "expo-router/build/react-navigation";
@@ -12,7 +12,7 @@ import IconFloatingButton from "@/components/IconFloatingButton";
 import GasOptionsDisplay from "@/components/GasOptionsDisplay";
 import BrandsOptionsDisplay from "@/components/BrandsOptionsDisplay";
 import GasStationPreview from "@/components/GasStationPreview";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import FavoritesBottomSheet from "@/components/FavoritesBottomSheet";
 
 const FILTER_TO_PRICE_KEY: Record<string, keyof Omit<price, "date">> = {

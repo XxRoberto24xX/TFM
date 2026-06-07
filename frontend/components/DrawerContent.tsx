@@ -1,10 +1,11 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/Colors";
 import { Image, StyleSheet, ScrollView, View, TouchableOpacity, Text } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import { closeDrawer } from "@/utils/DrawerController";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface DrawerMenuItemProps {
   label: string;
@@ -32,6 +33,43 @@ function DrawerMenuItem({ label, iconName, onPress }: DrawerMenuItemProps) {
 
 export default function DrawerContent() {
   const router = useRouter();
+  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
+
+  /* Function to take the actual route the current display view has */
+  const getCurrentScreenName = () => {
+    const state = navigation.getState();
+    if (state?.routes) {
+      let currentRoute = state.routes[state.routes.length - 1];
+
+      while (
+        currentRoute &&
+        "state" in currentRoute &&
+        currentRoute.state?.routes &&
+        currentRoute.state.index !== undefined
+      ) {
+        const nextRoute = currentRoute.state.routes[currentRoute.state.index];
+        if (!nextRoute) break;
+        currentRoute = nextRoute as any;
+      }
+
+      return currentRoute?.name;
+    }
+    return null;
+  };
+
+  const handleNavigation = (path: string) => {
+    const currentScreen = getCurrentScreenName();
+    const targetScreen = path.split("/").pop();
+
+    console.log("Current is:" + currentScreen);
+    console.log("Target is:" + targetScreen);
+
+    if (currentScreen !== targetScreen) {
+      router.push(path);
+    }
+    closeDrawer();
+  };
 
   const handleLogout = async () => {
     await SecureStore.deleteItemAsync("token");
@@ -45,7 +83,14 @@ export default function DrawerContent() {
       colors={[Colors.primaryOrange, Colors.primaryPink]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+        style={[
+          styles.scrollView,
+          {
+            paddingTop: insets.top,
+            paddingBottom: insets.bottom,
+          },
+        ]}>
         <View style={styles.header}>
           <Image
             style={styles.backgroundImage}
@@ -59,17 +104,17 @@ export default function DrawerContent() {
           <DrawerMenuItem
             label="Home"
             iconName="home"
-            onPress={() => router.push("/(root)/(main)/home")}
+            onPress={() => handleNavigation("/(root)/(main)/home")}
           />
           <DrawerMenuItem
             label="Coches"
             iconName="car"
-            onPress={() => router.push("/(root)/(main)/cars")}
+            onPress={() => handleNavigation("/(root)/(main)/cars")}
           />
           <DrawerMenuItem
             label="Cuenta"
             iconName="person-circle"
-            onPress={() => router.push("/(root)/(main)/account")}
+            onPress={() => handleNavigation("/(root)/(main)/account")}
           />
 
           <View style={styles.divider} />

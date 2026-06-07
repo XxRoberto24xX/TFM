@@ -6,7 +6,6 @@ import { ApiError, gasStation, gasStationWithPrice } from "@/types/types";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 
-import Fontisto from "@expo/vector-icons/Fontisto";
 import { addToFavorites, removeFromFavorites } from "@/services/api";
 import { useState } from "react";
 
@@ -98,9 +97,8 @@ export default function GasStationPreview({
             onPress={() => {
               toggleFavorite(gasStation.id);
             }}>
-            <Fontisto
-              style={{ alignSelf: "center" }}
-              name={isFavorite ? "bookmark-alt" : "bookmark"}
+            <Ionicons
+              name={isFavorite ? "bookmark" : "bookmark-outline"}
               size={30}
               color={Colors.textPrimary}
             />
@@ -147,14 +145,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-start",
     padding: 10,
-    gap: 10,
+    gap: 8,
   },
   infoView: {
     flexDirection: "column",
-    maxWidth: "70%",
+    flex: 1,
   },
   markersView: {
-    marginStart: "auto",
     flexDirection: "column",
   },
   imageView: {

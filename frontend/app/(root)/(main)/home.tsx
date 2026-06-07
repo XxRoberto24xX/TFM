@@ -1,7 +1,7 @@
 import { StyleSheet, View, Animated } from "react-native";
 import { StatusBar } from "expo-status-bar";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { ApiError, gasStation, gasStationWithPrice, price } from "@/types/types";
 import { getListFavorites, getGasStationsInRange } from "@/services/api";
 import { useHeaderHeight } from "expo-router/build/react-navigation";
@@ -12,7 +12,7 @@ import IconFloatingButton from "@/components/IconFloatingButton";
 import GasOptionsDisplay from "@/components/GasOptionsDisplay";
 import BrandsOptionsDisplay from "@/components/BrandsOptionsDisplay";
 import GasStationPreview from "@/components/GasStationPreview";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import FavoritesBottomSheet from "@/components/FavoritesBottomSheet";
 
 const FILTER_TO_PRICE_KEY: Record<string, keyof Omit<price, "date">> = {
@@ -40,6 +40,13 @@ export default function Home() {
   const [selectedGasStation, setSelectedGasStation] = useState<gasStationWithPrice | null>(null);
 
   const [slideAnim] = useState(() => new Animated.Value(300));
+
+  /* CLEAR STATIONS ON SCREEN FOCUS NEEDED FOR THE MAP TO DISPLAY ALL THE MARKERS CORRECTLY */
+  useFocusEffect(
+    useCallback(() => {
+      setPaintedGasStataions([]);
+    }, []),
+  );
 
   /* ANIMATION EFFECTS */
   useEffect(() => {

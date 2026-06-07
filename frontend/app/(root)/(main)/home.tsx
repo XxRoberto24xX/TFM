@@ -1,7 +1,7 @@
 import { StyleSheet, View, Animated } from "react-native";
 import { StatusBar } from "expo-status-bar";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { ApiError, gasStation, gasStationWithPrice, price } from "@/types/types";
 import { getListFavorites, getGasStationsInRange } from "@/services/api";
 import { useHeaderHeight } from "expo-router/build/react-navigation";
@@ -12,7 +12,7 @@ import IconFloatingButton from "@/components/IconFloatingButton";
 import GasOptionsDisplay from "@/components/GasOptionsDisplay";
 import BrandsOptionsDisplay from "@/components/BrandsOptionsDisplay";
 import GasStationPreview from "@/components/GasStationPreview";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import FavoritesBottomSheet from "@/components/FavoritesBottomSheet";
 
 const FILTER_TO_PRICE_KEY: Record<string, keyof Omit<price, "date">> = {
@@ -34,12 +34,20 @@ export default function Home() {
   const [favorites, setFavorites] = useState<gasStation[]>([]);
   const [paintedGasStations, setPaintedGasStataions] = useState<gasStationWithPrice[]>([]);
   const [returnedGasStations, setReturnedGasStations] = useState<gasStationWithPrice[]>([]);
-  const [location, setLocation] = useState<Location.LocationObject | null>(null);
+  const [userLocation, setUserLocation] = useState<Location.LocationObject | null>(null);
   const [activeGasFilter, setActiveGasFilter] = useState<string>("E5 95");
   const [activeBrandFilter, setActiveBrandFilter] = useState<string>("Todos");
   const [selectedGasStation, setSelectedGasStation] = useState<gasStationWithPrice | null>(null);
 
   const [slideAnim] = useState(() => new Animated.Value(300));
+
+  const [mapKey, setMapKey] = useState(0);
+
+  useFocusEffect(
+    useCallback(() => {
+      setMapKey((k) => k + 1);
+    }, []),
+  );
 
   /* ANIMATION EFFECTS */
   useEffect(() => {
@@ -51,18 +59,18 @@ export default function Home() {
   }, [selectedGasStation, slideAnim]);
 
   /* HANDLERS */
-  const centerOnUser = () => {
-    if (location && mapRef.current) {
+  const centerOnUserButtonHandler = () => {
+    if (userLocation && mapRef.current) {
       mapRef.current.animateToRegion({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
+        latitude: userLocation.coords.latitude,
+        longitude: userLocation.coords.longitude,
         latitudeDelta: 0.05,
         longitudeDelta: 0.05,
       });
     }
   };
 
-  const paintGasStationsInRange = async (region: Region) => {
+  const getGasStationsInView = async (region: Region) => {
     const north = region.latitude + region.latitudeDelta / 2;
     const south = region.latitude - region.latitudeDelta / 2;
     const east = region.longitude + region.longitudeDelta / 2;
@@ -90,18 +98,18 @@ export default function Home() {
 
   /* VARIABLE WATCHERS */
   useEffect(() => {
-    if (location && mapRef.current) {
+    if (userLocation && mapRef.current) {
       mapRef.current.animateToRegion(
         {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
+          latitude: userLocation.coords.latitude,
+          longitude: userLocation.coords.longitude,
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         },
         1000,
       );
     }
-  }, [location]);
+  }, [userLocation]);
 
   useEffect(() => {
     const filterGasStations = async () => {
@@ -151,7 +159,7 @@ export default function Home() {
       }
 
       const userLocation = await Location.getCurrentPositionAsync({});
-      setLocation(userLocation);
+      setUserLocation(userLocation);
     };
 
     fetchFavorites();
@@ -163,6 +171,7 @@ export default function Home() {
       <StatusBar style="dark" />
       <MapView
         style={StyleSheet.absoluteFill}
+        key={mapKey}
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
         showsUserLocation={true}
@@ -172,11 +181,11 @@ export default function Home() {
           setSelectedGasStation(null);
         }}
         onRegionChangeComplete={(region) => {
-          paintGasStationsInRange(region);
+          getGasStationsInView(region);
         }}
         initialRegion={{
-          latitude: location?.coords?.latitude ?? 40.4168,
-          longitude: location?.coords?.longitude ?? -3.7038,
+          latitude: userLocation?.coords?.latitude ?? 40.4168,
+          longitude: userLocation?.coords?.longitude ?? -3.7038,
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }}>
@@ -233,7 +242,7 @@ export default function Home() {
             />
             <IconFloatingButton
               icon="locate"
-              onPress={() => centerOnUser()}
+              onPress={() => centerOnUserButtonHandler()}
             />
           </View>
         </View>

@@ -29,7 +29,6 @@ export default function Login() {
     try {
       const response = await login(email, password);
       await SecureStore.setItemAsync("token", response.token).then(() => {
-        console.log("Token: " + response.token);
         router.replace("/home");
       });
     } catch (callError) {

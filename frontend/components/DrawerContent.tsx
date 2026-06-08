@@ -62,9 +62,6 @@ export default function DrawerContent() {
     const currentScreen = getCurrentScreenName();
     const targetScreen = path.split("/").pop();
 
-    console.log("Current is:" + currentScreen);
-    console.log("Target is:" + targetScreen);
-
     if (currentScreen !== targetScreen) {
       router.push(path);
     }

@@ -1,5 +1,5 @@
-import { Pressable, PressableProps, StyleSheet, ImageSourcePropType, View, Image } from "react-native";
-import { Colors } from "@/constants/Colors";
+import { Pressable, PressableProps, StyleSheet, View, Image } from "react-native";
+import { Colors } from "@/constants/colors";
 
 import ThemedText from "./ThemedText";
 import { ApiError, gasStation, gasStationWithPrice } from "@/types/types";
@@ -7,7 +7,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 
 import { addToFavorites, removeFromFavorites } from "@/services/api";
-import { useState } from "react";
+
+import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
 
 interface Props extends PressableProps {
   gasStation: gasStationWithPrice;
@@ -15,18 +16,6 @@ interface Props extends PressableProps {
   listFavorites: gasStation[];
   onChangeListFavorites: (filter: gasStation[]) => void;
 }
-
-const BRAND_IMAGES: Record<string, ImageSourcePropType> = {
-  REPSOL: require("@/assets/brands/repsol.png"),
-  CEPSA: require("@/assets/brands/cepsa.png"),
-  SHELL: require("@/assets/brands/shell.png"),
-  BP: require("@/assets/brands/bp.png"),
-  CAMPSA: require("@/assets/brands/campsa.png"),
-  GALP: require("@/assets/brands/galp.png"),
-  PLANERGY: require("@/assets/brands/plenoil.png"),
-};
-
-const DEFAULT_IMAGE = require("@/assets/brands/default.png");
 
 export default function GasStationPreview({
   gasStation,

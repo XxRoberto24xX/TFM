@@ -1,6 +1,6 @@
 import { StyleSheet, View, type TextInputProps } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "../constants/Colors";
+import { Colors } from "../constants/colors";
 
 import ThemedText from "../components/ThemedText";
 

@@ -1,5 +1,5 @@
 import { Stack } from "expo-router";
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";

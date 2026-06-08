@@ -1,5 +1,5 @@
 import { Text, type TextProps } from "react-native";
-import { Colors } from "../constants/Colors";
+import { Colors } from "../constants/colors";
 
 interface Props extends TextProps {
   size: "h1" | "h2" | "xl" | "l" | "m" | "s";

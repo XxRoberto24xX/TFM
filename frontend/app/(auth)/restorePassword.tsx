@@ -1,7 +1,7 @@
 import { Dimensions, StyleSheet, View, Image, ActivityIndicator } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useState } from "react";
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/constants/colors";
 import { useRouter } from "expo-router";
 
 import { passwordResetEmail } from "@/services/api";

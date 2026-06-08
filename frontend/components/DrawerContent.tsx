@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/constants/colors";
 import { Image, StyleSheet, ScrollView, View, TouchableOpacity, Text } from "react-native";
 import { useRouter, useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";

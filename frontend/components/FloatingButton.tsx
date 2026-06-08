@@ -1,7 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
 import { Pressable, StyleSheet, type PressableProps } from "react-native";
-import { Colors } from "../constants/Colors";
+import { Colors } from "../constants/colors";
 import ThemedText from "./ThemedText";
 
 interface Props extends PressableProps {

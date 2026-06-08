@@ -1,6 +1,8 @@
-import { StyleSheet, ScrollView, Pressable, ImageSourcePropType, ScrollViewProps, Image } from "react-native";
-import { Colors } from "@/constants/Colors";
+import { StyleSheet, ScrollView, Pressable, ScrollViewProps, Image } from "react-native";
+import { Colors } from "@/constants/colors";
 import ThemedText from "./ThemedText";
+
+import { BRAND_IMAGES } from "@/constants/values";
 
 import * as Haptics from "expo-haptics";
 
@@ -10,17 +12,6 @@ interface Props extends ScrollViewProps {
 }
 
 const FILTER_OPTIONS = ["Todos", "Repsol", "Cepsa", "Shell", "BP", "Campsa", "Galp", "Plenery"];
-
-const BRAND_IMAGES: Record<string, ImageSourcePropType> = {
-  Repsol: require("@/assets/brands/repsol.png"),
-  Cepsa: require("@/assets/brands/cepsa.png"),
-  Shell: require("@/assets/brands/shell.png"),
-  BP: require("@/assets/brands/bp.png"),
-  Campsa: require("@/assets/brands/campsa.png"),
-  Galp: require("@/assets/brands/galp.png"),
-  Plenery: require("@/assets/brands/plenoil.png"),
-  Todos: require("@/assets/brands/default.png"),
-};
 
 export default function BrandsOptionsDisplay({ selectedFilter, onSelectFilter, style, ...scrollviewProps }: Props) {
   return (

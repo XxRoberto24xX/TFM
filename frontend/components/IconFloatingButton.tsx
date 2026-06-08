@@ -1,6 +1,6 @@
 import { Pressable, PressableProps, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/constants/colors";
 
 import * as Haptics from "expo-haptics";
 import { Ionicons } from "@expo/vector-icons";

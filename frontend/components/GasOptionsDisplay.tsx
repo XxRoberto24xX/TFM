@@ -1,5 +1,5 @@
 import { StyleSheet, ScrollView, ScrollViewProps, Pressable } from "react-native";
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/constants/colors";
 import ThemedText from "./ThemedText";
 
 import * as Haptics from "expo-haptics";

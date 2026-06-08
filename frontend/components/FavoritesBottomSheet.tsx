@@ -3,7 +3,7 @@ import { Dimensions, StyleSheet, View } from "react-native";
 import BottomSheet, { BottomSheetBackgroundProps, BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { gasStation } from "@/types/types";
 
-import { Colors } from "@/constants/Colors";
+import { Colors } from "@/constants/colors";
 import ThemedText from "@/components/ThemedText";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";

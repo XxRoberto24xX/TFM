@@ -1,11 +1,12 @@
-import { Pressable, StyleSheet, Image, View, PressableProps, ImageSourcePropType } from "react-native";
-import { Colors } from "@/constants/Colors";
+import { Pressable, StyleSheet, Image, View, PressableProps } from "react-native";
+import { Colors } from "@/constants/colors";
 import { ApiError, gasStation } from "@/types/types";
 
 import ThemedText from "./ThemedText";
-import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { addToFavorites, removeFromFavorites } from "@/services/api";
+
+import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
 
 interface Props extends PressableProps {
   gasStation: gasStation;
@@ -13,18 +14,6 @@ interface Props extends PressableProps {
   onChangeListFavorites: (filter: gasStation[]) => void;
   onPress: () => void;
 }
-
-const BRAND_IMAGES: Record<string, ImageSourcePropType> = {
-  REPSOL: require("@/assets/brands/repsol.png"),
-  CEPSA: require("@/assets/brands/cepsa.png"),
-  SHELL: require("@/assets/brands/shell.png"),
-  BP: require("@/assets/brands/bp.png"),
-  CAMPSA: require("@/assets/brands/campsa.png"),
-  GALP: require("@/assets/brands/galp.png"),
-  PLANERGY: require("@/assets/brands/plenoil.png"),
-};
-
-const DEFAULT_IMAGE = require("@/assets/brands/default.png");
 
 export default function FavoriteCard({
   gasStation,

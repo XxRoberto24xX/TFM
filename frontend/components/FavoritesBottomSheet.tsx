@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
+// Importamos el BottomSheet y su lista nativa para los gestos
 import BottomSheet, { BottomSheetBackgroundProps, BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { gasStation } from "@/types/types";
 
@@ -30,31 +31,17 @@ const CustomBackground = ({ style }: BottomSheetBackgroundProps) => {
 
 export default function FavoritesBottomSheet({ listFavorites, onChangeListFavorites }: Props) {
   const router = useRouter();
-  const snapPoints = useMemo(() => [80], []);
 
-  const [isScrollable, setIsScrollable] = useState(false);
-  const maxHeight = Dimensions.get("window").height * 0.5;
+  const snapPoints = useMemo(() => [80, Dimensions.get("window").height * 0.4], []);
 
   const animatedIndex = useSharedValue(0);
 
   const iconStyle = useAnimatedStyle(() => {
-    const rotation = interpolate(animatedIndex.value, [0, 1], [0, 180]);
-
+    const rotation = interpolate(animatedIndex.value, [0, 1], [0, 180], "clamp");
     return {
       transform: [{ rotate: `${rotation}deg` }],
     };
   });
-
-  const handleContentSize = useCallback(
-    (_: any, h: number) => {
-      const shouldScroll = h > maxHeight;
-      setIsScrollable((prev) => {
-        if (prev !== shouldScroll) return shouldScroll;
-        return prev;
-      });
-    },
-    [maxHeight],
-  );
 
   const favoritesPraceHolder = () => (
     <View style={styles.emptyContainer}>
@@ -69,15 +56,10 @@ export default function FavoritesBottomSheet({ listFavorites, onChangeListFavori
   return (
     <BottomSheet
       animatedIndex={animatedIndex}
-      style={{
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
-        overflow: "hidden",
-      }}
+      style={{ borderTopLeftRadius: 30, borderTopRightRadius: 30, overflow: "hidden" }}
       snapPoints={snapPoints}
       index={0}
-      enableDynamicSizing={true}
-      maxDynamicContentSize={Dimensions.get("window").height * 0.5}
+      enableDynamicSizing={false}
       enableOverDrag={false}
       handleIndicatorStyle={{ backgroundColor: "white" }}
       backgroundComponent={CustomBackground}>
@@ -91,31 +73,19 @@ export default function FavoritesBottomSheet({ listFavorites, onChangeListFavori
           />
         </Animated.View>
       </View>
+
       <BottomSheetFlatList
-        onContentSizeChange={(_, h) => {
-          handleContentSize(_, h);
-        }}
         ListEmptyComponent={favoritesPraceHolder}
-        scrollEnabled={isScrollable}
         style={{ paddingHorizontal: 24 }}
         data={listFavorites}
         keyExtractor={(item) => item.id.toString()}
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{
-          gap: 8,
-          paddingBottom: isScrollable ? 0 : 60,
-        }}
+        contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
         renderItem={({ item }) => (
           <FavoriteCard
             gasStation={item}
             listFavorites={listFavorites}
             onChangeListFavorites={onChangeListFavorites}
-            onPress={() => {
-              router.push({
-                pathname: "[id]",
-                params: { id: item.id },
-              });
-            }}
+            onPress={() => router.push({ pathname: "[id]", params: { id: item.id } })}
           />
         )}
       />
@@ -130,32 +100,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 24,
   },
-  imageView: {
-    alignSelf: "flex-start",
-    backgroundColor: Colors.white,
-    borderRadius: 10,
-    padding: 3,
-
-    shadowColor: Colors.black,
-
-    // Shadow for IOS
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-
-    // Shadow for Android
-    elevation: 5,
-  },
-  image: {
-    width: 50,
-    height: 50,
-  },
   emptyContainer: {
-    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 20,
-    gap: 8,
+    paddingVertical: 40,
   },
   emptyText: {
     color: "rgba(255, 255, 255, 0.8)",

@@ -56,6 +56,16 @@ export default function FavoritesBottomSheet({ listFavorites, onChangeListFavori
     [maxHeight],
   );
 
+  const favoritesPraceHolder = () => (
+    <View style={styles.emptyContainer}>
+      <ThemedText
+        style={styles.emptyText}
+        size="l">
+        No hay favoritos
+      </ThemedText>
+    </View>
+  );
+
   return (
     <BottomSheet
       animatedIndex={animatedIndex}
@@ -85,6 +95,7 @@ export default function FavoritesBottomSheet({ listFavorites, onChangeListFavori
         onContentSizeChange={(_, h) => {
           handleContentSize(_, h);
         }}
+        ListEmptyComponent={favoritesPraceHolder}
         scrollEnabled={isScrollable}
         style={{ paddingHorizontal: 24 }}
         data={listFavorites}
@@ -138,5 +149,16 @@ const styles = StyleSheet.create({
   image: {
     width: 50,
     height: 50,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 20,
+    gap: 8,
+  },
+  emptyText: {
+    color: "rgba(255, 255, 255, 0.8)",
+    textAlign: "center",
   },
 });

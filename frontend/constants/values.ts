@@ -23,3 +23,5 @@ export const BRAND_IMAGES: Record<string, ImageSourcePropType> = {
 };
 
 export const DEFAULT_IMAGE = require("@/assets/brands/default.png");
+
+export const MAX_LATITUDE_DELTA_FOR_MARKERS = 1;

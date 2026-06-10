@@ -16,7 +16,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import FavoritesBottomSheet from "@/components/FavoritesBottomSheet";
 import { getMarkerGasDisplayInfo } from "@/utils/gasStationsUtils";
 
-import { FILTER_TO_PRICE_KEY } from "@/constants/values";
+import { FILTER_TO_PRICE_KEY, MAX_LATITUDE_DELTA_FOR_MARKERS } from "@/constants/values";
 
 export default function Home() {
   /* VARIABLES */
@@ -89,12 +89,16 @@ export default function Home() {
     const east = region.longitude + region.longitudeDelta / 2;
     const west = region.longitude - region.longitudeDelta / 2;
 
-    try {
-      const data = await getGasStationsInRange(north, south, east, west);
-      setReturnedGasStations(data.listGasStations);
-    } catch (callError) {
-      const apiError = callError as ApiError;
-      console.log("Get Elements In Region: " + apiError.message);
+    if (region && region.latitudeDelta < MAX_LATITUDE_DELTA_FOR_MARKERS) {
+      try {
+        const data = await getGasStationsInRange(north, south, east, west);
+        setReturnedGasStations(data.listGasStations);
+      } catch (callError) {
+        const apiError = callError as ApiError;
+        console.log("Get Elements In Region: " + apiError.message);
+      }
+    } else {
+      setReturnedGasStations([]);
     }
   };
 

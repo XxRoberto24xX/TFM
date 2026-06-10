@@ -12,14 +12,14 @@ export const FILTER_TO_PRICE_KEY: Record<string, keyof Omit<price, "date">> = {
 };
 
 export const BRAND_IMAGES: Record<string, ImageSourcePropType> = {
-  Repsol: require("@/assets/brands/repsol.png"),
-  Cepsa: require("@/assets/brands/cepsa.png"),
-  Shell: require("@/assets/brands/shell.png"),
+  TODOS: require("@/assets/brands/default.png"),
+  REPSOL: require("@/assets/brands/repsol.png"),
+  CEPSA: require("@/assets/brands/cepsa.png"),
+  SHELL: require("@/assets/brands/shell.png"),
   BP: require("@/assets/brands/bp.png"),
-  Campsa: require("@/assets/brands/campsa.png"),
-  Galp: require("@/assets/brands/galp.png"),
-  Plenery: require("@/assets/brands/plenoil.png"),
-  Todos: require("@/assets/brands/default.png"),
+  CAMPSA: require("@/assets/brands/campsa.png"),
+  GALP: require("@/assets/brands/galp.png"),
+  PLENERY: require("@/assets/brands/plenoil.png"),
 };
 
 export const DEFAULT_IMAGE = require("@/assets/brands/default.png");

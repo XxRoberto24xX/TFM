@@ -23,7 +23,7 @@ export default function BrandsOptionsDisplay({ selectedFilter, onSelectFilter, s
       {...scrollviewProps}>
       {FILTER_OPTIONS.map((item) => {
         const isSelected = selectedFilter === item;
-        const imageSource = BRAND_IMAGES[item];
+        const imageSource = BRAND_IMAGES[item.toUpperCase()];
         return (
           <Pressable
             style={({ pressed }) => [

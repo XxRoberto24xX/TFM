@@ -161,6 +161,7 @@ export default function Home() {
         provider={PROVIDER_GOOGLE}
         showsUserLocation={true}
         showsMyLocationButton={false}
+        toolbarEnabled={false}
         onPress={() => setSelectedGasStation(null)}
         onPoiClick={() => {
           setSelectedGasStation(null);
@@ -168,6 +169,12 @@ export default function Home() {
         onRegionChangeComplete={(region) => {
           setLastRegion(region);
           onRegionChanged(region);
+        }}
+        mapPadding={{
+          top: headerHeight + 60,
+          bottom: 145,
+          left: 0,
+          right: 0,
         }}
         initialRegion={
           lastRegion ?? {

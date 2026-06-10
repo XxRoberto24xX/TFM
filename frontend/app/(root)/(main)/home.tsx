@@ -28,6 +28,7 @@ export default function Home() {
   const [favorites, setFavorites] = useState<gasStation[]>([]);
   const [lastRegion, setLastRegion] = useState<Region | null>(null);
   const [userLocation, setUserLocation] = useState<Location.LocationObject | null>(null);
+  const [isCenteredOnUser, setIsCenteredOnUser] = useState(false);
   const [activeGasFilter, setActiveGasFilter] = useState<string>("E5 95");
   const [activeBrandFilter, setActiveBrandFilter] = useState<string>("Todos");
   const [selectedGasStation, setSelectedGasStation] = useState<gasStationWithPrice | null>(null);
@@ -80,6 +81,7 @@ export default function Home() {
 
       mapRef.current.animateToRegion(userRegion);
       setLastRegion(userRegion);
+      setIsCenteredOnUser(true);
     }
   };
 
@@ -114,6 +116,7 @@ export default function Home() {
 
       setLastRegion(userRegion);
       mapRef.current.animateToRegion(userRegion, 1000);
+      setIsCenteredOnUser(true);
     }
   }, [userLocation]);
 
@@ -166,9 +169,12 @@ export default function Home() {
         onPoiClick={() => {
           setSelectedGasStation(null);
         }}
-        onRegionChangeComplete={(region) => {
+        onRegionChangeComplete={(region, details) => {
           setLastRegion(region);
           onRegionChanged(region);
+          if (details?.isGesture) {
+            setIsCenteredOnUser(false);
+          }
         }}
         mapPadding={{
           top: headerHeight + 60,
@@ -236,7 +242,8 @@ export default function Home() {
               onSelectFilter={(filter) => setActiveGasFilter(filter)}
             />
             <IconFloatingButton
-              icon="locate"
+              icon={isCenteredOnUser ? "gps-fixed" : "gps-not-fixed"}
+              iconProvider="material"
               onPress={() => onGoToUserLocation()}
             />
           </View>

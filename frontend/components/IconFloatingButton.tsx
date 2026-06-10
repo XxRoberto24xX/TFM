@@ -3,22 +3,27 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/colors";
 
 import * as Haptics from "expo-haptics";
-import { Ionicons } from "@expo/vector-icons";
-
-type IoniconsName = keyof typeof Ionicons.glyphMap;
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 interface Props extends PressableProps {
-  icon: IoniconsName;
+  icon: keyof typeof Ionicons.glyphMap | keyof typeof MaterialIcons.glyphMap;
+  iconProvider?: "ionicons" | "material";
   onPress: () => void;
 }
 
-export default function IconFloatingButton({ icon, onPress, style, ...pressableProps }: Props) {
+export default function IconFloatingButton({
+  icon,
+  iconProvider = "ionicons",
+  onPress,
+  style,
+  ...pressableProps
+}: Props) {
   return (
     <Pressable
       style={({ pressed }) => [
         styles.buttonContainer,
         pressed && styles.buttonPressed,
-        typeof style === "function" ? style({ pressed }) : style, // <- made to introduce de style only if its a stylesheet
+        typeof style === "function" ? style({ pressed }) : style,
       ]}
       onPress={() => {
         Haptics.selectionAsync();
@@ -29,11 +34,20 @@ export default function IconFloatingButton({ icon, onPress, style, ...pressableP
         colors={[Colors.primaryOrange, Colors.primaryPink]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}>
-        <Ionicons
-          name={icon}
-          size={26}
-          color={Colors.textPrimary}
-        />
+        {/* 2. Renderizado condicional según el proveedor */}
+        {iconProvider === "material" ? (
+          <MaterialIcons
+            name={icon as keyof typeof MaterialIcons.glyphMap}
+            size={26}
+            color={Colors.textPrimary}
+          />
+        ) : (
+          <Ionicons
+            name={icon as keyof typeof Ionicons.glyphMap}
+            size={26}
+            color={Colors.textPrimary}
+          />
+        )}
       </LinearGradient>
     </Pressable>
   );

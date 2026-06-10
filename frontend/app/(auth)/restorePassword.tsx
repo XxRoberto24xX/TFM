@@ -43,7 +43,7 @@ export default function RestorePassword() {
       extraScrollHeight={30}
       showsVerticalScrollIndicator={false}>
       <Image
-        source={require("@/assets/fondoLoginGrande.png")}
+        source={require("@/assets/backgrounds/fondoLoginGrande.png")}
         style={styles.backgroundImage}
       />
 

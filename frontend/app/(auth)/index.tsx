@@ -49,7 +49,7 @@ export default function Login() {
       showsVerticalScrollIndicator={false}>
       <Image
         style={styles.backgroundImage}
-        source={require("@/assets/fondoLoginGrande.png")}
+        source={require("@/assets/backgrounds/fondoLoginGrande.png")}
       />
 
       <ThemedText

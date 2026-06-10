@@ -46,7 +46,7 @@ export default function Register() {
       extraScrollHeight={30}
       showsVerticalScrollIndicator={false}>
       <Image
-        source={require("@/assets/fondoLoginPequeno.png")}
+        source={require("@/assets/backgrounds/fondoLoginPequeno.png")}
         style={styles.backgroundImage}
       />
 

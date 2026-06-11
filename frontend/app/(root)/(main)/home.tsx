@@ -1,73 +1,33 @@
-import { StyleSheet, View, Animated } from "react-native";
-import { StatusBar } from "expo-status-bar";
-
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { ApiError, gasStation, gasStationWithPrice } from "@/types/types";
-import { getListFavorites, getGasStationsInRange } from "@/services/api";
+import { StyleSheet, View } from "react-native";
+import { useEffect, useRef } from "react";
+import { ApiError } from "@/types/types";
+import { getListFavorites } from "@/services/api";
 import { useHeaderHeight } from "expo-router/build/react-navigation";
-import MapView, { PROVIDER_GOOGLE, Region, Marker } from "react-native-maps";
+import MapView, { Region } from "react-native-maps";
 
 import * as Location from "expo-location";
 import IconFloatingButton from "@/components/IconFloatingButton";
 import GasOptionsDisplay from "@/components/GasOptionsDisplay";
 import BrandsOptionsDisplay from "@/components/BrandsOptionsDisplay";
 import GasStationPreview from "@/components/GasStationPreview";
-import { useFocusEffect, useRouter } from "expo-router";
 import FavoritesBottomSheet from "@/components/FavoritesBottomSheet";
-import { getMarkerGasDisplayInfo } from "@/utils/gasStationsUtils";
 
-import { FILTER_TO_PRICE_KEY, MAX_LATITUDE_DELTA_FOR_MARKERS } from "@/constants/values";
+import Map from "@/components/Map";
+import { useLocationStore } from "@/stores/useLocationStore";
+import { useGasStationStore } from "@/stores/useGasStationsStore";
 
 export default function Home() {
   /* VARIABLES */
-  const router = useRouter();
   const mapRef = useRef<MapView | null>(null);
   const headerHeight = useHeaderHeight();
 
-  const [returnedGasStations, setReturnedGasStations] = useState<gasStationWithPrice[]>([]);
-  const [favorites, setFavorites] = useState<gasStation[]>([]);
-  const [lastRegion, setLastRegion] = useState<Region | null>(null);
-  const [userLocation, setUserLocation] = useState<Location.LocationObject | null>(null);
-  const [isCenteredOnUser, setIsCenteredOnUser] = useState(false);
-  const [activeGasFilter, setActiveGasFilter] = useState<string>("E5 95");
-  const [activeBrandFilter, setActiveBrandFilter] = useState<string>("Todos");
-  const [selectedGasStation, setSelectedGasStation] = useState<gasStationWithPrice | null>(null);
+  const userLocation = useLocationStore((state) => state.userLocation);
+  const isCenteredOnUser = useLocationStore((state) => state.isCenteredOnUser);
 
-  const [slideAnim] = useState(() => new Animated.Value(300));
-  const [mapKey, setMapKey] = useState(0);
-
-  /* USEMEMO VARIABLES */
-  const paintedGasStations = useMemo(() => {
-    if (!returnedGasStations || returnedGasStations.length === 0) {
-      return [];
-    }
-
-    const filteredStations = returnedGasStations.filter((station) => {
-      const matchesBrand =
-        activeBrandFilter === "Todos" || station.brand.toUpperCase() === activeBrandFilter.toUpperCase();
-
-      const priceKey = FILTER_TO_PRICE_KEY[activeGasFilter];
-
-      const hasPrice = station.prices && station.prices[priceKey] !== undefined && station.prices[priceKey] > 0;
-
-      return matchesBrand && hasPrice;
-    });
-
-    if (filteredStations.length === 0) {
-      console.log("No hay ninguna coincidencia");
-    }
-
-    return filteredStations;
-  }, [returnedGasStations, activeBrandFilter, activeGasFilter]);
-
-  /* ANIMATION EFFECTS */
-  useEffect(() => {
-    Animated.timing(slideAnim, {
-      toValue: selectedGasStation ? 0 : 300,
-      duration: selectedGasStation ? 300 : 250,
-      useNativeDriver: true,
-    }).start();
-  }, [selectedGasStation, slideAnim]);
+  const setFavorites = useGasStationStore((state) => state.setFavorites);
+  const setLastRegion = useLocationStore((state) => state.setLastRegion);
+  const setUserLocation = useLocationStore((state) => state.setUserLocation);
+  const setIsCenteredOnUser = useLocationStore((state) => state.setIsCenteredOnUser);
 
   /* HANDLERS */
   const onGoToUserLocation = () => {
@@ -82,25 +42,6 @@ export default function Home() {
       mapRef.current.animateToRegion(userRegion);
       setLastRegion(userRegion);
       setIsCenteredOnUser(true);
-    }
-  };
-
-  const onRegionChanged = async (region: Region) => {
-    const north = region.latitude + region.latitudeDelta / 2;
-    const south = region.latitude - region.latitudeDelta / 2;
-    const east = region.longitude + region.longitudeDelta / 2;
-    const west = region.longitude - region.longitudeDelta / 2;
-
-    if (region && region.latitudeDelta < MAX_LATITUDE_DELTA_FOR_MARKERS) {
-      try {
-        const data = await getGasStationsInRange(north, south, east, west);
-        setReturnedGasStations(data.listGasStations);
-      } catch (callError) {
-        const apiError = callError as ApiError;
-        console.log("Get Elements In Region: " + apiError.message);
-      }
-    } else {
-      setReturnedGasStations([]);
     }
   };
 
@@ -147,100 +88,15 @@ export default function Home() {
     fetchFavorites();
   }, []);
 
-  /* ON ACTIVE */
-  useFocusEffect(
-    useCallback(() => {
-      setMapKey((k) => k + 1);
-    }, []),
-  );
-
   return (
     <View style={styles.mapContainer}>
-      <StatusBar style="dark" />
-      <MapView
-        style={StyleSheet.absoluteFill}
-        key={mapKey}
-        ref={mapRef}
-        provider={PROVIDER_GOOGLE}
-        showsUserLocation={true}
-        showsMyLocationButton={false}
-        toolbarEnabled={false}
-        onPress={() => setSelectedGasStation(null)}
-        onPoiClick={() => {
-          setSelectedGasStation(null);
-        }}
-        onRegionChangeComplete={(region, details) => {
-          setLastRegion(region);
-          onRegionChanged(region);
-          if (details?.isGesture) {
-            setIsCenteredOnUser(false);
-          }
-        }}
-        mapPadding={{
-          top: headerHeight + 60,
-          bottom: 145,
-          left: 0,
-          right: 0,
-        }}
-        initialRegion={
-          lastRegion ?? {
-            latitude: 40.4168,
-            longitude: -3.7038,
-            latitudeDelta: 0.05,
-            longitudeDelta: 0.05,
-          }
-        }>
-        {paintedGasStations?.map((station: gasStationWithPrice) => {
-          return (
-            <Marker
-              key={station.id}
-              coordinate={{ latitude: station.latitude, longitude: station.longitude }}
-              title={station.direction}
-              description={getMarkerGasDisplayInfo(station, activeGasFilter)}
-              pinColor="red"
-              onPress={(e) => {
-                e.stopPropagation();
-                setSelectedGasStation(station);
-              }}
-            />
-          );
-        })}
-      </MapView>
+      <Map ref={mapRef} />
       <View style={[styles.mainViewContainer, { paddingTop: headerHeight }]}>
-        <BrandsOptionsDisplay
-          selectedFilter={activeBrandFilter}
-          onSelectFilter={(filter) => setActiveBrandFilter(filter)}
-        />
+        <BrandsOptionsDisplay />
         <View style={{ marginTop: "auto" }}>
-          <Animated.View
-            style={{
-              transform: [{ translateY: slideAnim }],
-              pointerEvents: selectedGasStation ? "auto" : "none",
-            }}>
-            {/* If there is no gasStation selected we can pass empty elementas ass the "GasStationPreview" is going to be hidden */}
-            <GasStationPreview
-              style={{ margin: 10 }}
-              key={selectedGasStation?.id ?? "empty"}
-              priceToShow={selectedGasStation ? getMarkerGasDisplayInfo(selectedGasStation, activeGasFilter) : ""}
-              gasStation={selectedGasStation || ({} as gasStationWithPrice)}
-              listFavorites={favorites}
-              onChangeListFavorites={setFavorites}
-              onPress={(e) => {
-                e.stopPropagation();
-                if (selectedGasStation) {
-                  router.push({
-                    pathname: "[id]",
-                    params: { id: selectedGasStation.id },
-                  });
-                }
-              }}
-            />
-          </Animated.View>
+          <GasStationPreview style={{ margin: 10 }} />
           <View style={styles.bottomViewContainer}>
-            <GasOptionsDisplay
-              selectedFilter={activeGasFilter}
-              onSelectFilter={(filter) => setActiveGasFilter(filter)}
-            />
+            <GasOptionsDisplay />
             <IconFloatingButton
               icon={isCenteredOnUser ? "gps-fixed" : "gps-not-fixed"}
               iconProvider="material"
@@ -249,10 +105,7 @@ export default function Home() {
           </View>
         </View>
       </View>
-      <FavoritesBottomSheet
-        listFavorites={favorites}
-        onChangeListFavorites={setFavorites}
-      />
+      <FavoritesBottomSheet />
     </View>
   );
 }

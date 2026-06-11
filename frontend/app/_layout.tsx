@@ -26,7 +26,7 @@ export default function Layout() {
   return (
     <GestureHandlerRootView>
       <SafeAreaProvider>
-        <StatusBar style="light" />
+        <StatusBar style="dark" />
         <Stack screenOptions={{ headerShown: false, animation: "slide_from_bottom" }}>
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(root)" />

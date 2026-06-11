@@ -1,8 +1,6 @@
 import { useMemo } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
-// Importamos el BottomSheet y su lista nativa para los gestos
 import BottomSheet, { BottomSheetBackgroundProps, BottomSheetFlatList } from "@gorhom/bottom-sheet";
-import { gasStation } from "@/types/types";
 
 import { Colors } from "@/constants/colors";
 import ThemedText from "@/components/ThemedText";
@@ -12,11 +10,7 @@ import FavoriteCard from "./FavoriteCard";
 import { useRouter } from "expo-router";
 
 import Animated, { useAnimatedStyle, interpolate, useSharedValue } from "react-native-reanimated";
-
-interface Props {
-  listFavorites: gasStation[];
-  onChangeListFavorites: (filter: gasStation[]) => void;
-}
+import { useGasStationStore } from "@/stores/useGasStationsStore";
 
 const CustomBackground = ({ style }: BottomSheetBackgroundProps) => {
   return (
@@ -29,12 +23,22 @@ const CustomBackground = ({ style }: BottomSheetBackgroundProps) => {
   );
 };
 
-export default function FavoritesBottomSheet({ listFavorites, onChangeListFavorites }: Props) {
+const favoritesPraceHolder = () => (
+  <View style={styles.emptyContainer}>
+    <ThemedText
+      style={styles.emptyText}
+      size="l">
+      No hay favoritos
+    </ThemedText>
+  </View>
+);
+
+export default function FavoritesBottomSheet() {
   const router = useRouter();
-
   const snapPoints = useMemo(() => [80, Dimensions.get("window").height * 0.4], []);
-
   const animatedIndex = useSharedValue(0);
+
+  const listFavorites = useGasStationStore((state) => state.listFavorites);
 
   const iconStyle = useAnimatedStyle(() => {
     const rotation = interpolate(animatedIndex.value, [0, 1], [0, 180], "clamp");
@@ -42,16 +46,6 @@ export default function FavoritesBottomSheet({ listFavorites, onChangeListFavori
       transform: [{ rotate: `${rotation}deg` }],
     };
   });
-
-  const favoritesPraceHolder = () => (
-    <View style={styles.emptyContainer}>
-      <ThemedText
-        style={styles.emptyText}
-        size="l">
-        No hay favoritos
-      </ThemedText>
-    </View>
-  );
 
   return (
     <BottomSheet
@@ -75,19 +69,12 @@ export default function FavoritesBottomSheet({ listFavorites, onChangeListFavori
       </View>
 
       <BottomSheetFlatList
-        ListEmptyComponent={favoritesPraceHolder}
         style={{ paddingHorizontal: 24 }}
         data={listFavorites}
         keyExtractor={(item) => item.id.toString()}
+        ListEmptyComponent={favoritesPraceHolder}
         contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
-        renderItem={({ item }) => (
-          <FavoriteCard
-            gasStation={item}
-            listFavorites={listFavorites}
-            onChangeListFavorites={onChangeListFavorites}
-            onPress={() => router.push({ pathname: "[id]", params: { id: item.id } })}
-          />
-        )}
+        renderItem={({ item }) => <FavoriteCard gasStation={item} />}
       />
     </BottomSheet>
   );

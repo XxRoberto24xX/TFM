@@ -1,26 +1,23 @@
-import { StyleSheet, ScrollView, ScrollViewProps, Pressable } from "react-native";
+import { StyleSheet, ScrollView, Pressable } from "react-native";
 import { Colors } from "@/constants/colors";
 import ThemedText from "./ThemedText";
 
 import * as Haptics from "expo-haptics";
+import { GAS_FILTER_OPTIONS } from "@/constants/values";
+import { useGasStationStore } from "@/stores/useGasStationsStore";
 
-const FILTER_OPTIONS = ["E5 95", "E5 98", "Diesel A", "Diesel B", "Diesel +", "Gas Natural", "Biocombustible"];
+export default function GasOptionsDisplay() {
+  const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
+  const setActiveGasFilter = useGasStationStore((state) => state.setActiveGasFilter);
 
-interface Props extends ScrollViewProps {
-  selectedFilter: string | null;
-  onSelectFilter: (filter: string) => void;
-}
-
-export default function GasOptionsDisplay({ selectedFilter, onSelectFilter, style, ...scrollviewProps }: Props) {
   return (
     <ScrollView
-      style={[styles.scrollView, style]}
+      style={[styles.scrollView]}
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.scrollContainer}
-      {...scrollviewProps}>
-      {FILTER_OPTIONS.map((item) => {
-        const isSelected = selectedFilter === item;
+      contentContainerStyle={styles.scrollContainer}>
+      {GAS_FILTER_OPTIONS.map((item) => {
+        const isSelected = activeGasFilter === item;
         return (
           <Pressable
             style={({ pressed }) => [
@@ -31,7 +28,7 @@ export default function GasOptionsDisplay({ selectedFilter, onSelectFilter, styl
             key={item}
             onPress={() => {
               Haptics.selectionAsync();
-              onSelectFilter(item);
+              setActiveGasFilter(item);
             }}>
             <ThemedText
               size="m"

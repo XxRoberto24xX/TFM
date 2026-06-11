@@ -25,3 +25,15 @@ export const BRAND_IMAGES: Record<string, ImageSourcePropType> = {
 export const DEFAULT_IMAGE = require("@/assets/brands/default.png");
 
 export const MAX_LATITUDE_DELTA_FOR_MARKERS = 1;
+
+export const GAS_FILTER_OPTIONS = [
+  "E5 95",
+  "E5 98",
+  "Diesel A",
+  "Diesel B",
+  "Diesel +",
+  "Gas Natural",
+  "Biocombustible",
+];
+
+export const BRAND_FILTER_OPTIONS = ["Todos", "Repsol", "Cepsa", "Shell", "BP", "Campsa", "Galp", "Plenery"];

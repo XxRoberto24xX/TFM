@@ -1,40 +1,28 @@
-import { Pressable, StyleSheet, Image, View, PressableProps } from "react-native";
+import { Pressable, StyleSheet, Image, View } from "react-native";
 import { Colors } from "@/constants/colors";
 import { ApiError, gasStation } from "@/types/types";
 
 import ThemedText from "./ThemedText";
 import { Ionicons } from "@expo/vector-icons";
-import { addToFavorites, removeFromFavorites } from "@/services/api";
+import { removeFromFavorites } from "@/services/api";
 
 import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
+import { router } from "expo-router";
+import { useGasStationStore } from "@/stores/useGasStationsStore";
 
-interface Props extends PressableProps {
+interface Props {
   gasStation: gasStation;
-  listFavorites: gasStation[];
-  onChangeListFavorites: (filter: gasStation[]) => void;
-  onPress: () => void;
 }
 
-export default function FavoriteCard({
-  gasStation,
-  listFavorites,
-  onChangeListFavorites,
-  onPress,
-  ...pressableProps
-}: Props) {
-  const imageSource = BRAND_IMAGES[gasStation?.brand] || DEFAULT_IMAGE;
-  const isFavorite = listFavorites.some((fav) => fav.id === gasStation.id);
+export default function FavoriteCard({ gasStation }: Props) {
+  const removeFavorite = useGasStationStore((state) => state.removeFavorite);
+  const imageSource = BRAND_IMAGES[gasStation.brand] || DEFAULT_IMAGE;
 
   /* HANDLERS */
-  const toggleFavorite = async (id: number) => {
+  const onRemoveFromFavorites = async () => {
     try {
-      if (!isFavorite) {
-        await addToFavorites(id);
-        onChangeListFavorites([...listFavorites, gasStation]);
-      } else {
-        await removeFromFavorites(id);
-        onChangeListFavorites(listFavorites.filter((fav) => fav.id !== id));
-      }
+      await removeFromFavorites(gasStation.id);
+      removeFavorite(gasStation.id);
     } catch (callError) {
       const apiError = callError as ApiError;
       console.log("Toggle Favorite: " + apiError.message);
@@ -44,8 +32,7 @@ export default function FavoriteCard({
   return (
     <Pressable
       style={({ pressed }) => [styles.container, pressed && styles.containerPressed]}
-      onPress={onPress}
-      {...pressableProps}>
+      onPress={() => router.push({ pathname: "[id]", params: { id: gasStation.direction } })}>
       <View style={styles.imageView}>
         <Image
           style={styles.image}
@@ -62,10 +49,10 @@ export default function FavoriteCard({
       </View>
       <Pressable
         onPress={() => {
-          toggleFavorite(gasStation.id);
+          onRemoveFromFavorites();
         }}>
         <Ionicons
-          name={isFavorite ? "bookmark" : "bookmark-outline"}
+          name={"bookmark"}
           size={30}
           color={Colors.textPrimary}
         />

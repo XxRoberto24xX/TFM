@@ -1,103 +1,131 @@
-import { Pressable, PressableProps, StyleSheet, View, Image } from "react-native";
+import { Pressable, StyleSheet, View, Image, Animated } from "react-native";
 import { Colors } from "@/constants/colors";
 
 import ThemedText from "./ThemedText";
-import { ApiError, gasStation, gasStationWithPrice } from "@/types/types";
+import { ApiError } from "@/types/types";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 
 import { addToFavorites, removeFromFavorites } from "@/services/api";
 
 import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
+import { useEffect, useState } from "react";
+import { PressableProps } from "react-native-gesture-handler";
+import { useGasStationStore } from "@/stores/useGasStationsStore";
+import { useRouter } from "expo-router";
+import { getMarkerGasDisplayInfo } from "@/utils/gasStationsUtils";
 
-interface Props extends PressableProps {
-  gasStation: gasStationWithPrice;
-  priceToShow: string | undefined;
-  listFavorites: gasStation[];
-  onChangeListFavorites: (filter: gasStation[]) => void;
-}
+export default function GasStationPreview({ style }: PressableProps) {
+  const router = useRouter();
 
-export default function GasStationPreview({
-  gasStation,
-  priceToShow,
-  listFavorites,
-  onChangeListFavorites,
-  onPress,
-  style,
-  ...presableProps
-}: Props) {
-  const imageSource = BRAND_IMAGES[gasStation?.brand] || DEFAULT_IMAGE;
-  const isFavorite = listFavorites.some((fav) => fav.id === gasStation.id);
+  const selectedGasStation = useGasStationStore((state) => state.selectedGasStation);
+  const listFavorites = useGasStationStore((state) => state.listFavorites);
+  const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
+
+  const addFavorite = useGasStationStore((state) => state.addFavorite);
+  const removeFavorite = useGasStationStore((state) => state.removeFavorite);
+
+  const imageSource = selectedGasStation ? BRAND_IMAGES[selectedGasStation.brand] || DEFAULT_IMAGE : DEFAULT_IMAGE;
+  const isFavorite = listFavorites.some((fav) => fav.id === selectedGasStation?.id);
+
+  const [slideAnim] = useState(() => new Animated.Value(300));
+
+  /* ANIMATION EFFECTS */
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: selectedGasStation ? 0 : 300,
+      duration: selectedGasStation ? 300 : 250,
+      useNativeDriver: true,
+    }).start();
+  }, [selectedGasStation, slideAnim]);
+
   /* HANDLERS */
-  const toggleFavorite = async (id: number) => {
-    try {
-      if (!isFavorite) {
-        await addToFavorites(id);
-        onChangeListFavorites([...listFavorites, gasStation]);
-      } else {
-        await removeFromFavorites(id);
-        onChangeListFavorites(listFavorites.filter((fav) => fav.id !== id));
+  const toggleFavorite = async () => {
+    if (selectedGasStation) {
+      try {
+        if (!isFavorite) {
+          await addToFavorites(selectedGasStation.id);
+          addFavorite(selectedGasStation);
+        } else {
+          await removeFromFavorites(selectedGasStation.id);
+          removeFavorite(selectedGasStation.id);
+        }
+      } catch (callError) {
+        const apiError = callError as ApiError;
+        console.log("Toggle Favorite: " + apiError.message);
       }
-    } catch (callError) {
-      const apiError = callError as ApiError;
-      console.log("Toggle Favorite: " + apiError.message);
     }
   };
 
   return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.container,
-        pressed && styles.previewPressed,
-        typeof style === "function" ? style({ pressed }) : style, // <- made to introduce de style only if its a stylesheet
-      ]}
-      onPress={onPress}
-      {...presableProps}>
-      <LinearGradient
-        style={styles.gradient}
-        colors={[Colors.primaryOrange, Colors.primaryPink]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}>
-        {gasStation?.id && (
-          <View style={styles.imageView}>
-            <Image
-              style={styles.image}
-              source={imageSource}
-            />
+    <Animated.View
+      style={{
+        transform: [{ translateY: slideAnim }],
+        pointerEvents: selectedGasStation ? "auto" : "none",
+      }}>
+      <Pressable
+        style={({ pressed }) => [
+          styles.container,
+          pressed && styles.previewPressed,
+          typeof style === "function" ? style({ pressed }) : style, // <- made to introduce de style only if its a stylesheet
+        ]}
+        onPress={(e) => {
+          e.stopPropagation();
+          if (selectedGasStation) {
+            router.push({
+              pathname: "[id]",
+              params: { id: selectedGasStation.id },
+            });
+          }
+        }}>
+        <LinearGradient
+          style={styles.gradient}
+          colors={[Colors.primaryOrange, Colors.primaryPink]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}>
+          {selectedGasStation?.id && (
+            <View style={styles.imageView}>
+              <Image
+                style={styles.image}
+                source={imageSource}
+              />
+            </View>
+          )}
+          <View style={styles.infoView}>
+            <ThemedText size="l">{selectedGasStation?.direction}</ThemedText>
+            <ThemedText
+              style={{ marginTop: 5 }}
+              size="s">
+              {selectedGasStation?.municipality}
+            </ThemedText>
+            <View style={styles.gasView}>
+              {selectedGasStation?.id && <View style={[styles.indicator, { backgroundColor: "green" }]}></View>}
+              <ThemedText size="xl">
+                {selectedGasStation ? getMarkerGasDisplayInfo(selectedGasStation, activeGasFilter) : ""}
+              </ThemedText>
+            </View>
           </View>
-        )}
-        <View style={styles.infoView}>
-          <ThemedText size="l">{gasStation.direction}</ThemedText>
-          <ThemedText
-            style={{ marginTop: 5 }}
-            size="s">
-            {gasStation.municipality}
-          </ThemedText>
-          <View style={styles.gasView}>
-            {gasStation?.id && <View style={[styles.indicator, { backgroundColor: "green" }]}></View>}
-            <ThemedText size="xl">{priceToShow}</ThemedText>
-          </View>
-        </View>
-        <View style={styles.markersView}>
-          <Pressable
-            onPress={() => {
-              toggleFavorite(gasStation.id);
-            }}>
+          <View style={styles.markersView}>
+            <Pressable
+              onPress={() => {
+                toggleFavorite();
+              }}>
+              <Ionicons
+                name={isFavorite ? "bookmark" : "bookmark-outline"}
+                size={30}
+                color={Colors.textPrimary}
+              />
+            </Pressable>
             <Ionicons
-              name={isFavorite ? "bookmark" : "bookmark-outline"}
+              style={{ marginTop: "auto" }}
+              name={"chevron-forward"}
               size={30}
               color={Colors.textPrimary}
             />
-          </Pressable>
-          <Ionicons
-            style={{ marginTop: "auto" }}
-            name={"chevron-forward"}
-            size={30}
-            color={Colors.textPrimary}
-          />
-        </View>
-      </LinearGradient>
-    </Pressable>
+          </View>
+        </LinearGradient>
+      </Pressable>
+    </Animated.View>
   );
 }
 

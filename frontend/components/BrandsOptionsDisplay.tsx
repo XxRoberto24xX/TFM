@@ -1,28 +1,23 @@
-import { StyleSheet, ScrollView, Pressable, ScrollViewProps, Image } from "react-native";
+import { StyleSheet, ScrollView, Pressable, Image } from "react-native";
 import { Colors } from "@/constants/colors";
 import ThemedText from "./ThemedText";
-
-import { BRAND_IMAGES } from "@/constants/values";
+import { BRAND_FILTER_OPTIONS, BRAND_IMAGES } from "@/constants/values";
 
 import * as Haptics from "expo-haptics";
+import { useGasStationStore } from "@/stores/useGasStationsStore";
 
-interface Props extends ScrollViewProps {
-  selectedFilter: string;
-  onSelectFilter: (filter: string) => void;
-}
+export default function BrandsOptionsDisplay() {
+  const activeBrandFilter = useGasStationStore((state) => state.activeBrandFilter);
+  const setActiveBrandFilter = useGasStationStore((state) => state.setActiveBrandFilter);
 
-const FILTER_OPTIONS = ["Todos", "Repsol", "Cepsa", "Shell", "BP", "Campsa", "Galp", "Plenery"];
-
-export default function BrandsOptionsDisplay({ selectedFilter, onSelectFilter, style, ...scrollviewProps }: Props) {
   return (
     <ScrollView
-      style={[styles.scrollView, style]}
+      style={[styles.scrollView]}
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.scrollContainer}
-      {...scrollviewProps}>
-      {FILTER_OPTIONS.map((item) => {
-        const isSelected = selectedFilter === item;
+      contentContainerStyle={styles.scrollContainer}>
+      {BRAND_FILTER_OPTIONS.map((item) => {
+        const isSelected = activeBrandFilter === item;
         const imageSource = BRAND_IMAGES[item.toUpperCase()];
         return (
           <Pressable
@@ -34,7 +29,7 @@ export default function BrandsOptionsDisplay({ selectedFilter, onSelectFilter, s
             key={item}
             onPress={() => {
               Haptics.selectionAsync();
-              onSelectFilter(item);
+              setActiveBrandFilter(item);
             }}>
             <Image
               style={styles.image}

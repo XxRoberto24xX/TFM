@@ -1,11 +1,10 @@
-import { ApiError, gasStationWithPrice } from "@/types/types";
+import { ApiError, gasStation } from "@/types/types";
 import { useFocusEffect } from "expo-router";
-import { useHeaderHeight } from "expo-router/build/react-navigation";
 import { memo, Ref, useCallback, useMemo, useState } from "react";
 import { StyleSheet } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Region } from "react-native-maps";
 
-import { FILTER_TO_PRICE_KEY, MAX_LATITUDE_DELTA_FOR_MARKERS } from "@/constants/values";
+import { DEFAULT_REGION, FILTER_TO_PRICE_KEY, MAX_LATITUDE_DELTA_FOR_MARKERS } from "@/constants/values";
 import { getGasStationsInRange } from "@/services/api";
 import { useGasStationStore } from "@/stores/useGasStationsStore";
 import { useLocationStore } from "@/stores/useLocationStore";
@@ -17,8 +16,7 @@ interface Props {
 
 function Map({ ref }: Props) {
   /* VARIABLES */
-  const headerHeight = useHeaderHeight();
-  const [returnedGasStations, setReturnedGasStations] = useState<gasStationWithPrice[]>([]);
+  const [returnedGasStations, setReturnedGasStations] = useState<gasStation[]>([]);
   const [mapKey, setMapKey] = useState(0);
 
   const activeBrandFilter = useGasStationStore((state) => state.activeBrandFilter);
@@ -101,14 +99,7 @@ function Map({ ref }: Props) {
           setIsCenteredOnUser(false);
         }
       }}
-      initialRegion={
-        lastRegion ?? {
-          latitude: 40.4168,
-          longitude: -3.7038,
-          latitudeDelta: 0.05,
-          longitudeDelta: 0.05,
-        }
-      }>
+      initialRegion={lastRegion ?? DEFAULT_REGION}>
       {paintedGasStations.map((station) => (
         <CustomMarker
           key={station.id}

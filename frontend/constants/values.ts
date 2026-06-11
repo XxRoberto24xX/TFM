@@ -1,5 +1,6 @@
 import { price } from "@/types/types";
 import { ImageSourcePropType } from "react-native";
+import { Region } from "react-native-maps";
 
 export const FILTER_TO_PRICE_KEY: Record<string, keyof Omit<price, "date">> = {
   "E5 95": "gasoline95",
@@ -37,3 +38,10 @@ export const GAS_FILTER_OPTIONS = [
 ];
 
 export const BRAND_FILTER_OPTIONS = ["Todos", "Repsol", "Cepsa", "Shell", "BP", "Campsa", "Galp", "Plenery"];
+
+export const DEFAULT_REGION: Region = {
+  latitude: 40.4168,
+  longitude: -3.7038,
+  latitudeDelta: 0.05,
+  longitudeDelta: 0.05,
+};

@@ -1,5 +1,12 @@
 import apiClient from "./client";
-import { AuthResponse, getListFavoritesModel, getListGasStationsInRangeModel } from "../types/types";
+import {
+  AuthResponse,
+  getListFavoritesModel,
+  getListFavoritesResponse,
+  getListGasStationsInRangeModel,
+  getListGasStationsInRangeResponse,
+} from "../types/types";
+import { mapGasStationModelToFrontend } from "@/utils/mappers";
 
 export async function login(email: string, password: string): Promise<AuthResponse> {
   const response = await apiClient.post<AuthResponse>(
@@ -20,9 +27,11 @@ export async function passwordResetEmail(email: string): Promise<void> {
   return response.data;
 }
 
-export async function getListFavorites(): Promise<getListFavoritesModel> {
+export async function getListFavorites(): Promise<getListFavoritesResponse> {
   const response = await apiClient.get<getListFavoritesModel>("/gasStations/getListFavorites");
-  return response.data;
+  return {
+    listFavoriteGasStation: response.data.gasStations.map(mapGasStationModelToFrontend),
+  };
 }
 
 export async function addToFavorites(gasStationId: number): Promise<void> {
@@ -40,12 +49,14 @@ export async function getGasStationsInRange(
   south: number,
   east: number,
   west: number,
-): Promise<getListGasStationsInRangeModel> {
+): Promise<getListGasStationsInRangeResponse> {
   const response = await apiClient.post<getListGasStationsInRangeModel>("/gasStations/getGasStationsInRange", {
     north,
     south,
     east,
     west,
   });
-  return response.data;
+  return {
+    listGasStations: response.data.listGasStations.map(mapGasStationModelToFrontend),
+  };
 }

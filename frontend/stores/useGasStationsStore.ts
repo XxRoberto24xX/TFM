@@ -1,18 +1,18 @@
-import { gasStation, gasStationWithPrice } from "@/types/types";
+import { gasStation } from "@/types/types";
 import { create } from "zustand";
 
 interface GasStationState {
   listFavorites: gasStation[];
   activeBrandFilter: string;
   activeGasFilter: string;
-  selectedGasStation: gasStationWithPrice | null;
+  selectedGasStation: gasStation | null;
 
   setFavorites: (listFavorites: gasStation[]) => void;
   addFavorite: (station: gasStation) => void;
   removeFavorite: (id: number) => void;
   setActiveBrandFilter: (brand: string) => void;
   setActiveGasFilter: (gasType: string) => void;
-  setSelectedGasStation: (station: gasStationWithPrice | null) => void;
+  setSelectedGasStation: (station: gasStation | null) => void;
 }
 
 export const useGasStationStore = create<GasStationState>((set) => ({

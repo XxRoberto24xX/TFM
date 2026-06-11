@@ -1,10 +1,10 @@
 import { useGasStationStore } from "@/stores/useGasStationsStore";
-import { gasStationWithPrice } from "@/types/types";
+import { gasStation } from "@/types/types";
 import { memo } from "react";
 import { Marker } from "react-native-maps";
 
 interface Props {
-  gasStation: gasStationWithPrice;
+  gasStation: gasStation;
 }
 
 const CustomMarker = ({ gasStation }: Props) => {
@@ -13,7 +13,7 @@ const CustomMarker = ({ gasStation }: Props) => {
   return (
     <Marker
       key={gasStation.id}
-      coordinate={{ latitude: gasStation.latitude, longitude: gasStation.longitude }}
+      coordinate={gasStation.coordinates}
       pinColor="red"
       onPress={(e) => {
         e.stopPropagation();

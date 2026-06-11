@@ -66,7 +66,7 @@ export default function Home() {
     const fetchFavorites = async () => {
       try {
         const data = await getListFavorites();
-        setFavorites(data.gasStations);
+        setFavorites(data.listFavoriteGasStation);
       } catch (callError) {
         const apiError = callError as ApiError;
         console.log("Fetch Favoritos: " + apiError.message);

@@ -9,11 +9,31 @@ export interface AuthResponse {
 }
 
 export interface getListFavoritesModel {
-  gasStations: gasStation[];
+  gasStations: gasStationModel[];
 }
 
 export interface getListGasStationsInRangeModel {
-  listGasStations: gasStationWithPrice[];
+  listGasStations: gasStationModel[];
+}
+
+export interface getListFavoritesResponse {
+  listFavoriteGasStation: gasStation[];
+}
+
+export interface getListGasStationsInRangeResponse {
+  listGasStations: gasStation[];
+}
+
+export interface gasStationModel {
+  id: number;
+  hours: string;
+  brand: string;
+  direction: string;
+  latitude: number;
+  longitude: number;
+  sellingType: string;
+  municipality: string;
+  prices?: price;
 }
 
 export interface gasStation {
@@ -21,22 +41,10 @@ export interface gasStation {
   hours: string;
   brand: string;
   direction: string;
-  latitude: number;
-  longitude: number;
+  coordinates: coordinates;
   sellingType: string;
   municipality: string;
-}
-
-export interface gasStationWithPrice {
-  id: number;
-  hours: string;
-  brand: string;
-  direction: string;
-  latitude: number;
-  longitude: number;
-  sellingType: string;
-  municipality: string;
-  prices: price;
+  prices?: price;
 }
 
 export interface price {
@@ -44,4 +52,9 @@ export interface price {
   gasoline95: number;
   gasoline98: number;
   diesel: number;
+}
+
+export interface coordinates {
+  latitude: number;
+  longitude: number;
 }

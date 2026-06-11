@@ -1,20 +1,21 @@
 import { ApiError, gasStationWithPrice } from "@/types/types";
 import { useFocusEffect } from "expo-router";
 import { useHeaderHeight } from "expo-router/build/react-navigation";
-import { Ref, useCallback, useMemo, useState } from "react";
+import { memo, Ref, useCallback, useMemo, useState } from "react";
 import { StyleSheet } from "react-native";
-import MapView, { Marker, PROVIDER_GOOGLE, Region } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, Region } from "react-native-maps";
 
 import { FILTER_TO_PRICE_KEY, MAX_LATITUDE_DELTA_FOR_MARKERS } from "@/constants/values";
 import { getGasStationsInRange } from "@/services/api";
 import { useGasStationStore } from "@/stores/useGasStationsStore";
 import { useLocationStore } from "@/stores/useLocationStore";
+import CustomMarker from "./CustomMarker";
 
 interface Props {
   ref?: Ref<MapView>;
 }
 
-export default function Map({ ref }: Props) {
+function Map({ ref }: Props) {
   /* VARIABLES */
   const headerHeight = useHeaderHeight();
   const [returnedGasStations, setReturnedGasStations] = useState<gasStationWithPrice[]>([]);
@@ -87,6 +88,7 @@ export default function Map({ ref }: Props) {
       provider={PROVIDER_GOOGLE}
       showsUserLocation={true}
       showsMyLocationButton={false}
+      showsCompass={false}
       toolbarEnabled={false}
       onPress={() => setSelectedGasStation(null)}
       onPoiClick={() => {
@@ -99,12 +101,6 @@ export default function Map({ ref }: Props) {
           setIsCenteredOnUser(false);
         }
       }}
-      mapPadding={{
-        top: headerHeight + 60,
-        bottom: 145,
-        left: 0,
-        right: 0,
-      }}
       initialRegion={
         lastRegion ?? {
           latitude: 40.4168,
@@ -113,19 +109,14 @@ export default function Map({ ref }: Props) {
           longitudeDelta: 0.05,
         }
       }>
-      {paintedGasStations?.map((station: gasStationWithPrice) => {
-        return (
-          <Marker
-            key={station.id}
-            coordinate={{ latitude: station.latitude, longitude: station.longitude }}
-            pinColor="red"
-            onPress={(e) => {
-              e.stopPropagation();
-              setSelectedGasStation(station);
-            }}
-          />
-        );
-      })}
+      {paintedGasStations.map((station) => (
+        <CustomMarker
+          key={station.id}
+          gasStation={station}
+        />
+      ))}
     </MapView>
   );
 }
+
+export default memo(Map);

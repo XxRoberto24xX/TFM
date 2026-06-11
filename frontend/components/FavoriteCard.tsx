@@ -9,12 +9,13 @@ import { removeFromFavorites } from "@/services/api";
 import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
 import { router } from "expo-router";
 import { useGasStationStore } from "@/stores/useGasStationsStore";
+import { memo } from "react";
 
 interface Props {
   gasStation: gasStation;
 }
 
-export default function FavoriteCard({ gasStation }: Props) {
+function FavoriteCard({ gasStation }: Props) {
   const removeFavorite = useGasStationStore((state) => state.removeFavorite);
   const imageSource = BRAND_IMAGES[gasStation.brand] || DEFAULT_IMAGE;
 
@@ -65,6 +66,8 @@ export default function FavoriteCard({ gasStation }: Props) {
     </Pressable>
   );
 }
+
+export default memo(FavoriteCard);
 
 const styles = StyleSheet.create({
   container: {

@@ -9,13 +9,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { addToFavorites, removeFromFavorites } from "@/services/api";
 
 import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { PressableProps } from "react-native-gesture-handler";
 import { useGasStationStore } from "@/stores/useGasStationsStore";
 import { useRouter } from "expo-router";
 import { getMarkerGasDisplayInfo } from "@/utils/gasStationsUtils";
 
-export default function GasStationPreview({ style }: PressableProps) {
+function GasStationPreview({ style }: PressableProps) {
   const router = useRouter();
 
   const selectedGasStation = useGasStationStore((state) => state.selectedGasStation);
@@ -128,6 +128,8 @@ export default function GasStationPreview({ style }: PressableProps) {
     </Animated.View>
   );
 }
+
+export default memo(GasStationPreview);
 
 const styles = StyleSheet.create({
   container: {

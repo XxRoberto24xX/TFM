@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import BottomSheet, { BottomSheetBackgroundProps, BottomSheetFlatList } from "@gorhom/bottom-sheet";
 
@@ -7,7 +7,6 @@ import ThemedText from "@/components/ThemedText";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import FavoriteCard from "./FavoriteCard";
-import { useRouter } from "expo-router";
 
 import Animated, { useAnimatedStyle, interpolate, useSharedValue } from "react-native-reanimated";
 import { useGasStationStore } from "@/stores/useGasStationsStore";
@@ -33,8 +32,7 @@ const favoritesPraceHolder = () => (
   </View>
 );
 
-export default function FavoritesBottomSheet() {
-  const router = useRouter();
+function FavoritesBottomSheet() {
   const snapPoints = useMemo(() => [80, Dimensions.get("window").height * 0.4], []);
   const animatedIndex = useSharedValue(0);
 
@@ -79,6 +77,8 @@ export default function FavoritesBottomSheet() {
     </BottomSheet>
   );
 }
+
+export default memo(FavoritesBottomSheet);
 
 const styles = StyleSheet.create({
   saveHeader: {

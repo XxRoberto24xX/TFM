@@ -5,8 +5,9 @@ import { BRAND_FILTER_OPTIONS, BRAND_IMAGES } from "@/constants/values";
 
 import * as Haptics from "expo-haptics";
 import { useGasStationStore } from "@/stores/useGasStationsStore";
+import { memo } from "react";
 
-export default function BrandsOptionsDisplay() {
+function BrandsOptionsDisplay() {
   const activeBrandFilter = useGasStationStore((state) => state.activeBrandFilter);
   const setActiveBrandFilter = useGasStationStore((state) => state.setActiveBrandFilter);
 
@@ -46,6 +47,8 @@ export default function BrandsOptionsDisplay() {
     </ScrollView>
   );
 }
+
+export default memo(BrandsOptionsDisplay);
 
 const styles = StyleSheet.create({
   scrollView: {

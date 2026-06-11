@@ -11,8 +11,8 @@ import GasOptionsDisplay from "@/components/GasOptionsDisplay";
 import BrandsOptionsDisplay from "@/components/BrandsOptionsDisplay";
 import GasStationPreview from "@/components/GasStationPreview";
 import FavoritesBottomSheet from "@/components/FavoritesBottomSheet";
-
 import Map from "@/components/Map";
+
 import { useLocationStore } from "@/stores/useLocationStore";
 import { useGasStationStore } from "@/stores/useGasStationsStore";
 
@@ -94,7 +94,7 @@ export default function Home() {
       <View style={[styles.mainViewContainer, { paddingTop: headerHeight }]}>
         <BrandsOptionsDisplay />
         <View style={{ marginTop: "auto" }}>
-          <GasStationPreview style={{ margin: 10 }} />
+          <GasStationPreview style={styles.gasStationPreview} />
           <View style={styles.bottomViewContainer}>
             <GasOptionsDisplay />
             <IconFloatingButton
@@ -118,6 +118,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     paddingBottom: 80,
+  },
+  gasStationPreview: {
+    margin: 10,
   },
   bottomViewContainer: {
     flexDirection: "row",

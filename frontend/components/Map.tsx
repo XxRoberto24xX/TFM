@@ -21,11 +21,12 @@ function Map({ ref }: Props) {
 
   const activeBrandFilter = useGasStationStore((state) => state.activeBrandFilter);
   const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
-  const lastRegion = useLocationStore((state) => state.lastRegion);
 
   const setSelectedGasStation = useGasStationStore((state) => state.setSelectedGasStation);
   const setLastRegion = useLocationStore((state) => state.setLastRegion);
   const setIsCenteredOnUser = useLocationStore((state) => state.setIsCenteredOnUser);
+
+  const lastRegion = useLocationStore.getState().lastRegion;
 
   /* USEMEMO VARIABLES */
   const paintedGasStations = useMemo(() => {

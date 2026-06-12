@@ -45,22 +45,6 @@ export default function Home() {
     }
   };
 
-  /* VARIABLE WATCHERS */
-  useEffect(() => {
-    if (userLocation && mapRef.current) {
-      const userRegion = {
-        latitude: userLocation.coords.latitude,
-        longitude: userLocation.coords.longitude,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
-      };
-
-      setLastRegion(userRegion);
-      mapRef.current.animateToRegion(userRegion, 1000);
-      setIsCenteredOnUser(true);
-    }
-  }, [userLocation]);
-
   /* ON MOUNT */
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -82,11 +66,24 @@ export default function Home() {
 
       const userLocation = await Location.getCurrentPositionAsync({});
       setUserLocation(userLocation);
+
+      if (mapRef.current) {
+        const userRegion = {
+          latitude: userLocation.coords.latitude,
+          longitude: userLocation.coords.longitude,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        };
+
+        mapRef.current.animateToRegion(userRegion, 1000);
+        setLastRegion(userRegion);
+        setIsCenteredOnUser(true);
+      }
     };
 
     getUserLocation();
     fetchFavorites();
-  }, []);
+  }, [setFavorites, setUserLocation, setLastRegion, setIsCenteredOnUser]);
 
   return (
     <View style={styles.mapContainer}>

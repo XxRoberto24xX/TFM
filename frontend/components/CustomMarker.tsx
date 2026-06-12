@@ -12,9 +12,9 @@ const CustomMarker = ({ gasStation }: Props) => {
 
   return (
     <Marker
-      key={gasStation.id}
       coordinate={gasStation.coordinates}
       pinColor="red"
+      tracksViewChanges={false}
       onPress={(e) => {
         e.stopPropagation();
         setSelectedGasStation(gasStation);

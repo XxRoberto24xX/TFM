@@ -4,16 +4,13 @@ export interface ApiError {
   code?: string;
 }
 
+/*
+ *
+ * FUNCTION RESPONSE STRUCTURES
+ *
+ */
 export interface AuthResponse {
   token: string;
-}
-
-export interface getListFavoritesModel {
-  gasStations: gasStationModel[];
-}
-
-export interface getListGasStationsInRangeModel {
-  listGasStations: gasStationModel[];
 }
 
 export interface getListFavoritesResponse {
@@ -22,6 +19,35 @@ export interface getListFavoritesResponse {
 
 export interface getListGasStationsInRangeResponse {
   listGasStations: gasStation[];
+}
+
+export interface PlaceAutocompleteResponse {
+  predictions: predicction[];
+}
+
+export interface PlaceDetailsResponse {
+  result: {
+    geometry: {
+      location: {
+        lat: number;
+        lng: number;
+      };
+    };
+  };
+  status: string;
+}
+
+/*
+ *
+ * API RESPONSE MODELS
+ *
+ */
+export interface getListFavoritesModel {
+  gasStations: gasStationModel[];
+}
+
+export interface getListGasStationsInRangeModel {
+  listGasStations: gasStationModel[];
 }
 
 export interface gasStationModel {
@@ -36,6 +62,11 @@ export interface gasStationModel {
   prices?: price;
 }
 
+/*
+ *
+ * FRONTEND DATA MODELS
+ *
+ */
 export interface gasStation {
   id: number;
   hours: string;
@@ -57,4 +88,13 @@ export interface price {
 export interface coordinates {
   latitude: number;
   longitude: number;
+}
+
+export interface predicction {
+  place_id: string;
+  description: string;
+  structured_formatting: {
+    main_text: string;
+    secondary_text: string;
+  };
 }

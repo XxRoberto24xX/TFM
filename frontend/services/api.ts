@@ -1,12 +1,15 @@
 import apiClient from "./client";
 import {
   AuthResponse,
+  coordinates,
   getListFavoritesModel,
   getListFavoritesResponse,
   getListGasStationsInRangeModel,
   getListGasStationsInRangeResponse,
+  PlaceAutocompleteResponse,
 } from "../types/types";
-import { mapGasStationModelToFrontend } from "@/utils/mappers";
+import { mapGasStationModelToFrontend, mapPlaceAutocompleteResponseToFrontend } from "@/utils/mappers";
+import googleClient from "./googleClient";
 
 export async function login(email: string, password: string): Promise<AuthResponse> {
   const response = await apiClient.post<AuthResponse>(
@@ -58,5 +61,44 @@ export async function getGasStationsInRange(
   });
   return {
     listGasStations: response.data.listGasStations.map(mapGasStationModelToFrontend),
+  };
+}
+
+export async function getPlaceAutocomplete(input: string, sessionToken: string): Promise<PlaceAutocompleteResponse> {
+  const response = await googleClient.post(
+    "/places:autocomplete",
+    {
+      input: input,
+      sessionToken: sessionToken,
+      //includedRegionCodes: ["es"],
+      languageCode: "es",
+    },
+    {
+      headers: {
+        "X-Goog-FieldMask":
+          "suggestions.placePrediction.placeId,suggestions.placePrediction.text.text,suggestions.placePrediction.structuredFormat.mainText.text,suggestions.placePrediction.structuredFormat.secondaryText.text",
+      },
+    },
+  );
+
+  return {
+    predictions: mapPlaceAutocompleteResponseToFrontend(response.data),
+  };
+}
+
+export async function getPlaceCoordinates(placeId: string, sessionToken: string): Promise<coordinates> {
+  const response = await googleClient.get(`/places/${placeId}`, {
+    params: {
+      sessionToken: sessionToken,
+      languageCode: "es",
+    },
+    headers: {
+      "X-Goog-FieldMask": "location",
+    },
+  });
+
+  return {
+    latitude: response.data.location.latitude,
+    longitude: response.data.location.longitude,
   };
 }

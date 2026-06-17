@@ -99,4 +99,5 @@ export interface predicction {
     main_text: string;
     secondary_text: string;
   };
+  coordinates?: coordinates;
 }

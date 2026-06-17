@@ -1,5 +1,5 @@
 import { ActivityIndicator, Keyboard, StyleSheet, View } from "react-native";
-import { memo, useCallback, useEffect, useMemo, useRef } from "react";
+import { memo, RefObject, useCallback, useEffect, useMemo } from "react";
 import { Colors } from "@/constants/colors";
 import BottomSheet, { BottomSheetBackgroundProps, BottomSheetFlatList, BottomSheetView } from "@gorhom/bottom-sheet";
 import ThemedText from "./ThemedText";
@@ -8,6 +8,10 @@ import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore"
 import CardPrediction from "./CardPrediction";
 import { getPlaceCoordinates } from "@/services/api";
 import { predicction } from "@/types/types";
+
+interface Props {
+  bottomSheetRef: RefObject<BottomSheet | null>;
+}
 
 const CustomBackground = ({ style }: BottomSheetBackgroundProps) => {
   return (
@@ -30,9 +34,8 @@ const predictionPlaceHolder = () => (
   </View>
 );
 
-const BottomSheetGoogleAutocomplete = () => {
+const BottomSheetGoogleAutocomplete = ({ bottomSheetRef }: Props) => {
   const snapPoints = useMemo(() => ["70%"], []);
-  const bottomSheetRef = useRef<BottomSheet>(null);
 
   const listPredictions = useGoogleAutocompleteStore((state) => state.listPredictions);
   const isLoading = useGoogleAutocompleteStore((state) => state.isLoading);
@@ -55,12 +58,16 @@ const BottomSheetGoogleAutocomplete = () => {
     try {
       if (sessionToken !== null) {
         const coords = await getPlaceCoordinates(place.place_id, sessionToken);
+        const placeWithCoordinates: predicction = {
+          ...place,
+          coordinates: coords, // Asumiendo que 'coords' tiene el tipo { latitude: number, longitude: number }
+        };
         if (activeInput === "origin") {
-          setOrigin(place);
-          setQuery("origin", place.structured_formatting.main_text);
+          setOrigin(placeWithCoordinates);
+          setQuery("origin", placeWithCoordinates.structured_formatting.main_text);
         } else {
-          setDestiny(place);
-          setQuery("destiny", place.structured_formatting.main_text);
+          setDestiny(placeWithCoordinates);
+          setQuery("destiny", placeWithCoordinates.structured_formatting.main_text);
         }
         console.log("📌 Coordenadas:", coords.latitude, coords.longitude);
       } else {

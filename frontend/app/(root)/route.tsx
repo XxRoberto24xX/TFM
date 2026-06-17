@@ -1,13 +1,19 @@
 import BottomSheetGoogleAutocomplete from "@/components/BottomSheetGoogleAutocomplete";
 import InputGoogleAutocomplete from "@/components/InputGoogleAutocomplete";
+import MapRoutes from "@/components/MapRoutes";
+import BottomSheet from "@gorhom/bottom-sheet";
+import { useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Route() {
   const insets = useSafeAreaInsets();
 
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
+      <MapRoutes bottomSheetRef={bottomSheetRef} />
       <InputGoogleAutocomplete
         type="origin"
         placeHolder="Origen"
@@ -17,7 +23,7 @@ export default function Route() {
         type="destiny"
         placeHolder="Destino"
       />
-      <BottomSheetGoogleAutocomplete />
+      <BottomSheetGoogleAutocomplete bottomSheetRef={bottomSheetRef} />
     </View>
   );
 }

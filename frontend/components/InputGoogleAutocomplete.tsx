@@ -1,5 +1,5 @@
 import { Keyboard, Pressable, StyleProp, StyleSheet, ViewStyle } from "react-native";
-import { memo, useCallback, useRef } from "react";
+import { memo, Ref, useCallback, useRef } from "react";
 import { Colors } from "@/constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { TextInput } from "react-native-gesture-handler";
@@ -14,11 +14,10 @@ interface Props {
   placeHolder: string;
   style?: StyleProp<ViewStyle>;
   type: AutocompleteType;
+  ref?: Ref<TextInput>;
 }
 
-const InputGoogleAutocomplete = ({ placeHolder, style, type }: Props) => {
-  const inputRef = useRef<TextInput>(null);
-
+const InputGoogleAutocomplete = ({ placeHolder, style, type, ref }: Props) => {
   const query = useGoogleAutocompleteStore((state) => (type === "origin" ? state.originQuery : state.destinyQuery));
   const sessionToken = useGoogleAutocompleteStore((state) => state.sesionToken);
   const setQuery = useGoogleAutocompleteStore((state) => state.setQuery);
@@ -28,6 +27,8 @@ const InputGoogleAutocomplete = ({ placeHolder, style, type }: Props) => {
   const setSessionToken = useGoogleAutocompleteStore((state) => state.setSessionToken);
   const setDisplayBottomSheet = useGoogleAutocompleteStore((state) => state.setDisplayBottomSheet);
   const setActiveInput = useGoogleAutocompleteStore((state) => state.setActiveInput);
+  const setOrigin = useGoogleAutocompleteStore((state) => state.setOrigin);
+  const setDestiny = useGoogleAutocompleteStore((state) => state.setDestiny);
 
   const debounceTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -76,6 +77,11 @@ const InputGoogleAutocomplete = ({ placeHolder, style, type }: Props) => {
   );
 
   const handleClear = useCallback(() => {
+    if (type === "origin") {
+      setOrigin(null);
+    } else {
+      setDestiny(null);
+    }
     setQuery(type, "");
     setPredictions([]);
     setSessionToken(null);
@@ -90,7 +96,7 @@ const InputGoogleAutocomplete = ({ placeHolder, style, type }: Props) => {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}>
       <TextInput
-        ref={inputRef}
+        ref={ref}
         style={styles.input}
         placeholder={placeHolder}
         placeholderTextColor={Colors.textPrimary}

@@ -1,5 +1,5 @@
 import { ActivityIndicator, Keyboard, StyleSheet, View } from "react-native";
-import { memo, useEffect, useMemo, useRef } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { Colors } from "@/constants/colors";
 import BottomSheet, { BottomSheetBackgroundProps, BottomSheetFlatList, BottomSheetView } from "@gorhom/bottom-sheet";
 import ThemedText from "./ThemedText";
@@ -7,6 +7,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
 import CardPrediction from "./CardPrediction";
 import { getPlaceCoordinates } from "@/services/api";
+import { predicction } from "@/types/types";
 
 const CustomBackground = ({ style }: BottomSheetBackgroundProps) => {
   return (
@@ -36,16 +37,31 @@ const BottomSheetGoogleAutocomplete = () => {
   const listPredictions = useGoogleAutocompleteStore((state) => state.listPredictions);
   const isLoading = useGoogleAutocompleteStore((state) => state.isLoading);
   const sessionToken = useGoogleAutocompleteStore((state) => state.sesionToken);
+  const displayBottomSheet = useGoogleAutocompleteStore((state) => state.displayBottomSheet);
+  const activeInput = useGoogleAutocompleteStore((state) => state.activeInput);
 
   const setSessionToken = useGoogleAutocompleteStore((state) => state.setSessionToken);
+  const setPredictions = useGoogleAutocompleteStore((state) => state.setPredictions);
+  const setOrigin = useGoogleAutocompleteStore((state) => state.setOrigin);
+  const setDestiny = useGoogleAutocompleteStore((state) => state.setDestiny);
+  const setQuery = useGoogleAutocompleteStore((state) => state.setQuery);
+  const handleCancelSearch = useGoogleAutocompleteStore((state) => state.handleCancelSearch);
+  const setActiveInput = useGoogleAutocompleteStore((state) => state.setActiveInput);
+  const setDisplayBottomSheet = useGoogleAutocompleteStore((state) => state.setDisplayBottomSheet);
 
-  const handlePlaceSelect = async (placeId: string) => {
+  const handlePlaceSelect = async (place: predicction) => {
     Keyboard.dismiss();
 
     try {
       if (sessionToken !== null) {
-        const coords = await getPlaceCoordinates(placeId, sessionToken);
-
+        const coords = await getPlaceCoordinates(place.place_id, sessionToken);
+        if (activeInput === "origin") {
+          setOrigin(place);
+          setQuery("origin", place.structured_formatting.main_text);
+        } else {
+          setDestiny(place);
+          setQuery("destiny", place.structured_formatting.main_text);
+        }
         console.log("📌 Coordenadas:", coords.latitude, coords.longitude);
       } else {
         console.error("Error buscando lugares: el session token es nulo");
@@ -54,16 +70,35 @@ const BottomSheetGoogleAutocomplete = () => {
       console.error("Error obteniendo coordenadas:", error);
     } finally {
       setSessionToken(null);
+      setActiveInput(null);
+      setDisplayBottomSheet(false);
+      setPredictions([]);
     }
   };
 
+  const handleSheetChanges = useCallback(
+    (index: number) => {
+      if (index === -1) {
+        handleCancelSearch();
+        setDisplayBottomSheet(false);
+        setActiveInput(null);
+        Keyboard.dismiss();
+      }
+    },
+    [setDisplayBottomSheet, setActiveInput],
+  );
+
   useEffect(() => {
-    if (sessionToken !== null) {
+    if (displayBottomSheet) {
       bottomSheetRef.current?.expand();
     } else {
       bottomSheetRef.current?.close();
     }
-  }, [sessionToken]);
+  }, [displayBottomSheet]);
+
+  useEffect(() => {
+    setPredictions([]);
+  }, [activeInput, setPredictions]);
 
   return (
     <BottomSheet
@@ -73,6 +108,8 @@ const BottomSheetGoogleAutocomplete = () => {
       snapPoints={snapPoints}
       enableDynamicSizing={false}
       enableOverDrag={false}
+      enablePanDownToClose={true}
+      onChange={handleSheetChanges}
       handleIndicatorStyle={{ backgroundColor: "white" }}
       backgroundComponent={CustomBackground}>
       {isLoading ? (
@@ -91,13 +128,14 @@ const BottomSheetGoogleAutocomplete = () => {
         <BottomSheetFlatList
           data={listPredictions}
           keyExtractor={(item) => item.place_id}
+          keyboardShouldPersistTaps="handled"
           ListEmptyComponent={predictionPlaceHolder}
           contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
           renderItem={({ item }) => (
             <CardPrediction
               prediction={item}
               onPress={() => {
-                handlePlaceSelect(item.place_id);
+                handlePlaceSelect(item);
               }}
             />
           )}

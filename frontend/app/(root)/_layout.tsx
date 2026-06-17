@@ -42,7 +42,12 @@ export default function _layout() {
             }}
           />
           <Stack.Screen name="[id]" />
-          <Stack.Screen name="route" />
+          <Stack.Screen
+            name="route"
+            options={{
+              headerShown: false,
+            }}
+          />
         </Stack>
       </CustomDrawerLayout>
     </GestureHandlerRootView>

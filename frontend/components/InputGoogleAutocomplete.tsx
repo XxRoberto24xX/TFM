@@ -1,26 +1,33 @@
-import { Keyboard, Pressable, StyleSheet } from "react-native";
-import { memo, useCallback, useRef, useState } from "react";
+import { Keyboard, Pressable, StyleProp, StyleSheet, ViewStyle } from "react-native";
+import { memo, useCallback, useRef } from "react";
 import { Colors } from "@/constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { TextInput } from "react-native-gesture-handler";
 import { getPlaceAutocomplete } from "@/services/api";
 import { Ionicons } from "@expo/vector-icons";
 import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
+import { AutocompleteType } from "@/types/types";
 
 import * as Crypto from "expo-crypto";
 
 interface Props {
   placeHolder: string;
+  style?: StyleProp<ViewStyle>;
+  type: AutocompleteType;
 }
 
-const InputGoogleAutocomplete = ({ placeHolder }: Props) => {
-  const [query, setQuery] = useState("");
+const InputGoogleAutocomplete = ({ placeHolder, style, type }: Props) => {
+  const inputRef = useRef<TextInput>(null);
 
+  const query = useGoogleAutocompleteStore((state) => (type === "origin" ? state.originQuery : state.destinyQuery));
   const sessionToken = useGoogleAutocompleteStore((state) => state.sesionToken);
+  const setQuery = useGoogleAutocompleteStore((state) => state.setQuery);
 
   const setPredictions = useGoogleAutocompleteStore((state) => state.setPredictions);
   const setIsLoading = useGoogleAutocompleteStore((state) => state.setIsLoading);
   const setSessionToken = useGoogleAutocompleteStore((state) => state.setSessionToken);
+  const setDisplayBottomSheet = useGoogleAutocompleteStore((state) => state.setDisplayBottomSheet);
+  const setActiveInput = useGoogleAutocompleteStore((state) => state.setActiveInput);
 
   const debounceTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
@@ -48,15 +55,10 @@ const InputGoogleAutocomplete = ({ placeHolder }: Props) => {
 
   const handleTextChange = useCallback(
     (text: string) => {
-      setQuery(text);
+      setQuery(type, text);
 
       if (debounceTimeout.current) {
         clearTimeout(debounceTimeout.current);
-      }
-
-      if (text.length === 1 && !sessionToken) {
-        console.log("añado el token");
-        startNewSession();
       }
 
       if (text.length < 3) {
@@ -74,25 +76,37 @@ const InputGoogleAutocomplete = ({ placeHolder }: Props) => {
   );
 
   const handleClear = useCallback(() => {
-    setQuery("");
+    setQuery(type, "");
     setPredictions([]);
     setSessionToken(null);
+    setDisplayBottomSheet(false);
     Keyboard.dismiss();
   }, [setPredictions, setSessionToken]);
 
   return (
     <LinearGradient
-      style={styles.container}
+      style={[styles.container, style]}
       colors={[Colors.primaryOrange, Colors.primaryPink]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}>
       <TextInput
+        ref={inputRef}
         style={styles.input}
         placeholder={placeHolder}
         placeholderTextColor={Colors.textPrimary}
         cursorColor={Colors.textPrimary}
         value={query}
         onChangeText={handleTextChange}
+        onFocus={() => {
+          setActiveInput(type);
+          setDisplayBottomSheet(true);
+          if (!sessionToken) {
+            console.log("añado el token");
+            startNewSession();
+          } else {
+            console.log(sessionToken);
+          }
+        }}
       />
       {query.length > 0 && (
         <Pressable
@@ -115,11 +129,21 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     flexDirection: "row",
-    width: "90%",
+    width: "85%",
     paddingHorizontal: 16,
     paddingVertical: 4,
     borderRadius: 400,
     overflow: "hidden",
+
+    shadowColor: Colors.black,
+
+    // Shadow for IOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    // Shadow for Android
+    elevation: 5,
   },
   input: {
     flex: 1,

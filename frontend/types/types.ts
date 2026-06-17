@@ -1,3 +1,5 @@
+export type AutocompleteType = "origin" | "destiny";
+
 export interface ApiError {
   message: string;
   statusCode?: number;

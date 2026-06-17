@@ -1,4 +1,4 @@
-import { Pressable, PressableProps, StyleSheet, Text, View } from "react-native";
+import { Pressable, PressableProps, StyleSheet } from "react-native";
 import { memo } from "react";
 import { predicction } from "@/types/types";
 import ThemedText from "./ThemedText";

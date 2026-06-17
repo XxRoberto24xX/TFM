@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { memo, Ref, RefObject, useCallback, useState } from "react";
+import { memo, RefObject, useCallback, useEffect, useRef, useState } from "react";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { useFocusEffect } from "expo-router";
 import { DEFAULT_REGION } from "@/constants/values";
@@ -8,16 +8,51 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
 
 interface Props {
-  ref?: Ref<MapView>;
   bottomSheetRef: RefObject<BottomSheet | null>;
 }
 
-const MapRoutes = ({ ref, bottomSheetRef }: Props) => {
+const MapRoutes = ({ bottomSheetRef }: Props) => {
   const [mapKey, setMapKey] = useState(0);
+  const mapRef = useRef<MapView>(null);
 
   const lastRegion = useLocationStore.getState().lastRegion;
   const origin = useGoogleAutocompleteStore((state) => state.origin);
   const destiny = useGoogleAutocompleteStore((state) => state.destiny);
+
+  useEffect(() => {
+    const map = mapRef?.current;
+    if (!map) return;
+
+    const originCoords = origin?.coordinates;
+    const destinyCoords = destiny?.coordinates;
+
+    if (originCoords && destinyCoords) {
+      map.fitToCoordinates([originCoords, destinyCoords], {
+        edgePadding: { top: 100, right: 100, bottom: 100, left: 100 },
+        animated: true,
+      });
+    } else if (originCoords) {
+      map.animateToRegion(
+        {
+          latitude: originCoords.latitude,
+          longitude: originCoords.longitude,
+          latitudeDelta: 0.015,
+          longitudeDelta: 0.015,
+        },
+        1000,
+      );
+    } else if (destinyCoords) {
+      map.animateToRegion(
+        {
+          latitude: destinyCoords.latitude,
+          longitude: destinyCoords.longitude,
+          latitudeDelta: 0.015,
+          longitudeDelta: 0.015,
+        },
+        1000,
+      );
+    }
+  }, [origin?.coordinates, destiny?.coordinates, mapKey, mapRef]);
 
   /* ON ACTIVE */
   useFocusEffect(
@@ -30,7 +65,7 @@ const MapRoutes = ({ ref, bottomSheetRef }: Props) => {
     <MapView
       style={StyleSheet.absoluteFill}
       key={mapKey}
-      ref={ref}
+      ref={mapRef}
       provider={PROVIDER_GOOGLE}
       showsUserLocation={true}
       showsMyLocationButton={false}

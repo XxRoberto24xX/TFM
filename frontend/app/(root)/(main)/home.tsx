@@ -23,11 +23,13 @@ export default function Home() {
 
   const userLocation = useLocationStore((state) => state.userLocation);
   const isCenteredOnUser = useLocationStore((state) => state.isCenteredOnUser);
+  const mapType = useGasStationStore((state) => state.mapType);
 
   const setFavorites = useGasStationStore((state) => state.setFavorites);
   const setLastRegion = useLocationStore((state) => state.setLastRegion);
   const setUserLocation = useLocationStore((state) => state.setUserLocation);
   const setIsCenteredOnUser = useLocationStore((state) => state.setIsCenteredOnUser);
+  const setMapType = useGasStationStore((state) => state.setMapType);
 
   /* HANDLERS */
   const onGoToUserLocation = () => {
@@ -42,6 +44,14 @@ export default function Home() {
       mapRef.current.animateToRegion(userRegion);
       setLastRegion(userRegion);
       setIsCenteredOnUser(true);
+    }
+  };
+
+  const onMapTypeChange = () => {
+    if (mapType === "standard") {
+      setMapType("hybrid");
+    } else {
+      setMapType("standard");
     }
   };
 
@@ -90,6 +100,11 @@ export default function Home() {
       <Map ref={mapRef} />
       <View style={[styles.mainViewContainer, { paddingTop: headerHeight }]}>
         <BrandsOptionsDisplay />
+        <IconFloatingButton
+          style={{ alignSelf: "flex-end", margin: 8 }}
+          icon={"layers"}
+          onPress={() => onMapTypeChange()}
+        />
         <View style={{ marginTop: "auto" }}>
           <GasStationPreview style={styles.gasStationPreview} />
           <View style={styles.bottomViewContainer}>

@@ -17,10 +17,11 @@ interface Props {
 function Map({ ref }: Props) {
   /* VARIABLES */
   const [returnedGasStations, setReturnedGasStations] = useState<gasStation[]>([]);
-  const [mapKey, setMapKey] = useState(0);
+  const [mapKey, setMapKey] = useState<number>(0);
 
   const activeBrandFilter = useGasStationStore((state) => state.activeBrandFilter);
   const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
+  const mapType = useGasStationStore((state) => state.mapType);
 
   const setSelectedGasStation = useGasStationStore((state) => state.setSelectedGasStation);
   const setLastRegion = useLocationStore((state) => state.setLastRegion);
@@ -89,6 +90,7 @@ function Map({ ref }: Props) {
       showsMyLocationButton={false}
       showsCompass={false}
       toolbarEnabled={false}
+      mapType={mapType}
       onPress={() => setSelectedGasStation(null)}
       onPoiClick={() => {
         setSelectedGasStation(null);

@@ -1,11 +1,12 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/colors";
-import { Image, StyleSheet, ScrollView, View, TouchableOpacity, Text } from "react-native";
+import { Image, StyleSheet, ScrollView, View, Text, Pressable } from "react-native";
 import { useRouter, useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import { closeDrawer } from "@/utils/DrawerController";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import ThemedText from "./ThemedText";
 
 interface DrawerMenuItemProps {
   label: string;
@@ -15,8 +16,8 @@ interface DrawerMenuItemProps {
 
 function DrawerMenuItem({ label, iconName, onPress }: DrawerMenuItemProps) {
   return (
-    <TouchableOpacity
-      style={styles.menuItem}
+    <Pressable
+      style={({ pressed }) => [styles.menuItem, pressed && styles.menuItemPressed]}
       onPress={() => {
         onPress();
         closeDrawer();
@@ -24,10 +25,10 @@ function DrawerMenuItem({ label, iconName, onPress }: DrawerMenuItemProps) {
       <Ionicons
         name={iconName}
         size={24}
-        color="rgba(255, 255, 255, 0.75)"
+        color={Colors.textPrimary}
       />
-      <Text style={styles.menuLabel}>{label}</Text>
-    </TouchableOpacity>
+      <ThemedText size="l">{label}</ThemedText>
+    </Pressable>
   );
 }
 
@@ -114,8 +115,6 @@ export default function DrawerContent() {
             onPress={() => handleNavigation("/(root)/(main)/account")}
           />
 
-          <View style={styles.divider} />
-
           <DrawerMenuItem
             label="Cerrar Sesión"
             iconName="log-out-outline"
@@ -152,23 +151,18 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   menuContainer: {
-    paddingVertical: 10,
+    gap: 8,
   },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    gap: 15,
+    marginHorizontal: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    gap: 16,
+    borderRadius: 400,
   },
-  menuLabel: {
-    fontFamily: "Roboto_Bold",
-    fontSize: 16,
-    color: "rgba(255, 255, 255, 0.75)",
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    marginVertical: 10,
+  menuItemPressed: {
+    backgroundColor: "rgba(0, 0, 0, 0.05)",
   },
 });

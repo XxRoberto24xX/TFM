@@ -1,7 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/colors";
 import { Image, StyleSheet, ScrollView, View, Text, Pressable } from "react-native";
-import { useRouter, useNavigation } from "expo-router";
+import { useRouter, useSegments } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 import { closeDrawer } from "@/utils/DrawerController";
@@ -34,36 +34,23 @@ function DrawerMenuItem({ label, iconName, onPress }: DrawerMenuItemProps) {
 
 export default function DrawerContent() {
   const router = useRouter();
-  const navigation = useNavigation();
+  const segments = useSegments();
   const insets = useSafeAreaInsets();
 
-  /* Function to take the actual route the current display view has */
-  const getCurrentScreenName = () => {
-    const state = navigation.getState();
-    if (state?.routes) {
-      let currentRoute = state.routes[state.routes.length - 1];
-
-      while (
-        currentRoute &&
-        "state" in currentRoute &&
-        currentRoute.state?.routes &&
-        currentRoute.state.index !== undefined
-      ) {
-        const nextRoute = currentRoute.state.routes[currentRoute.state.index];
-        if (!nextRoute) break;
-        currentRoute = nextRoute as any;
-      }
-
-      return currentRoute?.name;
-    }
-    return null;
+  const getCurrentRoute = () => {
+    return `/${segments.join("/")}`;
   };
 
   const handleNavigation = (path: string) => {
-    const currentScreen = getCurrentScreenName();
-    const targetScreen = path.split("/").pop();
+    const currentRoute = getCurrentRoute();
 
-    if (currentScreen !== targetScreen) {
+    const cleanPath = path.replace(/^\/+/, "");
+    const cleanCurrent = currentRoute.replace(/^\/+/, "");
+
+    console.log(cleanPath);
+    console.log(cleanCurrent);
+
+    if (cleanCurrent !== cleanPath) {
       router.push(path);
     }
     closeDrawer();

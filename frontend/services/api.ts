@@ -7,9 +7,14 @@ import {
   getListGasStationsInRangeModel,
   getListGasStationsInRangeResponse,
   PlaceAutocompleteResponse,
+  RouteModel,
+  RouteResponse,
 } from "../types/types";
 import { mapGasStationModelToFrontend, mapPlaceAutocompleteResponseToFrontend } from "@/utils/mappers";
 import googleClient from "./googleClient";
+import googleRoutesClient from "./googleRoutesClient";
+import { formatDuration, parseDuration } from "@/utils/gasStationsUtils";
+import polyline from "@mapbox/polyline";
 
 export async function login(email: string, password: string): Promise<AuthResponse> {
   const response = await apiClient.post<AuthResponse>(
@@ -100,5 +105,112 @@ export async function getPlaceCoordinates(placeId: string, sessionToken: string)
   return {
     latitude: response.data.location.latitude,
     longitude: response.data.location.longitude,
+  };
+}
+
+export async function computeRoute(origin: coordinates, destination: coordinates): Promise<RouteResponse> {
+  const response = await googleRoutesClient.post<RouteModel>(
+    "",
+    {
+      origin: {
+        location: {
+          latLng: {
+            latitude: origin.latitude,
+            longitude: origin.longitude,
+          },
+        },
+      },
+      destination: {
+        location: {
+          latLng: {
+            latitude: destination.latitude,
+            longitude: destination.longitude,
+          },
+        },
+      },
+      travelMode: "DRIVE",
+      routingPreference: "TRAFFIC_UNAWARE",
+    },
+    {
+      headers: {
+        "X-Goog-FieldMask":
+          "routes.polyline.encodedPolyline,routes.distanceMeters,routes.duration,routes.legs.startLocation,routes.legs.endLocation",
+      },
+    },
+  );
+
+  if (!response.data?.routes || response.data.routes.length === 0) {
+    throw new Error("No se encontró ninguna ruta para los puntos proporcionados");
+  }
+
+  const route = response.data.routes[0];
+  const decodedPoints = polyline.decode(route.polyline.encodedPolyline).map((point: number[]) => ({
+    latitude: point[0],
+    longitude: point[1],
+  }));
+
+  return {
+    coordinates: decodedPoints,
+    distanceKm: route.distanceMeters / 1000,
+    durationMinutes: Math.round(parseDuration(route.duration) / 60),
+    durationText: formatDuration(Math.round(parseDuration(route.duration) / 60)),
+  };
+}
+
+export async function computeRouteWithWaypoints(
+  origin: coordinates,
+  destination: coordinates,
+  waypoints: coordinates[],
+): Promise<RouteResponse> {
+  const intermediates = waypoints.map((point) => ({
+    location: {
+      latLng: {
+        latitude: point.latitude,
+        longitude: point.longitude,
+      },
+    },
+  }));
+
+  const response = await googleRoutesClient.post<RouteModel>(
+    "",
+    {
+      origin: {
+        location: {
+          latLng: {
+            latitude: origin.latitude,
+            longitude: origin.longitude,
+          },
+        },
+      },
+      destination: {
+        location: {
+          latLng: {
+            latitude: destination.latitude,
+            longitude: destination.longitude,
+          },
+        },
+      },
+      intermediates: intermediates,
+      travelMode: "DRIVE",
+      routingPreference: "TRAFFIC_UNAWARE",
+    },
+    {
+      headers: {
+        "X-Goog-FieldMask": "routes.polyline.encodedPolyline,routes.distanceMeters,routes.duration",
+      },
+    },
+  );
+
+  const route = response.data.routes[0];
+  const decodedPoints = polyline.decode(route.polyline.encodedPolyline).map((point: number[]) => ({
+    latitude: point[0],
+    longitude: point[1],
+  }));
+
+  return {
+    coordinates: decodedPoints,
+    distanceKm: route.distanceMeters / 1000,
+    durationMinutes: Math.round(parseDuration(route.duration) / 60),
+    durationText: formatDuration(Math.round(parseDuration(route.duration) / 60)),
   };
 }

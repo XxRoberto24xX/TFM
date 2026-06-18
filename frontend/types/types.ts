@@ -101,3 +101,26 @@ export interface predicction {
   };
   coordinates?: coordinates;
 }
+
+export interface RouteModel {
+  routes: {
+    polyline: {
+      encodedPolyline: string;
+    };
+    distanceMeters: number;
+    duration: string;
+    legs: {
+      startLocation: coordinates;
+      endLocation: coordinates;
+      distanceMeters: number;
+      duration: string;
+    }[];
+  }[];
+}
+
+export interface RouteResponse {
+  coordinates: coordinates[];
+  distanceKm: number;
+  durationMinutes: number;
+  durationText: string;
+}

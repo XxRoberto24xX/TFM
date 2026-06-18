@@ -5,6 +5,7 @@
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
     "@gorhom/bottom-sheet": "^5.2.14",
+    "@mapbox/polyline": "^1.2.1",
     "axios": "^1.16.1",
     "expo": "~56.0.12",
     "expo-constants": "~56.0.16",
@@ -31,6 +32,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@types/mapbox__polyline": "^1.0.5",
     "@types/react": "~19.2.2",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~56.0.4",

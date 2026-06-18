@@ -1,6 +1,6 @@
 import { ApiError, gasStation } from "@/types/types";
 import { useFocusEffect } from "expo-router";
-import { memo, Ref, useCallback, useMemo, useState } from "react";
+import { memo, RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Region } from "react-native-maps";
 
@@ -11,7 +11,7 @@ import { useLocationStore } from "@/stores/useLocationStore";
 import CustomMarker from "./CustomMarker";
 
 interface Props {
-  ref?: Ref<MapView>;
+  ref?: RefObject<MapView | null>;
 }
 
 function Map({ ref }: Props) {
@@ -22,12 +22,14 @@ function Map({ ref }: Props) {
   const activeBrandFilter = useGasStationStore((state) => state.activeBrandFilter);
   const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
   const mapType = useGasStationStore((state) => state.mapType);
+  const userLocation = useLocationStore((state) => state.userLocation);
+  const lastRegion = useLocationStore.getState().lastRegion;
 
   const setSelectedGasStation = useGasStationStore((state) => state.setSelectedGasStation);
   const setLastRegion = useLocationStore((state) => state.setLastRegion);
   const setIsCenteredOnUser = useLocationStore((state) => state.setIsCenteredOnUser);
 
-  const lastRegion = useLocationStore.getState().lastRegion;
+  const originalUserLocation = useRef(userLocation);
 
   /* USEMEMO VARIABLES */
   const paintedGasStations = useMemo(() => {
@@ -72,6 +74,23 @@ function Map({ ref }: Props) {
       setReturnedGasStations([]);
     }
   };
+
+  /* WATCHERS */
+  //if the location is not in cache the user will enter in the default region
+  //but eventually the location will be set and it shound show the user where it is
+  //this is extremely rare but can happen
+  useEffect(() => {
+    if (originalUserLocation && userLocation !== null) {
+      const userRegion: Region = {
+        latitude: userLocation.coords.latitude,
+        longitude: userLocation.coords.longitude,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05,
+      };
+
+      ref?.current?.animateToRegion(userRegion);
+    }
+  }, [userLocation, ref]);
 
   /* ON ACTIVE */
   useFocusEffect(

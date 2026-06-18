@@ -5,7 +5,6 @@ import { getListFavorites } from "@/services/api";
 import { useHeaderHeight } from "expo-router/build/react-navigation";
 import MapView, { Region } from "react-native-maps";
 
-import * as Location from "expo-location";
 import IconFloatingButton from "@/components/IconFloatingButton";
 import GasOptionsDisplay from "@/components/GasOptionsDisplay";
 import BrandsOptionsDisplay from "@/components/BrandsOptionsDisplay";
@@ -27,7 +26,6 @@ export default function Home() {
 
   const setFavorites = useGasStationStore((state) => state.setFavorites);
   const setLastRegion = useLocationStore((state) => state.setLastRegion);
-  const setUserLocation = useLocationStore((state) => state.setUserLocation);
   const setIsCenteredOnUser = useLocationStore((state) => state.setIsCenteredOnUser);
   const setMapType = useGasStationStore((state) => state.setMapType);
 
@@ -67,33 +65,8 @@ export default function Home() {
       }
     };
 
-    const getUserLocation = async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permiso a la ubicación Denegado");
-        return;
-      }
-
-      const userLocation = await Location.getCurrentPositionAsync({});
-      setUserLocation(userLocation);
-
-      if (mapRef.current) {
-        const userRegion = {
-          latitude: userLocation.coords.latitude,
-          longitude: userLocation.coords.longitude,
-          latitudeDelta: 0.05,
-          longitudeDelta: 0.05,
-        };
-
-        mapRef.current.animateToRegion(userRegion, 1000);
-        setLastRegion(userRegion);
-        setIsCenteredOnUser(true);
-      }
-    };
-
-    getUserLocation();
     fetchFavorites();
-  }, [setFavorites, setUserLocation, setLastRegion, setIsCenteredOnUser]);
+  }, [setFavorites, setLastRegion, setIsCenteredOnUser]);
 
   return (
     <View style={styles.mapContainer}>

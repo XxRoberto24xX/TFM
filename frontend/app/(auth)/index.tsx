@@ -1,9 +1,10 @@
 import { ActivityIndicator, Dimensions, Image, StyleSheet, View } from "react-native";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Colors } from "@/constants/colors";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import * as SecureStore from "expo-secure-store";
+import * as Location from "expo-location";
 
 import FloatingButton from "@/components/FloatingButton";
 import ThemedText from "@/components/ThemedText";
@@ -12,6 +13,8 @@ import ErrorMessage from "@/components/ErrorMessage";
 
 import { login } from "@/services/api";
 import { ApiError } from "@/types/types";
+import { useLocationStore } from "@/stores/useLocationStore";
+import { Region } from "react-native-maps";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -21,6 +24,10 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const setUserLocation = useLocationStore((state) => state.setUserLocation);
+  const setLastRegion = useLocationStore((state) => state.setLastRegion);
+  const setIsCenteredOnUser = useLocationStore((state) => state.setIsCenteredOnUser);
 
   const handleLogin = async () => {
     setLoading(true);
@@ -39,6 +46,37 @@ export default function Login() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const getUserLocation = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permiso a la ubicación Denegado");
+        return;
+      }
+
+      let userLocation = await Location.getLastKnownPositionAsync({});
+      if (!userLocation) {
+        userLocation = await Location.getCurrentPositionAsync({});
+      }
+
+      setUserLocation(userLocation);
+
+      const userRegion: Region = {
+        latitude: userLocation.coords.latitude,
+        longitude: userLocation.coords.longitude,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05,
+      };
+
+      console.log(userRegion);
+
+      setLastRegion(userRegion);
+      setIsCenteredOnUser(true);
+    };
+
+    getUserLocation();
+  }, []);
 
   return (
     <KeyboardAwareScrollView

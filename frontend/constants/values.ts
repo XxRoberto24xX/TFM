@@ -19,7 +19,7 @@ export const BRAND_IMAGES: Record<string, ImageSourcePropType> = {
   SHELL: require("@/assets/brands/shell.png"),
   BP: require("@/assets/brands/bp.png"),
   GALP: require("@/assets/brands/galp.png"),
-  PLENERY: require("@/assets/brands/plenoil.png"),
+  PLENERGY: require("@/assets/brands/plenoil.png"),
   MOEVE: require("@/assets/brands/moeve.png"),
 };
 
@@ -37,7 +37,7 @@ export const GAS_FILTER_OPTIONS = [
   "Biocombustible",
 ];
 
-export const BRAND_FILTER_OPTIONS = ["Todos", "Repsol", "Moeve", , "Plenery", "Cepsa", "Shell", "BP", "Galp"];
+export const BRAND_FILTER_OPTIONS = ["Todos", "Repsol", "Moeve", , "Plenergy", "Cepsa", "Shell", "BP", "Galp"];
 
 export const DEFAULT_REGION: Region = {
   latitude: 40.4168,

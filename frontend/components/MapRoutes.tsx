@@ -1,4 +1,4 @@
-import { memo, RefObject, useCallback, useEffect, useRef, useState } from "react";
+import { memo, RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet } from "react-native";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 
@@ -40,6 +40,10 @@ function MapRoutes({ bottomSheetRef }: Props) {
     }
   }, []);
 
+  const safeCoordinates = useMemo(() => {
+    return routeResult?.coordinates ? [...routeResult.coordinates] : [];
+  }, [routeResult]);
+
   useEffect(() => {
     const animationAndRouting = async () => {
       const map = mapRef?.current;
@@ -80,7 +84,7 @@ function MapRoutes({ bottomSheetRef }: Props) {
     };
 
     animationAndRouting();
-  }, [origin?.coordinates, destiny?.coordinates, mapKey, mapRef]);
+  }, [origin, destiny]);
 
   /* ON ACTIVE */
   useFocusEffect(
@@ -123,9 +127,9 @@ function MapRoutes({ bottomSheetRef }: Props) {
         />
       )}
 
-      {routeResult && (
+      {safeCoordinates && (
         <Polyline
-          coordinates={routeResult.coordinates}
+          coordinates={safeCoordinates}
           strokeColor="#ff0000"
           strokeWidth={4}
         />

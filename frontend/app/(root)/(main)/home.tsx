@@ -89,11 +89,13 @@ export default function Home() {
           <GasStationPreview style={styles.gasStationPreview} />
           <View style={styles.bottomViewContainer}>
             <GasOptionsDisplay />
-            <IconFloatingButton
-              icon={isCenteredOnUser ? "gps-fixed" : "gps-not-fixed"}
-              iconProvider="material"
-              onPress={() => onGoToUserLocation()}
-            />
+            {userLocation && (
+              <IconFloatingButton
+                icon={isCenteredOnUser ? "gps-fixed" : "gps-not-fixed"}
+                iconProvider="material"
+                onPress={() => onGoToUserLocation()}
+              />
+            )}
           </View>
         </View>
       </View>

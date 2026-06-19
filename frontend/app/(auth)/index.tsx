@@ -53,28 +53,36 @@ export default function Login() {
 
   useEffect(() => {
     const getUserLocation = async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permiso a la ubicación Denegado");
-        return;
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          console.log("Permiso a la ubicación Denegado");
+          return;
+        }
+
+        let userLocation = await Location.getLastKnownPositionAsync({});
+        if (!userLocation) {
+          userLocation = await Location.getCurrentPositionAsync({});
+        }
+
+        setUserLocation(userLocation);
+
+        const userRegion: Region = {
+          latitude: userLocation.coords.latitude,
+          longitude: userLocation.coords.longitude,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        };
+
+        setLastRegion(userRegion);
+        setIsCenteredOnUser(true);
+      } catch (error: any) {
+        if (error.message.includes("unsatisfied device settings")) {
+          console.log("El usuario tiene el GPS apagado y rechazó activarlo en los ajustes.");
+        } else {
+          console.error("Otro error relacionado con la ubicación:", error);
+        }
       }
-
-      let userLocation = await Location.getLastKnownPositionAsync({});
-      if (!userLocation) {
-        userLocation = await Location.getCurrentPositionAsync({});
-      }
-
-      setUserLocation(userLocation);
-
-      const userRegion: Region = {
-        latitude: userLocation.coords.latitude,
-        longitude: userLocation.coords.longitude,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
-      };
-
-      setLastRegion(userRegion);
-      setIsCenteredOnUser(true);
     };
 
     const getUserPreferences = async () => {

@@ -11,6 +11,7 @@ import BrandsOptionsDisplay from "@/components/BrandsOptionsDisplay";
 import GasStationPreview from "@/components/GasStationPreview";
 import FavoritesBottomSheet from "@/components/FavoritesBottomSheet";
 import Map from "@/components/Map";
+import * as SecureStore from "expo-secure-store";
 
 import { useLocationStore } from "@/stores/useLocationStore";
 import { useGasStationStore } from "@/stores/useGasStationsStore";
@@ -46,11 +47,17 @@ export default function Home() {
   };
 
   const onMapTypeChange = () => {
-    if (mapType === "standard") {
-      setMapType("hybrid");
-    } else {
-      setMapType("standard");
-    }
+    const mapTypeChange = async () => {
+      if (mapType === "standard") {
+        setMapType("hybrid");
+        await SecureStore.setItemAsync("mapType", "hybrid");
+      } else {
+        setMapType("standard");
+        await SecureStore.setItemAsync("mapType", "standard");
+      }
+    };
+
+    mapTypeChange();
   };
 
   /* ON MOUNT */

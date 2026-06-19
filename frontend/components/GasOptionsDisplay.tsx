@@ -3,6 +3,7 @@ import { Colors } from "@/constants/colors";
 import ThemedText from "./ThemedText";
 
 import * as Haptics from "expo-haptics";
+import * as SecureStore from "expo-secure-store";
 import { GAS_FILTER_OPTIONS } from "@/constants/values";
 import { useGasStationStore } from "@/stores/useGasStationsStore";
 import { memo } from "react";
@@ -10,6 +11,8 @@ import { memo } from "react";
 function GasOptionsDisplay() {
   const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
   const setActiveGasFilter = useGasStationStore((state) => state.setActiveGasFilter);
+
+  console.log(activeGasFilter);
 
   return (
     <ScrollView
@@ -30,6 +33,7 @@ function GasOptionsDisplay() {
             onPress={() => {
               Haptics.selectionAsync();
               setActiveGasFilter(item);
+              SecureStore.setItemAsync("GasOptionSelected", item);
             }}>
             <ThemedText
               size="m"

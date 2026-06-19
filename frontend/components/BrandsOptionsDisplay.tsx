@@ -4,12 +4,15 @@ import ThemedText from "./ThemedText";
 import { BRAND_FILTER_OPTIONS, BRAND_IMAGES } from "@/constants/values";
 
 import * as Haptics from "expo-haptics";
+import * as SecureStore from "expo-secure-store";
 import { useGasStationStore } from "@/stores/useGasStationsStore";
 import { memo } from "react";
 
 function BrandsOptionsDisplay() {
   const activeBrandFilter = useGasStationStore((state) => state.activeBrandFilter);
   const setActiveBrandFilter = useGasStationStore((state) => state.setActiveBrandFilter);
+
+  console.log(activeBrandFilter);
 
   return (
     <ScrollView
@@ -31,6 +34,7 @@ function BrandsOptionsDisplay() {
             onPress={() => {
               Haptics.selectionAsync();
               setActiveBrandFilter(item);
+              SecureStore.setItemAsync("BrandOptionSelected", item);
             }}>
             <Image
               style={styles.image}

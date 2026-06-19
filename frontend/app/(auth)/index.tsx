@@ -14,7 +14,8 @@ import ErrorMessage from "@/components/ErrorMessage";
 import { login } from "@/services/api";
 import { ApiError } from "@/types/types";
 import { useLocationStore } from "@/stores/useLocationStore";
-import { Region } from "react-native-maps";
+import { MapType, Region } from "react-native-maps";
+import { useGasStationStore } from "@/stores/useGasStationsStore";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -28,6 +29,9 @@ export default function Login() {
   const setUserLocation = useLocationStore((state) => state.setUserLocation);
   const setLastRegion = useLocationStore((state) => state.setLastRegion);
   const setIsCenteredOnUser = useLocationStore((state) => state.setIsCenteredOnUser);
+  const setMapType = useGasStationStore((state) => state.setMapType);
+  const setActiveGasFilter = useGasStationStore((state) => state.setActiveGasFilter);
+  const setActiveBrandFilter = useGasStationStore((state) => state.setActiveBrandFilter);
 
   const handleLogin = async () => {
     setLoading(true);
@@ -69,13 +73,24 @@ export default function Login() {
         longitudeDelta: 0.05,
       };
 
-      console.log(userRegion);
-
       setLastRegion(userRegion);
       setIsCenteredOnUser(true);
     };
 
+    const getUserPreferences = async () => {
+      await SecureStore.getItemAsync("mapType").then((mapType) => {
+        setMapType((mapType ?? "standard") as MapType);
+      });
+      await SecureStore.getItemAsync("GasOptionSelected").then((GasOptionSelected) => {
+        setActiveGasFilter(GasOptionSelected ?? "E5 95");
+      });
+      await SecureStore.getItemAsync("BrandOptionSelected").then((BrandOptionSelected) => {
+        setActiveBrandFilter(BrandOptionSelected ?? "Todos");
+      });
+    };
+
     getUserLocation();
+    getUserPreferences();
   }, []);
 
   return (

@@ -1,13 +1,14 @@
-import { useGasStationStore } from "@/stores/useGasStationsStore";
-import { gasStation } from "@/types/types";
 import { memo } from "react";
 import { Marker } from "react-native-maps";
+
+import { useGasStationStore } from "@/stores/useGasStationsStore";
+import { gasStation } from "@/types/types";
 
 interface Props {
   gasStation: gasStation;
 }
 
-const CustomMarker = ({ gasStation }: Props) => {
+function MarkerGasStation({ gasStation }: Props) {
   const setSelectedGasStation = useGasStationStore((state) => state.setSelectedGasStation);
 
   return (
@@ -21,6 +22,13 @@ const CustomMarker = ({ gasStation }: Props) => {
       }}
     />
   );
+}
+
+const areEqual = (prevProps: any, nextProps: any) => {
+  return (
+    prevProps.gasStation.id === nextProps.gasStation.id &&
+    JSON.stringify(prevProps.gasStation.prices) === JSON.stringify(nextProps.gasStation.prices)
+  );
 };
 
-export default memo(CustomMarker);
+export default memo(MarkerGasStation, areEqual);

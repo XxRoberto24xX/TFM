@@ -1,19 +1,22 @@
-import { StyleSheet } from "react-native";
 import { memo, RefObject, useCallback, useEffect, useRef, useState } from "react";
+import { StyleSheet } from "react-native";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+
 import { useFocusEffect } from "expo-router";
-import { DEFAULT_REGION } from "@/constants/values";
-import { useLocationStore } from "@/stores/useLocationStore";
+
 import BottomSheet from "@gorhom/bottom-sheet";
+
+import { useLocationStore } from "@/stores/useLocationStore";
 import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
 import { computeRoute } from "@/services/api";
 import { coordinates, RouteResponse } from "@/types/types";
+import { DEFAULT_REGION } from "@/constants/values";
 
 interface Props {
   bottomSheetRef: RefObject<BottomSheet | null>;
 }
 
-const MapRoutes = ({ bottomSheetRef }: Props) => {
+function MapRoutes({ bottomSheetRef }: Props) {
   const [mapKey, setMapKey] = useState(0);
   const mapRef = useRef<MapView>(null);
 
@@ -129,6 +132,6 @@ const MapRoutes = ({ bottomSheetRef }: Props) => {
       )}
     </MapView>
   );
-};
+}
 
 export default memo(MapRoutes);

@@ -1,15 +1,16 @@
 import { memo, useMemo } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
-import BottomSheet, { BottomSheetBackgroundProps, BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import Animated, { useAnimatedStyle, interpolate, useSharedValue } from "react-native-reanimated";
 
-import { Colors } from "@/constants/colors";
-import ThemedText from "@/components/ThemedText";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
-import FavoriteCard from "./FavoriteCard";
 
-import Animated, { useAnimatedStyle, interpolate, useSharedValue } from "react-native-reanimated";
+import BottomSheet, { BottomSheetBackgroundProps, BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import FavoriteCard from "@/components/ListItemFavorite";
+import ThemedText from "@/components/ThemedText";
+
 import { useGasStationStore } from "@/stores/useGasStationsStore";
+import { Colors } from "@/constants/colors";
 
 const CustomBackground = ({ style }: BottomSheetBackgroundProps) => {
   return (
@@ -32,7 +33,7 @@ const favoritesPraceHolder = () => (
   </View>
 );
 
-function FavoritesBottomSheet() {
+function BottomSheetFavorites() {
   const snapPoints = useMemo(() => [80, Dimensions.get("window").height * 0.4], []);
   const animatedIndex = useSharedValue(0);
 
@@ -78,7 +79,7 @@ function FavoritesBottomSheet() {
   );
 }
 
-export default memo(FavoritesBottomSheet);
+export default memo(BottomSheetFavorites);
 
 const styles = StyleSheet.create({
   saveHeader: {

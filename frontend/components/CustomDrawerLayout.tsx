@@ -1,12 +1,14 @@
-import React, { useRef, ReactNode } from "react";
+import React, { useRef, ReactNode, memo } from "react";
 import { Dimensions } from "react-native";
 import ReanimatedDrawerLayout, {
   DrawerLayoutMethods,
   DrawerPosition,
   DrawerType,
 } from "react-native-gesture-handler/ReanimatedDrawerLayout";
-import { setDrawerRef } from "@/utils/DrawerController";
+
 import DrawerContent from "@/components/DrawerContent";
+
+import { setDrawerRef } from "@/utils/DrawerController";
 
 const screenWidth = Dimensions.get("window").width;
 const DRAWER_WIDTH = screenWidth * 0.75;
@@ -15,7 +17,7 @@ interface CustomDrawerLayoutProps {
   children: ReactNode;
 }
 
-export const CustomDrawerLayout = ({ children }: CustomDrawerLayoutProps) => {
+function CustomDrawerLayout({ children }: CustomDrawerLayoutProps) {
   const drawerRef = useRef<DrawerLayoutMethods>(null);
 
   React.useEffect(() => {
@@ -46,4 +48,6 @@ export const CustomDrawerLayout = ({ children }: CustomDrawerLayoutProps) => {
       {children}
     </ReanimatedDrawerLayout>
   );
-};
+}
+
+export default memo(CustomDrawerLayout);

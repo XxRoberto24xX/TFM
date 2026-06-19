@@ -1,10 +1,13 @@
+import { memo } from "react";
 import { StyleSheet, View, type TextInputProps } from "react-native";
+
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "../constants/colors";
+
+import { Colors } from "@/constants/colors";
 
 import ThemedText from "../components/ThemedText";
 
-export default function ErrorMessage({ children, style, ...TextInputProps }: TextInputProps) {
+function ErrorMessage({ children, style, ...TextInputProps }: TextInputProps) {
   return (
     <View style={[styles.inlineError, style]}>
       <Ionicons
@@ -21,6 +24,8 @@ export default function ErrorMessage({ children, style, ...TextInputProps }: Tex
     </View>
   );
 }
+
+export default memo(ErrorMessage);
 
 const styles = StyleSheet.create({
   inlineError: {

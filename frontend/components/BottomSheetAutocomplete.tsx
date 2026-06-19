@@ -1,13 +1,16 @@
-import { ActivityIndicator, Keyboard, StyleSheet, View } from "react-native";
 import { memo, RefObject, useCallback, useEffect, useMemo } from "react";
-import { Colors } from "@/constants/colors";
-import BottomSheet, { BottomSheetBackgroundProps, BottomSheetFlatList, BottomSheetView } from "@gorhom/bottom-sheet";
-import ThemedText from "./ThemedText";
+import { ActivityIndicator, Keyboard, StyleSheet, View } from "react-native";
+
 import { LinearGradient } from "expo-linear-gradient";
+
+import BottomSheet, { BottomSheetBackgroundProps, BottomSheetFlatList, BottomSheetView } from "@gorhom/bottom-sheet";
+import ListItemPrediction from "@/components/ListItemPrediction";
+import ThemedText from "@/components/ThemedText";
+
 import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
-import CardPrediction from "./CardPrediction";
 import { getPlaceCoordinates } from "@/services/api";
 import { predicction } from "@/types/types";
+import { Colors } from "@/constants/colors";
 
 interface Props {
   bottomSheetRef: RefObject<BottomSheet | null>;
@@ -34,7 +37,7 @@ const predictionPlaceHolder = () => (
   </View>
 );
 
-const BottomSheetGoogleAutocomplete = ({ bottomSheetRef }: Props) => {
+function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
   const snapPoints = useMemo(() => ["70%"], []);
 
   const listPredictions = useGoogleAutocompleteStore((state) => state.listPredictions);
@@ -60,7 +63,7 @@ const BottomSheetGoogleAutocomplete = ({ bottomSheetRef }: Props) => {
         const coords = await getPlaceCoordinates(place.place_id, sessionToken);
         const placeWithCoordinates: predicction = {
           ...place,
-          coordinates: coords, // Asumiendo que 'coords' tiene el tipo { latitude: number, longitude: number }
+          coordinates: coords,
         };
         if (activeInput === "origin") {
           setOrigin(placeWithCoordinates);
@@ -139,7 +142,7 @@ const BottomSheetGoogleAutocomplete = ({ bottomSheetRef }: Props) => {
           ListEmptyComponent={predictionPlaceHolder}
           contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
           renderItem={({ item }) => (
-            <CardPrediction
+            <ListItemPrediction
               prediction={item}
               onPress={() => {
                 handlePlaceSelect(item);
@@ -150,9 +153,9 @@ const BottomSheetGoogleAutocomplete = ({ bottomSheetRef }: Props) => {
       )}
     </BottomSheet>
   );
-};
+}
 
-export default memo(BottomSheetGoogleAutocomplete);
+export default memo(BottomSheetAutocomplete);
 
 const styles = StyleSheet.create({
   BottomSheet: {

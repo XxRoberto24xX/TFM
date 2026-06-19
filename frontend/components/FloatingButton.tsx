@@ -1,15 +1,19 @@
+import { memo } from "react";
+import { Pressable, StyleSheet, type PressableProps } from "react-native";
+
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
-import { Pressable, StyleSheet, type PressableProps } from "react-native";
+
+import ThemedText from "@/components/ThemedText";
+
 import { Colors } from "../constants/colors";
-import ThemedText from "./ThemedText";
 
 interface Props extends PressableProps {
   text: string;
   onPress: () => void;
 }
 
-export default function FloatingButton({ text, onPress, style, ...pressableProps }: Props) {
+function FloatingButton({ text, onPress, style, ...pressableProps }: Props) {
   return (
     <Pressable
       style={({ pressed }) => [
@@ -36,6 +40,8 @@ export default function FloatingButton({ text, onPress, style, ...pressableProps
     </Pressable>
   );
 }
+
+export default memo(FloatingButton);
 
 const styles = StyleSheet.create({
   buttonContainer: {

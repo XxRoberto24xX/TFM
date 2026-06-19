@@ -6,11 +6,11 @@ import { useHeaderHeight } from "expo-router/build/react-navigation";
 import MapView, { Region } from "react-native-maps";
 
 import IconFloatingButton from "@/components/IconFloatingButton";
-import GasOptionsDisplay from "@/components/GasOptionsDisplay";
-import BrandsOptionsDisplay from "@/components/BrandsOptionsDisplay";
-import GasStationPreview from "@/components/GasStationPreview";
-import FavoritesBottomSheet from "@/components/FavoritesBottomSheet";
-import Map from "@/components/Map";
+import FilterChipGas from "@/components/FilterChipGas";
+import FilterChipBrands from "@/components/FilterChipBrands";
+import CardGasStation from "@/components/CardGasStation";
+import BottomSheetFavorites from "@/components/BottomSheetFavorites";
+import MapHome from "@/components/MapHome";
 import * as SecureStore from "expo-secure-store";
 
 import { useLocationStore } from "@/stores/useLocationStore";
@@ -77,18 +77,18 @@ export default function Home() {
 
   return (
     <View style={styles.mapContainer}>
-      <Map ref={mapRef} />
+      <MapHome ref={mapRef} />
       <View style={[styles.mainViewContainer, { paddingTop: headerHeight }]}>
-        <BrandsOptionsDisplay />
+        <FilterChipBrands />
         <IconFloatingButton
           style={{ alignSelf: "flex-end", margin: 8 }}
           icon={"layers"}
           onPress={() => onMapTypeChange()}
         />
         <View style={{ marginTop: "auto" }}>
-          <GasStationPreview style={styles.gasStationPreview} />
+          <CardGasStation style={styles.gasStationPreview} />
           <View style={styles.bottomViewContainer}>
-            <GasOptionsDisplay />
+            <FilterChipGas />
             {userLocation && (
               <IconFloatingButton
                 icon={isCenteredOnUser ? "gps-fixed" : "gps-not-fixed"}
@@ -99,7 +99,7 @@ export default function Home() {
           </View>
         </View>
       </View>
-      <FavoritesBottomSheet />
+      <BottomSheetFavorites />
     </View>
   );
 }

@@ -1,9 +1,12 @@
+import { memo } from "react";
 import { Pressable, PressableProps, StyleSheet } from "react-native";
+
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { Colors } from "@/constants/colors";
 
 import * as Haptics from "expo-haptics";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+
+import { Colors } from "@/constants/colors";
 
 interface Props extends PressableProps {
   icon: keyof typeof Ionicons.glyphMap | keyof typeof MaterialIcons.glyphMap;
@@ -11,13 +14,7 @@ interface Props extends PressableProps {
   onPress: () => void;
 }
 
-export default function IconFloatingButton({
-  icon,
-  iconProvider = "ionicons",
-  onPress,
-  style,
-  ...pressableProps
-}: Props) {
+function IconFloatingButton({ icon, iconProvider = "ionicons", onPress, style, ...pressableProps }: Props) {
   return (
     <Pressable
       style={({ pressed }) => [
@@ -51,6 +48,8 @@ export default function IconFloatingButton({
     </Pressable>
   );
 }
+
+export default memo(IconFloatingButton);
 
 const styles = StyleSheet.create({
   buttonContainer: {

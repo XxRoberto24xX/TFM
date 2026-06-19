@@ -1,21 +1,22 @@
-import { Pressable, StyleSheet, Image, View } from "react-native";
-import { Colors } from "@/constants/colors";
-import { ApiError, gasStation } from "@/types/types";
-
-import ThemedText from "./ThemedText";
-import { Ionicons } from "@expo/vector-icons";
-import { removeFromFavorites } from "@/services/api";
-
-import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
-import { router } from "expo-router";
-import { useGasStationStore } from "@/stores/useGasStationsStore";
 import { memo } from "react";
+import { Pressable, StyleSheet, Image, View } from "react-native";
+
+import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+
+import ThemedText from "@/components/ThemedText";
+
+import { useGasStationStore } from "@/stores/useGasStationsStore";
+import { removeFromFavorites } from "@/services/api";
+import { ApiError, gasStation } from "@/types/types";
+import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
+import { Colors } from "@/constants/colors";
 
 interface Props {
   gasStation: gasStation;
 }
 
-function FavoriteCard({ gasStation }: Props) {
+function ListItemFavorite({ gasStation }: Props) {
   const removeFavorite = useGasStationStore((state) => state.removeFavorite);
   const imageSource = BRAND_IMAGES[gasStation.brand] || DEFAULT_IMAGE;
 
@@ -67,7 +68,7 @@ function FavoriteCard({ gasStation }: Props) {
   );
 }
 
-export default memo(FavoriteCard);
+export default memo(ListItemFavorite);
 
 const styles = StyleSheet.create({
   container: {

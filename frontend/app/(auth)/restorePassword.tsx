@@ -9,7 +9,7 @@ import { ApiError } from "@/types/types";
 
 import FloatingButton from "@/components/FloatingButton";
 import ThemedText from "@/components/ThemedText";
-import ThemedTextInput from "@/components/ThemedTextInput";
+import TextInputBasic from "@/components/TextInputBasic";
 import ErrorMessage from "@/components/ErrorMessage";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -61,7 +61,7 @@ export default function RestorePassword() {
         Enviaremos un correo de recuperación
       </ThemedText>
 
-      <ThemedTextInput
+      <TextInputBasic
         style={{ marginTop: 45 }}
         placeholder="Correo"
         value={email}

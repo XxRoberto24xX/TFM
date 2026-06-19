@@ -9,7 +9,7 @@ import { ApiError } from "@/types/types";
 
 import FloatingButton from "@/components/FloatingButton";
 import ThemedText from "@/components/ThemedText";
-import ThemedTextInput from "@/components/ThemedTextInput";
+import TextInputBasic from "@/components/TextInputBasic";
 import ErrorMessage from "@/components/ErrorMessage";
 
 import * as SecureStore from "expo-secure-store";
@@ -69,7 +69,7 @@ export default function Register() {
         Crea tu nueva cuenta
       </ThemedText>
 
-      <ThemedTextInput
+      <TextInputBasic
         style={{ marginTop: 45 }}
         placeholder="Correo"
         value={email}
@@ -78,7 +78,7 @@ export default function Register() {
         }}
       />
 
-      <ThemedTextInput
+      <TextInputBasic
         style={{ marginTop: 20 }}
         placeholder="Contraseña"
         icon={true}
@@ -89,7 +89,7 @@ export default function Register() {
         }}
       />
 
-      <ThemedTextInput
+      <TextInputBasic
         style={{ marginTop: 20 }}
         placeholder="Contraseña"
         icon={true}

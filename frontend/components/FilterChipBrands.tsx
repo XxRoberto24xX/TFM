@@ -1,16 +1,18 @@
-import { StyleSheet, ScrollView, Pressable } from "react-native";
-import { Colors } from "@/constants/colors";
-import ThemedText from "./ThemedText";
+import { memo } from "react";
+import { StyleSheet, ScrollView, Pressable, Image } from "react-native";
 
 import * as Haptics from "expo-haptics";
 import * as SecureStore from "expo-secure-store";
-import { GAS_FILTER_OPTIONS } from "@/constants/values";
-import { useGasStationStore } from "@/stores/useGasStationsStore";
-import { memo } from "react";
 
-function GasOptionsDisplay() {
-  const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
-  const setActiveGasFilter = useGasStationStore((state) => state.setActiveGasFilter);
+import ThemedText from "@/components/ThemedText";
+
+import { useGasStationStore } from "@/stores/useGasStationsStore";
+import { BRAND_FILTER_OPTIONS, BRAND_IMAGES } from "@/constants/values";
+import { Colors } from "@/constants/colors";
+
+function FilterChipBrands() {
+  const activeBrandFilter = useGasStationStore((state) => state.activeBrandFilter);
+  const setActiveBrandFilter = useGasStationStore((state) => state.setActiveBrandFilter);
 
   return (
     <ScrollView
@@ -18,8 +20,9 @@ function GasOptionsDisplay() {
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.scrollContainer}>
-      {GAS_FILTER_OPTIONS.map((item) => {
-        const isSelected = activeGasFilter === item;
+      {BRAND_FILTER_OPTIONS.map((item) => {
+        const isSelected = activeBrandFilter === item;
+        const imageSource = BRAND_IMAGES[item.toUpperCase()];
         return (
           <Pressable
             style={({ pressed }) => [
@@ -30,9 +33,13 @@ function GasOptionsDisplay() {
             key={item}
             onPress={() => {
               Haptics.selectionAsync();
-              setActiveGasFilter(item);
-              SecureStore.setItemAsync("GasOptionSelected", item);
+              setActiveBrandFilter(item);
+              SecureStore.setItemAsync("BrandOptionSelected", item);
             }}>
+            <Image
+              style={styles.image}
+              source={imageSource}
+            />
             <ThemedText
               size="m"
               color={Colors.textSecondary}>
@@ -45,7 +52,7 @@ function GasOptionsDisplay() {
   );
 }
 
-export default memo(GasOptionsDisplay);
+export default memo(FilterChipBrands);
 
 const styles = StyleSheet.create({
   scrollView: {
@@ -57,7 +64,11 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   chip: {
+    flexDirection: "row",
+    alignItems: "center",
     alignSelf: "center",
+    gap: 5,
+
     backgroundColor: "white",
     paddingVertical: 7,
     paddingHorizontal: 10,
@@ -89,5 +100,9 @@ const styles = StyleSheet.create({
   },
   chipSelected: {
     borderColor: Colors.primaryPink,
+  },
+  image: {
+    width: 25,
+    height: 25,
   },
 });

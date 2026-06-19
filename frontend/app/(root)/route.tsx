@@ -1,5 +1,5 @@
-import BottomSheetGoogleAutocomplete from "@/components/BottomSheetGoogleAutocomplete";
-import InputGoogleAutocomplete from "@/components/InputGoogleAutocomplete";
+import BottomSheetAutocomplete from "@/components/BottomSheetAutocomplete";
+import TextInputAutocomplete from "@/components/TextInputAutocomplete";
 import MapRoutes from "@/components/MapRoutes";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { useRef } from "react";
@@ -14,16 +14,16 @@ export default function Route() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <MapRoutes bottomSheetRef={bottomSheetRef} />
-      <InputGoogleAutocomplete
+      <TextInputAutocomplete
         type="origin"
         placeHolder="Origen"
       />
-      <InputGoogleAutocomplete
+      <TextInputAutocomplete
         style={{ marginTop: 16 }}
         type="destiny"
         placeHolder="Destino"
       />
-      <BottomSheetGoogleAutocomplete bottomSheetRef={bottomSheetRef} />
+      <BottomSheetAutocomplete bottomSheetRef={bottomSheetRef} />
     </View>
   );
 }

@@ -1,14 +1,16 @@
-import { Keyboard, Pressable, StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { memo, Ref, useCallback, useRef } from "react";
-import { Colors } from "@/constants/colors";
-import { LinearGradient } from "expo-linear-gradient";
+import { Keyboard, Pressable, StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
-import { getPlaceAutocomplete } from "@/services/api";
+
+import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
-import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
-import { AutocompleteType } from "@/types/types";
 
 import * as Crypto from "expo-crypto";
+
+import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
+import { getPlaceAutocomplete } from "@/services/api";
+import { AutocompleteType } from "@/types/types";
+import { Colors } from "@/constants/colors";
 
 interface Props {
   placeHolder: string;
@@ -17,7 +19,7 @@ interface Props {
   ref?: Ref<TextInput>;
 }
 
-const InputGoogleAutocomplete = ({ placeHolder, style, type, ref }: Props) => {
+function TextInputAutocomplete({ placeHolder, style, type, ref }: Props) {
   const query = useGoogleAutocompleteStore((state) => (type === "origin" ? state.originQuery : state.destinyQuery));
   const sessionToken = useGoogleAutocompleteStore((state) => state.sesionToken);
   const setQuery = useGoogleAutocompleteStore((state) => state.setQuery);
@@ -127,9 +129,9 @@ const InputGoogleAutocomplete = ({ placeHolder, style, type, ref }: Props) => {
       )}
     </LinearGradient>
   );
-};
+}
 
-export default memo(InputGoogleAutocomplete);
+export default memo(TextInputAutocomplete);
 
 const styles = StyleSheet.create({
   container: {

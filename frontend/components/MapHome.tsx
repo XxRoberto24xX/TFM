@@ -1,20 +1,22 @@
-import { ApiError, gasStation } from "@/types/types";
-import { useFocusEffect } from "expo-router";
 import { memo, RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Region } from "react-native-maps";
 
-import { DEFAULT_REGION, FILTER_TO_PRICE_KEY, MAX_LATITUDE_DELTA_FOR_MARKERS } from "@/constants/values";
-import { getGasStationsInRange } from "@/services/api";
+import { useFocusEffect } from "expo-router";
+
+import MarkerGasStation from "@/components/MarkerGasStation";
+
 import { useGasStationStore } from "@/stores/useGasStationsStore";
 import { useLocationStore } from "@/stores/useLocationStore";
-import CustomMarker from "./CustomMarker";
+import { getGasStationsInRange } from "@/services/api";
+import { ApiError, gasStation } from "@/types/types";
+import { DEFAULT_REGION, FILTER_TO_PRICE_KEY, MAX_LATITUDE_DELTA_FOR_MARKERS } from "@/constants/values";
 
 interface Props {
   ref?: RefObject<MapView | null>;
 }
 
-function Map({ ref }: Props) {
+function MapHome({ ref }: Props) {
   /* VARIABLES */
   const [returnedGasStations, setReturnedGasStations] = useState<gasStation[]>([]);
   const [mapKey, setMapKey] = useState<number>(0);
@@ -123,7 +125,7 @@ function Map({ ref }: Props) {
       }}
       initialRegion={lastRegion ?? DEFAULT_REGION}>
       {paintedGasStations.map((station) => (
-        <CustomMarker
+        <MarkerGasStation
           key={station.id}
           gasStation={station}
         />
@@ -132,4 +134,4 @@ function Map({ ref }: Props) {
   );
 }
 
-export default memo(Map);
+export default memo(MapHome);

@@ -1,12 +1,17 @@
-import { LinearGradient } from "expo-linear-gradient";
-import { Colors } from "@/constants/colors";
+import { memo } from "react";
 import { Image, StyleSheet, ScrollView, View, Text, Pressable } from "react-native";
-import { useRouter, useSegments } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import * as SecureStore from "expo-secure-store";
-import { closeDrawer } from "@/utils/DrawerController";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ThemedText from "./ThemedText";
+
+import { useRouter, useSegments } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
+import { Colors } from "@/constants/colors";
+
+import * as SecureStore from "expo-secure-store";
+
+import ThemedText from "@/components/ThemedText";
+
+import { closeDrawer } from "@/utils/DrawerController";
 
 interface DrawerMenuItemProps {
   label: string;
@@ -32,7 +37,7 @@ function DrawerMenuItem({ label, iconName, onPress }: DrawerMenuItemProps) {
   );
 }
 
-export default function DrawerContent() {
+function DrawerContent() {
   const router = useRouter();
   const segments = useSegments();
   const insets = useSafeAreaInsets();
@@ -112,6 +117,8 @@ export default function DrawerContent() {
     </LinearGradient>
   );
 }
+
+export default memo(DrawerContent);
 
 const styles = StyleSheet.create({
   container: {

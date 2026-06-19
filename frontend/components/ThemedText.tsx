@@ -1,4 +1,6 @@
+import { memo } from "react";
 import { Text, type TextProps } from "react-native";
+
 import { Colors } from "../constants/colors";
 
 interface Props extends TextProps {
@@ -22,14 +24,7 @@ const FONTS = {
   bold: "Roboto_Bold",
 };
 
-export default function ThemedText({
-  size,
-  color = Colors.textPrimary,
-  weight = "bold",
-  children,
-  style,
-  ...textProps
-}: Props) {
+function ThemedText({ size, color = Colors.textPrimary, weight = "bold", children, style, ...textProps }: Props) {
   return (
     <Text
       style={[
@@ -45,3 +40,5 @@ export default function ThemedText({
     </Text>
   );
 }
+
+export default memo(ThemedText);

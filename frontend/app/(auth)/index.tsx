@@ -1,21 +1,22 @@
-import { ActivityIndicator, Dimensions, Image, StyleSheet, View } from "react-native";
-import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Colors } from "@/constants/colors";
+import { ActivityIndicator, Dimensions, Image, StyleSheet, View } from "react-native";
+import { MapType, Region } from "react-native-maps";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+
+import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import * as Location from "expo-location";
 
 import FloatingButton from "@/components/FloatingButton";
 import ThemedText from "@/components/ThemedText";
-import ThemedTextInput from "@/components/ThemedTextInput";
+import ThemedTextInput from "@/components/TextInputBasic";
 import ErrorMessage from "@/components/ErrorMessage";
 
+import { useLocationStore } from "@/stores/useLocationStore";
+import { useGasStationStore } from "@/stores/useGasStationsStore";
 import { login } from "@/services/api";
 import { ApiError } from "@/types/types";
-import { useLocationStore } from "@/stores/useLocationStore";
-import { MapType, Region } from "react-native-maps";
-import { useGasStationStore } from "@/stores/useGasStationsStore";
+import { Colors } from "@/constants/colors";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 

@@ -3,7 +3,7 @@ import { Colors } from "@/constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { CustomDrawerLayout } from "@/components/CustomDrawerLayout";
+import CustomDrawerLayout from "@/components/CustomDrawerLayout";
 
 export default function _layout() {
   return (

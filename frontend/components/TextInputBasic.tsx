@@ -1,9 +1,10 @@
+import { memo, useState } from "react";
 import { Pressable, StyleSheet, TextInput, View, type TextInputProps } from "react-native";
-import { Colors } from "../constants/colors";
-import { useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
 
+import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+
+import { Colors } from "../constants/colors";
 
 interface Props extends TextInputProps {
   placeholder: string;
@@ -12,7 +13,7 @@ interface Props extends TextInputProps {
   hideContent?: boolean;
 }
 
-export default function ThemedTextInput({
+function TextInputBasic({
   placeholder,
   placeholderTextColor = Colors.textSecondary,
   icon = false,
@@ -49,6 +50,8 @@ export default function ThemedTextInput({
     </View>
   );
 }
+
+export default memo(TextInputBasic);
 
 const styles = StyleSheet.create({
   inputPlaceholder: {

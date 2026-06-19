@@ -1,14 +1,16 @@
-import { Pressable, PressableProps, StyleSheet } from "react-native";
 import { memo } from "react";
-import { predicction } from "@/types/types";
+import { Pressable, PressableProps, StyleSheet } from "react-native";
+
 import ThemedText from "./ThemedText";
+
+import { predicction } from "@/types/types";
 import { Colors } from "@/constants/colors";
 
 interface Props extends PressableProps {
   prediction: predicction;
 }
 
-const CardPrediction = ({ prediction, ...pressableProps }: Props) => {
+function ListItemPrediction({ prediction, ...pressableProps }: Props) {
   return (
     <Pressable
       style={({ pressed }) => [styles.container, pressed && styles.containerPressed]}
@@ -21,9 +23,9 @@ const CardPrediction = ({ prediction, ...pressableProps }: Props) => {
       </ThemedText>
     </Pressable>
   );
-};
+}
 
-export default memo(CardPrediction);
+export default memo(ListItemPrediction);
 
 const styles = StyleSheet.create({
   container: {

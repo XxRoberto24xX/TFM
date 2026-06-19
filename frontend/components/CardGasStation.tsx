@@ -1,21 +1,21 @@
+import { memo, useEffect, useState } from "react";
 import { Pressable, StyleSheet, View, Image, Animated } from "react-native";
-import { Colors } from "@/constants/colors";
+import { PressableProps } from "react-native-gesture-handler";
 
-import ThemedText from "./ThemedText";
-import { ApiError } from "@/types/types";
+import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 
-import { addToFavorites, removeFromFavorites } from "@/services/api";
+import ThemedText from "@/components/ThemedText";
 
-import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
-import { memo, useEffect, useState } from "react";
-import { PressableProps } from "react-native-gesture-handler";
 import { useGasStationStore } from "@/stores/useGasStationsStore";
-import { useRouter } from "expo-router";
+import { addToFavorites, removeFromFavorites } from "@/services/api";
 import { getMarkerGasDisplayInfo } from "@/utils/gasStationsUtils";
+import { ApiError } from "@/types/types";
+import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
+import { Colors } from "@/constants/colors";
 
-function GasStationPreview({ style }: PressableProps) {
+function CardGasStation({ style }: PressableProps) {
   const router = useRouter();
 
   const selectedGasStation = useGasStationStore((state) => state.selectedGasStation);
@@ -67,7 +67,7 @@ function GasStationPreview({ style }: PressableProps) {
         style={({ pressed }) => [
           styles.container,
           pressed && styles.previewPressed,
-          typeof style === "function" ? style({ pressed }) : style, // <- made to introduce de style only if its a stylesheet
+          typeof style === "function" ? style({ pressed }) : style,
         ]}
         onPress={(e) => {
           e.stopPropagation();
@@ -129,7 +129,7 @@ function GasStationPreview({ style }: PressableProps) {
   );
 }
 
-export default memo(GasStationPreview);
+export default memo(CardGasStation);
 
 const styles = StyleSheet.create({
   container: {

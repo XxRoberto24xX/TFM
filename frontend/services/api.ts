@@ -11,7 +11,7 @@ import {
   RouteResponse,
 } from "../types/types";
 import { mapGasStationModelToFrontend, mapPlaceAutocompleteResponseToFrontend } from "@/utils/mappers";
-import googleClient from "./googleClient";
+import googleClient from "./googlePlacesClient";
 import googleRoutesClient from "./googleRoutesClient";
 import { formatDuration, parseDuration } from "@/utils/gasStationsUtils";
 import polyline from "@mapbox/polyline";

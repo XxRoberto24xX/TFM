@@ -37,7 +37,7 @@ export const GAS_FILTER_OPTIONS = [
   "Biocombustible",
 ];
 
-export const BRAND_FILTER_OPTIONS = ["Todos", "Repsol", "Moeve", , "Plenergy", "Cepsa", "Shell", "BP", "Galp"];
+export const BRAND_FILTER_OPTIONS = ["Todos", "Repsol", "Moeve", "Plenergy", "Cepsa", "Shell", "BP", "Galp"];
 
 export const DEFAULT_REGION: Region = {
   latitude: 40.4168,

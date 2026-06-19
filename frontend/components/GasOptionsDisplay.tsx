@@ -12,8 +12,6 @@ function GasOptionsDisplay() {
   const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
   const setActiveGasFilter = useGasStationStore((state) => state.setActiveGasFilter);
 
-  console.log(activeGasFilter);
-
   return (
     <ScrollView
       style={[styles.scrollView]}

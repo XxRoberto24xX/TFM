@@ -4,13 +4,15 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-import { register } from "@/services/api";
+import { login, register } from "@/services/api";
 import { ApiError } from "@/types/types";
 
 import FloatingButton from "@/components/FloatingButton";
 import ThemedText from "@/components/ThemedText";
 import ThemedTextInput from "@/components/ThemedTextInput";
 import ErrorMessage from "@/components/ErrorMessage";
+
+import * as SecureStore from "expo-secure-store";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -28,7 +30,10 @@ export default function Register() {
 
     try {
       await register(email, password);
-      router.push("/");
+      const response = await login(email, password);
+      await SecureStore.setItemAsync("token", response.token).then(() => {
+        router.replace("/home");
+      });
     } catch (callError) {
       const apiError = callError as ApiError;
       console.log("Register: " + apiError.message);

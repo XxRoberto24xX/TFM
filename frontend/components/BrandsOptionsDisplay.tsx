@@ -12,8 +12,6 @@ function BrandsOptionsDisplay() {
   const activeBrandFilter = useGasStationStore((state) => state.activeBrandFilter);
   const setActiveBrandFilter = useGasStationStore((state) => state.setActiveBrandFilter);
 
-  console.log(activeBrandFilter);
-
   return (
     <ScrollView
       style={[styles.scrollView]}

@@ -8,8 +8,8 @@ export default function GasStation() {
     <View>
       <Stack.Screen
         options={{
-          title: `Elemento ${id}`, // Aquí usas el ID dinámico
-          headerTitleAlign: "center", // Opciones extra que quieras añadir
+          title: `Elemento ${id}`,
+          headerTitleAlign: "center",
         }}
       />
 

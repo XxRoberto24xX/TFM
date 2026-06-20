@@ -11,6 +11,7 @@ import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore"
 import { getPlaceCoordinates } from "@/services/api";
 import { predicction } from "@/types/types";
 import { Colors } from "@/constants/colors";
+import { useLocationStore } from "@/stores/useLocationStore";
 
 interface Props {
   bottomSheetRef: RefObject<BottomSheet | null>;
@@ -40,6 +41,8 @@ const predictionPlaceHolder = () => (
 function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
   const snapPoints = useMemo(() => ["70%"], []);
 
+  const userLocation = useLocationStore((state) => state.userLocation);
+
   const listPredictions = useGoogleAutocompleteStore((state) => state.listPredictions);
   const isLoading = useGoogleAutocompleteStore((state) => state.isLoading);
   const sessionToken = useGoogleAutocompleteStore((state) => state.sesionToken);
@@ -55,11 +58,36 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
   const setActiveInput = useGoogleAutocompleteStore((state) => state.setActiveInput);
   const setDisplayBottomSheet = useGoogleAutocompleteStore((state) => state.setDisplayBottomSheet);
 
+  const UserLocationOption = useMemo(() => {
+    return {
+      place_id: "-1",
+      description: "Mi ubicación actual",
+      structured_formatting: {
+        main_text: "Ubicación actual",
+        secondary_text: "Basado en el GPS de tu dispositivo",
+      },
+      coordinates: userLocation
+        ? {
+            latitude: userLocation.coords.latitude,
+            longitude: userLocation.coords.longitude,
+          }
+        : undefined,
+    };
+  }, [userLocation]);
+
   const handlePlaceSelect = async (place: predicction) => {
     Keyboard.dismiss();
 
     try {
-      if (sessionToken !== null) {
+      if (place.place_id === "-1") {
+        if (activeInput === "origin") {
+          setOrigin(place);
+          setQuery("origin", place.structured_formatting.main_text);
+        } else {
+          setDestiny(place);
+          setQuery("destiny", place.structured_formatting.main_text);
+        }
+      } else if (sessionToken !== null) {
         const coords = await getPlaceCoordinates(place.place_id, sessionToken);
         const placeWithCoordinates: predicction = {
           ...place,
@@ -140,6 +168,16 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
           keyExtractor={(item) => item.place_id}
           keyboardShouldPersistTaps="handled"
           ListEmptyComponent={predictionPlaceHolder}
+          ListHeaderComponent={
+            activeInput === "origin" && userLocation ? (
+              <ListItemPrediction
+                prediction={UserLocationOption}
+                onPress={() => {
+                  handlePlaceSelect(UserLocationOption);
+                }}
+              />
+            ) : null
+          }
           contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
           renderItem={({ item }) => (
             <ListItemPrediction

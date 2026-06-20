@@ -49,6 +49,7 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
   const sessionToken = useGoogleAutocompleteStore((state) => state.sesionToken);
   const displayBottomSheet = useGoogleAutocompleteStore((state) => state.displayBottomSheet);
   const activeInput = useGoogleAutocompleteStore((state) => state.activeInput);
+  const mirrorValue = useGoogleAutocompleteStore((state) => (activeInput === "origin" ? state.destiny : state.origin));
 
   /* USEMEMO */
   const UserLocationOption = useMemo(() => {
@@ -81,7 +82,7 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
           useGoogleAutocompleteStore.getState().setDestiny(place);
           useGoogleAutocompleteStore.getState().setQuery("destiny", place.structured_formatting.main_text);
         }
-      } else if (sessionToken !== null) {
+      } else if (sessionToken !== null && mirrorValue?.place_id !== place.place_id) {
         const coords = await getPlaceCoordinates(place.place_id, sessionToken);
         const placeWithCoordinates: Predicction = {
           ...place,
@@ -99,10 +100,14 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
             .setQuery("destiny", placeWithCoordinates.structured_formatting.main_text);
         }
       } else {
-        console.error("Error buscando lugares: el session token es nulo");
+        useGoogleAutocompleteStore.getState().handleCancelSearch();
+        useGoogleAutocompleteStore.getState().setDisplayBottomSheet(false);
+        useGoogleAutocompleteStore.getState().setActiveInput(null);
+        Keyboard.dismiss();
+        console.log("Error buscando lugares: no pueden ser origen y destino iguales");
       }
     } catch (error) {
-      console.error("Error obteniendo coordenadas:", error);
+      console.log("Error obteniendo coordenadas:", error);
     } finally {
       useGoogleAutocompleteStore.getState().setSessionToken(null);
       useGoogleAutocompleteStore.getState().setActiveInput(null);

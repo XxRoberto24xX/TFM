@@ -16,19 +16,17 @@ import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
 import { Colors } from "@/constants/colors";
 
 function CardGasStation({ style }: PressableProps) {
+  /* VARIABLES */
   const router = useRouter();
+
+  const [slideAnim] = useState(() => new Animated.Value(300));
 
   const selectedGasStation = useGasStationStore((state) => state.selectedGasStation);
   const listFavorites = useGasStationStore((state) => state.listFavorites);
   const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
 
-  const addFavorite = useGasStationStore((state) => state.addFavorite);
-  const removeFavorite = useGasStationStore((state) => state.removeFavorite);
-
   const imageSource = selectedGasStation ? BRAND_IMAGES[selectedGasStation.brand] || DEFAULT_IMAGE : DEFAULT_IMAGE;
   const isFavorite = listFavorites.some((fav) => fav.id === selectedGasStation?.id);
-
-  const [slideAnim] = useState(() => new Animated.Value(300));
 
   /* ANIMATION EFFECTS */
   useEffect(() => {
@@ -45,10 +43,10 @@ function CardGasStation({ style }: PressableProps) {
       try {
         if (!isFavorite) {
           await addToFavorites(selectedGasStation.id);
-          addFavorite(selectedGasStation);
+          useGasStationStore.getState().addFavorite(selectedGasStation);
         } else {
           await removeFromFavorites(selectedGasStation.id);
-          removeFavorite(selectedGasStation.id);
+          useGasStationStore.getState().removeFavorite(selectedGasStation.id);
         }
       } catch (callError) {
         const apiError = callError as ApiError;

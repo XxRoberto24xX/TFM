@@ -39,6 +39,7 @@ const predictionPlaceHolder = () => (
 );
 
 function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
+  /* VARIABLES */
   const snapPoints = useMemo(() => ["70%"], []);
 
   const userLocation = useLocationStore((state) => state.userLocation);
@@ -49,15 +50,7 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
   const displayBottomSheet = useGoogleAutocompleteStore((state) => state.displayBottomSheet);
   const activeInput = useGoogleAutocompleteStore((state) => state.activeInput);
 
-  const setSessionToken = useGoogleAutocompleteStore((state) => state.setSessionToken);
-  const setPredictions = useGoogleAutocompleteStore((state) => state.setPredictions);
-  const setOrigin = useGoogleAutocompleteStore((state) => state.setOrigin);
-  const setDestiny = useGoogleAutocompleteStore((state) => state.setDestiny);
-  const setQuery = useGoogleAutocompleteStore((state) => state.setQuery);
-  const handleCancelSearch = useGoogleAutocompleteStore((state) => state.handleCancelSearch);
-  const setActiveInput = useGoogleAutocompleteStore((state) => state.setActiveInput);
-  const setDisplayBottomSheet = useGoogleAutocompleteStore((state) => state.setDisplayBottomSheet);
-
+  /* USEMEMO */
   const UserLocationOption = useMemo(() => {
     return {
       place_id: "-1",
@@ -75,17 +68,18 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
     };
   }, [userLocation]);
 
+  /* HANDLERS */
   const handlePlaceSelect = async (place: Predicction) => {
     Keyboard.dismiss();
 
     try {
       if (place.place_id === "-1") {
         if (activeInput === "origin") {
-          setOrigin(place);
-          setQuery("origin", place.structured_formatting.main_text);
+          useGoogleAutocompleteStore.getState().setOrigin(place);
+          useGoogleAutocompleteStore.getState().setQuery("origin", place.structured_formatting.main_text);
         } else {
-          setDestiny(place);
-          setQuery("destiny", place.structured_formatting.main_text);
+          useGoogleAutocompleteStore.getState().setDestiny(place);
+          useGoogleAutocompleteStore.getState().setQuery("destiny", place.structured_formatting.main_text);
         }
       } else if (sessionToken !== null) {
         const coords = await getPlaceCoordinates(place.place_id, sessionToken);
@@ -94,11 +88,15 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
           coordinates: coords,
         };
         if (activeInput === "origin") {
-          setOrigin(placeWithCoordinates);
-          setQuery("origin", placeWithCoordinates.structured_formatting.main_text);
+          useGoogleAutocompleteStore.getState().setOrigin(placeWithCoordinates);
+          useGoogleAutocompleteStore
+            .getState()
+            .setQuery("origin", placeWithCoordinates.structured_formatting.main_text);
         } else {
-          setDestiny(placeWithCoordinates);
-          setQuery("destiny", placeWithCoordinates.structured_formatting.main_text);
+          useGoogleAutocompleteStore.getState().setDestiny(placeWithCoordinates);
+          useGoogleAutocompleteStore
+            .getState()
+            .setQuery("destiny", placeWithCoordinates.structured_formatting.main_text);
         }
       } else {
         console.error("Error buscando lugares: el session token es nulo");
@@ -106,36 +104,34 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
     } catch (error) {
       console.error("Error obteniendo coordenadas:", error);
     } finally {
-      setSessionToken(null);
-      setActiveInput(null);
-      setDisplayBottomSheet(false);
-      setPredictions([]);
+      useGoogleAutocompleteStore.getState().setSessionToken(null);
+      useGoogleAutocompleteStore.getState().setActiveInput(null);
+      useGoogleAutocompleteStore.getState().setDisplayBottomSheet(false);
+      useGoogleAutocompleteStore.getState().setPredictions([]);
     }
   };
 
-  const handleSheetChanges = useCallback(
-    (index: number) => {
-      if (index === -1) {
-        handleCancelSearch();
-        setDisplayBottomSheet(false);
-        setActiveInput(null);
-        Keyboard.dismiss();
-      }
-    },
-    [setDisplayBottomSheet, setActiveInput],
-  );
+  const handleSheetChanges = useCallback((index: number) => {
+    if (index === -1) {
+      useGoogleAutocompleteStore.getState().handleCancelSearch();
+      useGoogleAutocompleteStore.getState().setDisplayBottomSheet(false);
+      useGoogleAutocompleteStore.getState().setActiveInput(null);
+      Keyboard.dismiss();
+    }
+  }, []);
 
+  /* WATCHERS */
   useEffect(() => {
     if (displayBottomSheet) {
       bottomSheetRef.current?.expand();
     } else {
       bottomSheetRef.current?.close();
     }
-  }, [displayBottomSheet]);
+  }, [displayBottomSheet, bottomSheetRef]);
 
   useEffect(() => {
-    setPredictions([]);
-  }, [activeInput, setPredictions]);
+    useGoogleAutocompleteStore.getState().setPredictions([]);
+  }, [activeInput]);
 
   return (
     <BottomSheet

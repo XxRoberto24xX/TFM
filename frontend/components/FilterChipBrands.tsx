@@ -11,8 +11,8 @@ import { BRAND_FILTER_OPTIONS, BRAND_IMAGES } from "@/constants/values";
 import { Colors } from "@/constants/colors";
 
 function FilterChipBrands() {
+  /* VARIABLES */
   const activeBrandFilter = useGasStationStore((state) => state.activeBrandFilter);
-  const setActiveBrandFilter = useGasStationStore((state) => state.setActiveBrandFilter);
 
   return (
     <ScrollView
@@ -33,7 +33,7 @@ function FilterChipBrands() {
             key={item}
             onPress={() => {
               Haptics.selectionAsync();
-              setActiveBrandFilter(item);
+              useGasStationStore.getState().setActiveBrandFilter(item);
               SecureStore.setItemAsync("BrandOptionSelected", item);
             }}>
             <Image

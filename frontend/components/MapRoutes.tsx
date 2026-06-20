@@ -9,7 +9,7 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import { useLocationStore } from "@/stores/useLocationStore";
 import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
 import { computeRoute } from "@/services/api";
-import { Coordinates, RouteResponse } from "@/types/types";
+import { RouteResponse } from "@/types/types";
 import { DEFAULT_REGION } from "@/constants/values";
 
 interface Props {
@@ -17,35 +17,19 @@ interface Props {
 }
 
 function MapRoutes({ bottomSheetRef }: Props) {
-  const [mapKey, setMapKey] = useState(0);
+  /* VARIABLES */
   const mapRef = useRef<MapView>(null);
 
+  const [mapKey, setMapKey] = useState(0);
   const [routeResult, setRouteResult] = useState<RouteResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   const lastRegion = useLocationStore.getState().lastRegion;
   const origin = useGoogleAutocompleteStore((state) => state.origin);
   const destiny = useGoogleAutocompleteStore((state) => state.destiny);
 
-  const setDestiny = useGoogleAutocompleteStore((state) => state.setDestiny);
-  const setQuery = useGoogleAutocompleteStore((state) => state.setQuery);
-
-  const calculateRoute = useCallback(async (origin: Coordinates, destination: Coordinates) => {
-    setIsLoading(true);
-
-    try {
-      const result = await computeRoute(origin, destination);
-      setRouteResult(result);
-    } catch (error) {
-      console.error("Error calculando la ruta:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
   const handleLongPress = (event: LongPressEvent) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
-    setDestiny({
+    useGoogleAutocompleteStore.getState().setDestiny({
       place_id: "-2",
       description: `Lat: ${latitude.toFixed(5)}, Lng: ${longitude.toFixed(5)}`,
       structured_formatting: {
@@ -57,7 +41,9 @@ function MapRoutes({ bottomSheetRef }: Props) {
         longitude: longitude,
       },
     });
-    setQuery("destiny", `Lat: ${latitude.toFixed(5)}, Lng: ${longitude.toFixed(5)}`);
+    useGoogleAutocompleteStore
+      .getState()
+      .setQuery("destiny", `Lat: ${latitude.toFixed(5)}, Lng: ${longitude.toFixed(5)}`);
   };
 
   const safeCoordinates = useMemo(() => {
@@ -75,7 +61,13 @@ function MapRoutes({ bottomSheetRef }: Props) {
       const destinyCoords = destiny?.coordinates;
 
       if (originCoords && destinyCoords) {
-        await calculateRoute(originCoords, destinyCoords);
+        try {
+          const result = await computeRoute(originCoords, destinyCoords);
+          setRouteResult(result);
+        } catch (error) {
+          console.error("Error calculando la ruta:", error);
+        }
+
         map.fitToCoordinates([originCoords, destinyCoords], {
           edgePadding: { top: 250, right: 100, bottom: 100, left: 100 },
           animated: true,

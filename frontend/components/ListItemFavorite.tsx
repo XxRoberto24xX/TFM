@@ -17,14 +17,14 @@ interface Props {
 }
 
 function ListItemFavorite({ gasStation }: Props) {
-  const removeFavorite = useGasStationStore((state) => state.removeFavorite);
+  /* VARIABLES */
   const imageSource = BRAND_IMAGES[gasStation.brand] || DEFAULT_IMAGE;
 
   /* HANDLERS */
   const onRemoveFromFavorites = async () => {
     try {
       await removeFromFavorites(gasStation.id);
-      removeFavorite(gasStation.id);
+      useGasStationStore.getState().removeFavorite(gasStation.id);
     } catch (callError) {
       const apiError = callError as ApiError;
       console.log("Toggle Favorite: " + apiError.message);

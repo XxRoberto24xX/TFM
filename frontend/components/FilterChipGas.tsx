@@ -12,7 +12,6 @@ import { Colors } from "@/constants/colors";
 
 function FilterChipGas() {
   const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
-  const setActiveGasFilter = useGasStationStore((state) => state.setActiveGasFilter);
 
   return (
     <ScrollView
@@ -32,7 +31,7 @@ function FilterChipGas() {
             key={item}
             onPress={() => {
               Haptics.selectionAsync();
-              setActiveGasFilter(item);
+              useGasStationStore.getState().setActiveGasFilter(item);
               SecureStore.setItemAsync("GasOptionSelected", item);
             }}>
             <ThemedText

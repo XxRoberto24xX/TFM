@@ -21,19 +21,15 @@ import { Colors } from "@/constants/colors";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function Login() {
+  /* VARIABLES */
   const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const setUserLocation = useLocationStore((state) => state.setUserLocation);
-  const setLastRegion = useLocationStore((state) => state.setLastRegion);
-  const setIsCenteredOnUser = useLocationStore((state) => state.setIsCenteredOnUser);
-  const setMapType = useGasStationStore((state) => state.setMapType);
-  const setActiveGasFilter = useGasStationStore((state) => state.setActiveGasFilter);
-  const setActiveBrandFilter = useGasStationStore((state) => state.setActiveBrandFilter);
-
+  /* HANDLERS */
   const handleLogin = async () => {
     setLoading(true);
     setError("");
@@ -52,6 +48,7 @@ export default function Login() {
     }
   };
 
+  /* ON MOUNT */
   useEffect(() => {
     const getUserLocation = async () => {
       try {
@@ -66,7 +63,7 @@ export default function Login() {
           userLocation = await Location.getCurrentPositionAsync({});
         }
 
-        setUserLocation(userLocation);
+        useLocationStore.getState().setUserLocation(userLocation);
 
         const userRegion: Region = {
           latitude: userLocation.coords.latitude,
@@ -75,8 +72,8 @@ export default function Login() {
           longitudeDelta: 0.05,
         };
 
-        setLastRegion(userRegion);
-        setIsCenteredOnUser(true);
+        useLocationStore.getState().setLastRegion(userRegion);
+        useLocationStore.getState().setIsCenteredOnUser(true);
       } catch (error: any) {
         if (error.message.includes("unsatisfied device settings")) {
           console.log("El usuario tiene el GPS apagado y rechazó activarlo en los ajustes.");
@@ -88,13 +85,13 @@ export default function Login() {
 
     const getUserPreferences = async () => {
       await SecureStore.getItemAsync("mapType").then((mapType) => {
-        setMapType((mapType ?? "standard") as MapType);
+        useGasStationStore.getState().setMapType((mapType ?? "standard") as MapType);
       });
       await SecureStore.getItemAsync("GasOptionSelected").then((GasOptionSelected) => {
-        setActiveGasFilter(GasOptionSelected ?? "E5 95");
+        useGasStationStore.getState().setActiveGasFilter(GasOptionSelected ?? "E5 95");
       });
       await SecureStore.getItemAsync("BrandOptionSelected").then((BrandOptionSelected) => {
-        setActiveBrandFilter(BrandOptionSelected ?? "Todos");
+        useGasStationStore.getState().setActiveBrandFilter(BrandOptionSelected ?? "Todos");
       });
     };
 

@@ -34,7 +34,7 @@ const favoritesPraceHolder = () => (
 );
 
 function BottomSheetFavorites() {
-  const snapPoints = useMemo(() => [80, Dimensions.get("window").height * 0.4], []);
+  /* VARIABLES */
   const animatedIndex = useSharedValue(0);
 
   const listFavorites = useGasStationStore((state) => state.listFavorites);
@@ -45,6 +45,9 @@ function BottomSheetFavorites() {
       transform: [{ rotate: `${rotation}deg` }],
     };
   });
+
+  /* USEMEMO */
+  const snapPoints = useMemo(() => [80, Dimensions.get("window").height * 0.4], []);
 
   return (
     <BottomSheet

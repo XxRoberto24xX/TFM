@@ -27,10 +27,6 @@ function MapHome({ ref }: Props) {
   const userLocation = useLocationStore((state) => state.userLocation);
   const lastRegion = useLocationStore.getState().lastRegion;
 
-  const setSelectedGasStation = useGasStationStore((state) => state.setSelectedGasStation);
-  const setLastRegion = useLocationStore((state) => state.setLastRegion);
-  const setIsCenteredOnUser = useLocationStore((state) => state.setIsCenteredOnUser);
-
   const originalUserLocation = useRef(userLocation);
 
   /* USEMEMO VARIABLES */
@@ -112,15 +108,15 @@ function MapHome({ ref }: Props) {
       showsCompass={false}
       toolbarEnabled={false}
       mapType={mapType}
-      onPress={() => setSelectedGasStation(null)}
+      onPress={() => useGasStationStore.getState().setSelectedGasStation(null)}
       onPoiClick={() => {
-        setSelectedGasStation(null);
+        useGasStationStore.getState().setSelectedGasStation(null);
       }}
       onRegionChangeComplete={(region, details) => {
-        setLastRegion(region);
+        useLocationStore.getState().setLastRegion(region);
         onRegionChanged(region);
         if (details?.isGesture) {
-          setIsCenteredOnUser(false);
+          useLocationStore.getState().setIsCenteredOnUser(false);
         }
       }}
       initialRegion={lastRegion ?? DEFAULT_REGION}>

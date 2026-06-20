@@ -9,8 +9,6 @@ interface Props {
 }
 
 function MarkerGasStation({ gasStation }: Props) {
-  const setSelectedGasStation = useGasStationStore((state) => state.setSelectedGasStation);
-
   return (
     <Marker
       coordinate={gasStation.coordinates}
@@ -18,7 +16,7 @@ function MarkerGasStation({ gasStation }: Props) {
       tracksViewChanges={false}
       onPress={(e) => {
         e.stopPropagation();
-        setSelectedGasStation(gasStation);
+        useGasStationStore.getState().setSelectedGasStation(gasStation);
       }}
     />
   );

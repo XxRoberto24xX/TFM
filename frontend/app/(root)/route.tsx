@@ -9,18 +9,16 @@ import { useLocationStore } from "@/stores/useLocationStore";
 import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
 
 export default function Route() {
+  /* VARIABLES */
   const insets = useSafeAreaInsets();
+  const bottomSheetRef = useRef<BottomSheet>(null);
 
   const userLocation = useLocationStore((state) => state.userLocation);
 
-  const setQuery = useGoogleAutocompleteStore((state) => state.setQuery);
-  const setOrigin = useGoogleAutocompleteStore((state) => state.setOrigin);
-
-  const bottomSheetRef = useRef<BottomSheet>(null);
-
+  /* WATCHERS */
   useEffect(() => {
     if (userLocation) {
-      setOrigin({
+      useGoogleAutocompleteStore.getState().setOrigin({
         place_id: "-1",
         description: "Mi ubicación actual",
         structured_formatting: {
@@ -32,9 +30,10 @@ export default function Route() {
           longitude: userLocation.coords.longitude,
         },
       });
-      setQuery("origin", "Ubicación Actual");
+      useGoogleAutocompleteStore.getState().setQuery("origin", "Ubicación Actual");
     }
-  }, []);
+  }, [userLocation]);
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <MapRoutes bottomSheetRef={bottomSheetRef} />

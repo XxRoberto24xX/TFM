@@ -20,76 +20,66 @@ interface Props {
 }
 
 function TextInputAutocomplete({ placeHolder, style, type, ref }: Props) {
+  /* VARIABLES */
   const query = useGoogleAutocompleteStore((state) => (type === "origin" ? state.originQuery : state.destinyQuery));
   const sessionToken = useGoogleAutocompleteStore((state) => state.sesionToken);
-  const setQuery = useGoogleAutocompleteStore((state) => state.setQuery);
-
-  const setPredictions = useGoogleAutocompleteStore((state) => state.setPredictions);
-  const setIsLoading = useGoogleAutocompleteStore((state) => state.setIsLoading);
-  const setSessionToken = useGoogleAutocompleteStore((state) => state.setSessionToken);
-  const setDisplayBottomSheet = useGoogleAutocompleteStore((state) => state.setDisplayBottomSheet);
-  const setActiveInput = useGoogleAutocompleteStore((state) => state.setActiveInput);
-  const setOrigin = useGoogleAutocompleteStore((state) => state.setOrigin);
-  const setDestiny = useGoogleAutocompleteStore((state) => state.setDestiny);
 
   const debounceTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  const startNewSession = useCallback(() => {
-    setSessionToken(Crypto.randomUUID());
-  }, [setSessionToken]);
-
+  /* FUNCTIONS */
   const searchPlaces = useCallback(
     async (text: string) => {
       try {
         if (sessionToken !== null) {
           const data = await getPlaceAutocomplete(text, sessionToken);
-          setPredictions(data.predictions || []);
+          useGoogleAutocompleteStore.getState().setPredictions(data.predictions || []);
         } else {
           console.error("Input Error buscando lugares: el session token es nulo");
         }
       } catch (error) {
         console.error("Error buscando lugares:", error);
       } finally {
-        setIsLoading(false);
+        useGoogleAutocompleteStore.getState().setIsLoading(false);
       }
     },
-    [setIsLoading, setPredictions, sessionToken],
+    [sessionToken],
   );
 
+  /* HANDLERS */
   const handleTextChange = useCallback(
     (text: string) => {
-      setQuery(type, text);
+      useGoogleAutocompleteStore.getState().setQuery(type, text);
 
       if (debounceTimeout.current) {
         clearTimeout(debounceTimeout.current);
       }
 
       if (text.length < 3) {
-        setPredictions([]);
-        setIsLoading(false);
+        useGoogleAutocompleteStore.getState().setPredictions([]);
+        useGoogleAutocompleteStore.getState().setIsLoading(false);
         return;
       }
 
-      setIsLoading(true);
+      useGoogleAutocompleteStore.getState().setIsLoading(true);
       debounceTimeout.current = setTimeout(() => {
         searchPlaces(text);
       }, 300);
     },
-    [searchPlaces, startNewSession, setIsLoading, setPredictions, sessionToken],
+    [type, searchPlaces],
   );
 
   const handleClear = useCallback(() => {
     if (type === "origin") {
-      setOrigin(null);
+      useGoogleAutocompleteStore.getState().setOrigin(null);
     } else {
-      setDestiny(null);
+      useGoogleAutocompleteStore.getState().setDestiny(null);
     }
-    setQuery(type, "");
-    setPredictions([]);
-    setSessionToken(null);
-    setDisplayBottomSheet(false);
+    useGoogleAutocompleteStore.getState().setQuery(type, "");
+    useGoogleAutocompleteStore.getState().setPredictions([]);
+    useGoogleAutocompleteStore.getState().setSessionToken(null);
+    useGoogleAutocompleteStore.getState().setDisplayBottomSheet(false);
     Keyboard.dismiss();
-  }, [setPredictions, setSessionToken]);
+  }, [type]);
 
   return (
     <LinearGradient
@@ -106,10 +96,10 @@ function TextInputAutocomplete({ placeHolder, style, type, ref }: Props) {
         value={query}
         onChangeText={handleTextChange}
         onFocus={() => {
-          setActiveInput(type);
-          setDisplayBottomSheet(true);
+          useGoogleAutocompleteStore.getState().setActiveInput(type);
+          useGoogleAutocompleteStore.getState().setDisplayBottomSheet(true);
           if (!sessionToken) {
-            startNewSession();
+            useGoogleAutocompleteStore.getState().setSessionToken(Crypto.randomUUID());
           }
         }}
       />

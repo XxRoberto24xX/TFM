@@ -25,11 +25,6 @@ export default function Home() {
   const isCenteredOnUser = useLocationStore((state) => state.isCenteredOnUser);
   const mapType = useGasStationStore((state) => state.mapType);
 
-  const setFavorites = useGasStationStore((state) => state.setFavorites);
-  const setLastRegion = useLocationStore((state) => state.setLastRegion);
-  const setIsCenteredOnUser = useLocationStore((state) => state.setIsCenteredOnUser);
-  const setMapType = useGasStationStore((state) => state.setMapType);
-
   /* HANDLERS */
   const onGoToUserLocation = () => {
     if (userLocation && mapRef.current) {
@@ -41,18 +36,18 @@ export default function Home() {
       };
 
       mapRef.current.animateToRegion(userRegion);
-      setLastRegion(userRegion);
-      setIsCenteredOnUser(true);
+      useLocationStore.getState().setLastRegion(userRegion);
+      useLocationStore.getState().setIsCenteredOnUser(true);
     }
   };
 
   const onMapTypeChange = () => {
     const mapTypeChange = async () => {
       if (mapType === "standard") {
-        setMapType("hybrid");
+        useGasStationStore.getState().setMapType("hybrid");
         await SecureStore.setItemAsync("mapType", "hybrid");
       } else {
-        setMapType("standard");
+        useGasStationStore.getState().setMapType("standard");
         await SecureStore.setItemAsync("mapType", "standard");
       }
     };
@@ -65,7 +60,7 @@ export default function Home() {
     const fetchFavorites = async () => {
       try {
         const data = await getListFavorites();
-        setFavorites(data.listFavoriteGasStation);
+        useGasStationStore.getState().setFavorites(data.listFavoriteGasStation);
       } catch (callError) {
         const apiError = callError as ApiError;
         console.log("Fetch Favoritos: " + apiError.message);
@@ -73,7 +68,7 @@ export default function Home() {
     };
 
     fetchFavorites();
-  }, [setFavorites, setLastRegion, setIsCenteredOnUser]);
+  }, []);
 
   return (
     <View style={styles.mapContainer}>

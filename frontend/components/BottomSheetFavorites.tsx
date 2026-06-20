@@ -1,5 +1,5 @@
-import { memo, useMemo } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import { memo, useCallback, useMemo, useRef, useState } from "react";
+import { Dimensions, Pressable, StyleSheet, View } from "react-native";
 import Animated, { useAnimatedStyle, interpolate, useSharedValue } from "react-native-reanimated";
 
 import { LinearGradient } from "expo-linear-gradient";
@@ -35,7 +35,10 @@ const favoritesPraceHolder = () => (
 
 function BottomSheetFavorites() {
   /* VARIABLES */
+  const bottomSheetRef = useRef<BottomSheet>(null);
   const animatedIndex = useSharedValue(0);
+
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const listFavorites = useGasStationStore((state) => state.listFavorites);
 
@@ -49,25 +52,42 @@ function BottomSheetFavorites() {
   /* USEMEMO */
   const snapPoints = useMemo(() => [80, Dimensions.get("window").height * 0.4], []);
 
+  /* HANDELERS */
+  const handelToggleBottomSheet = useCallback(() => {
+    if (isExpanded) {
+      bottomSheetRef.current?.snapToIndex(0);
+    } else {
+      bottomSheetRef.current?.expand();
+    }
+  }, [isExpanded]);
+
   return (
     <BottomSheet
+      ref={bottomSheetRef}
       animatedIndex={animatedIndex}
       style={{ borderTopLeftRadius: 30, borderTopRightRadius: 30, overflow: "hidden" }}
       snapPoints={snapPoints}
       index={0}
+      onChange={(index) => {
+        setIsExpanded(index === 1);
+      }}
       enableDynamicSizing={false}
       enableOverDrag={false}
       handleIndicatorStyle={{ backgroundColor: "white" }}
       backgroundComponent={CustomBackground}>
       <View style={styles.saveHeader}>
         <ThemedText size="h2">Guardados</ThemedText>
-        <Animated.View style={[{ marginStart: "auto" }, iconStyle]}>
-          <Ionicons
-            name="chevron-up"
-            size={30}
-            color={Colors.textPrimary}
-          />
-        </Animated.View>
+        <Pressable
+          style={{ marginStart: "auto" }}
+          onPress={handelToggleBottomSheet}>
+          <Animated.View style={iconStyle}>
+            <Ionicons
+              name="chevron-up"
+              size={30}
+              color={Colors.textPrimary}
+            />
+          </Animated.View>
+        </Pressable>
       </View>
 
       <BottomSheetFlatList

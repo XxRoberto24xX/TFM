@@ -2,5 +2,14 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.tabSize": 2,
-  "js/ts.suggest.autoImports": true
+  "js/ts.suggest.autoImports": true,
+  "workbench.colorCustomizations": {
+    "editorWarning.foreground": "#FFFF00",
+    "list.warningForeground": "#FFFF00",
+
+    "notificationsWarningIcon.foreground": "#FFFF00",
+    "problemsWarningIcon.foreground": "#FFFF00",
+
+    "errorLens.warningForeground": "#FFFF00"
+  }
 }

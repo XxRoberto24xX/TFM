@@ -1,11 +1,11 @@
 import apiClient from "./client";
 import {
   AuthResponse,
-  coordinates,
-  getListFavoritesModel,
-  getListFavoritesResponse,
-  getListGasStationsInRangeModel,
-  getListGasStationsInRangeResponse,
+  Coordinates,
+  GetListFavoritesModel,
+  GetListFavoritesResponse,
+  GetListGasStationsInRangeModel,
+  GetListGasStationsInRangeResponse,
   PlaceAutocompleteResponse,
   RouteModel,
   RouteResponse,
@@ -35,8 +35,8 @@ export async function passwordResetEmail(email: string): Promise<void> {
   return response.data;
 }
 
-export async function getListFavorites(): Promise<getListFavoritesResponse> {
-  const response = await apiClient.get<getListFavoritesModel>("/gasStations/getListFavorites");
+export async function getListFavorites(): Promise<GetListFavoritesResponse> {
+  const response = await apiClient.get<GetListFavoritesModel>("/gasStations/getListFavorites");
   return {
     listFavoriteGasStation: response.data.gasStations.map(mapGasStationModelToFrontend),
   };
@@ -57,8 +57,8 @@ export async function getGasStationsInRange(
   south: number,
   east: number,
   west: number,
-): Promise<getListGasStationsInRangeResponse> {
-  const response = await apiClient.post<getListGasStationsInRangeModel>("/gasStations/getGasStationsInRange", {
+): Promise<GetListGasStationsInRangeResponse> {
+  const response = await apiClient.post<GetListGasStationsInRangeModel>("/gasStations/getGasStationsInRange", {
     north,
     south,
     east,
@@ -91,7 +91,7 @@ export async function getPlaceAutocomplete(input: string, sessionToken: string):
   };
 }
 
-export async function getPlaceCoordinates(placeId: string, sessionToken: string): Promise<coordinates> {
+export async function getPlaceCoordinates(placeId: string, sessionToken: string): Promise<Coordinates> {
   const response = await googleClient.get(`/places/${placeId}`, {
     params: {
       sessionToken: sessionToken,
@@ -108,7 +108,7 @@ export async function getPlaceCoordinates(placeId: string, sessionToken: string)
   };
 }
 
-export async function computeRoute(origin: coordinates, destination: coordinates): Promise<RouteResponse> {
+export async function computeRoute(origin: Coordinates, destination: Coordinates): Promise<RouteResponse> {
   const response = await googleRoutesClient.post<RouteModel>(
     "",
     {
@@ -158,9 +158,9 @@ export async function computeRoute(origin: coordinates, destination: coordinates
 }
 
 export async function computeRouteWithWaypoints(
-  origin: coordinates,
-  destination: coordinates,
-  waypoints: coordinates[],
+  origin: Coordinates,
+  destination: Coordinates,
+  waypoints: Coordinates[],
 ): Promise<RouteResponse> {
   const intermediates = waypoints.map((point) => ({
     location: {

@@ -1,20 +1,20 @@
-import { gasStation } from "@/types/types";
+import { GasStation } from "@/types/types";
 import { MapType } from "react-native-maps";
 import { create } from "zustand";
 
 interface GasStationState {
-  listFavorites: gasStation[];
+  listFavorites: GasStation[];
   activeBrandFilter: string;
   activeGasFilter: string;
-  selectedGasStation: gasStation | null;
+  selectedGasStation: GasStation | null;
   mapType: MapType;
 
-  setFavorites: (listFavorites: gasStation[]) => void;
-  addFavorite: (station: gasStation) => void;
+  setFavorites: (listFavorites: GasStation[]) => void;
+  addFavorite: (station: GasStation) => void;
   removeFavorite: (id: number) => void;
   setActiveBrandFilter: (brand: string) => void;
   setActiveGasFilter: (gasType: string) => void;
-  setSelectedGasStation: (station: gasStation | null) => void;
+  setSelectedGasStation: (station: GasStation | null) => void;
   setMapType: (mapType: MapType) => void;
 }
 

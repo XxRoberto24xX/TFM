@@ -9,7 +9,7 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import { useLocationStore } from "@/stores/useLocationStore";
 import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
 import { computeRoute } from "@/services/api";
-import { coordinates, RouteResponse } from "@/types/types";
+import { Coordinates, RouteResponse } from "@/types/types";
 import { DEFAULT_REGION } from "@/constants/values";
 
 interface Props {
@@ -30,7 +30,7 @@ function MapRoutes({ bottomSheetRef }: Props) {
   const setDestiny = useGoogleAutocompleteStore((state) => state.setDestiny);
   const setQuery = useGoogleAutocompleteStore((state) => state.setQuery);
 
-  const calculateRoute = useCallback(async (origin: coordinates, destination: coordinates) => {
+  const calculateRoute = useCallback(async (origin: Coordinates, destination: Coordinates) => {
     setIsLoading(true);
 
     try {

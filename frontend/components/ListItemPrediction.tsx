@@ -3,11 +3,11 @@ import { Pressable, PressableProps, StyleSheet } from "react-native";
 
 import ThemedText from "./ThemedText";
 
-import { predicction } from "@/types/types";
+import { Predicction } from "@/types/types";
 import { Colors } from "@/constants/colors";
 
 interface Props extends PressableProps {
-  prediction: predicction;
+  prediction: Predicction;
 }
 
 function ListItemPrediction({ prediction, ...pressableProps }: Props) {

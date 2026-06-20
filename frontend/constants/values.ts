@@ -1,8 +1,8 @@
-import { price } from "@/types/types";
+import { Price } from "@/types/types";
 import { ImageSourcePropType } from "react-native";
 import { Region } from "react-native-maps";
 
-export const FILTER_TO_PRICE_KEY: Record<string, keyof Omit<price, "date">> = {
+export const FILTER_TO_PRICE_KEY: Record<string, keyof Omit<Price, "date">> = {
   "E5 95": "gasoline95",
   "E5 98": "gasoline98",
   "Diesel A": "diesel",

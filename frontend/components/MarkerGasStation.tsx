@@ -2,10 +2,10 @@ import { memo } from "react";
 import { Marker } from "react-native-maps";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
-import { gasStation } from "@/types/types";
+import { GasStation } from "@/types/types";
 
 interface Props {
-  gasStation: gasStation;
+  gasStation: GasStation;
 }
 
 function MarkerGasStation({ gasStation }: Props) {

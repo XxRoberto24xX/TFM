@@ -9,7 +9,7 @@ import MarkerGasStation from "@/components/MarkerGasStation";
 import { useGasStationStore } from "@/stores/useGasStationsStore";
 import { useLocationStore } from "@/stores/useLocationStore";
 import { getGasStationsInRange } from "@/services/api";
-import { ApiError, gasStation } from "@/types/types";
+import { ApiError, GasStation } from "@/types/types";
 import { DEFAULT_REGION, FILTER_TO_PRICE_KEY, MAX_LATITUDE_DELTA_FOR_MARKERS } from "@/constants/values";
 
 interface Props {
@@ -18,7 +18,7 @@ interface Props {
 
 function MapHome({ ref }: Props) {
   /* VARIABLES */
-  const [returnedGasStations, setReturnedGasStations] = useState<gasStation[]>([]);
+  const [returnedGasStations, setReturnedGasStations] = useState<GasStation[]>([]);
   const [mapKey, setMapKey] = useState<number>(0);
 
   const activeBrandFilter = useGasStationStore((state) => state.activeBrandFilter);

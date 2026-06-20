@@ -8,12 +8,12 @@ import ThemedText from "@/components/ThemedText";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
 import { removeFromFavorites } from "@/services/api";
-import { ApiError, gasStation } from "@/types/types";
+import { ApiError, GasStation } from "@/types/types";
 import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
 import { Colors } from "@/constants/colors";
 
 interface Props {
-  gasStation: gasStation;
+  gasStation: GasStation;
 }
 
 function ListItemFavorite({ gasStation }: Props) {

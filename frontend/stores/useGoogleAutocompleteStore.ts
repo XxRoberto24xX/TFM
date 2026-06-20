@@ -1,20 +1,20 @@
-import { AutocompleteType, predicction } from "@/types/types";
+import { AutocompleteType, Predicction } from "@/types/types";
 import { create } from "zustand";
 
 interface googleAutocompleteState {
-  origin: predicction | null;
-  destiny: predicction | null;
+  origin: Predicction | null;
+  destiny: Predicction | null;
   originQuery: string;
   destinyQuery: string;
-  listPredictions: predicction[];
+  listPredictions: Predicction[];
   isLoading: boolean;
   sesionToken: string | null;
   displayBottomSheet: boolean;
   activeInput: AutocompleteType | null;
 
-  setOrigin: (origin: predicction | null) => void;
-  setDestiny: (destiny: predicction | null) => void;
-  setPredictions: (listPredictions: predicction[]) => void;
+  setOrigin: (origin: Predicction | null) => void;
+  setDestiny: (destiny: Predicction | null) => void;
+  setPredictions: (listPredictions: Predicction[]) => void;
   setIsLoading: (value: boolean) => void;
   setSessionToken: (token: string | null) => void;
   setDisplayBottomSheet: (value: boolean) => void;

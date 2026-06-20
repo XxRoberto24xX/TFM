@@ -1,6 +1,6 @@
-import { gasStation, gasStationModel, predicction } from "@/types/types";
+import { GasStation, GasStationModel, Predicction } from "@/types/types";
 
-export const mapGasStationModelToFrontend = (model: gasStationModel): gasStation => {
+export const mapGasStationModelToFrontend = (model: GasStationModel): GasStation => {
   return {
     id: model.id,
     hours: model.hours,
@@ -16,7 +16,7 @@ export const mapGasStationModelToFrontend = (model: gasStationModel): gasStation
   };
 };
 
-export function mapPlaceAutocompleteResponseToFrontend(data: any): predicction[] {
+export function mapPlaceAutocompleteResponseToFrontend(data: any): Predicction[] {
   return (
     data.suggestions?.map((suggestion: any) => {
       const prediction = suggestion.placePrediction;

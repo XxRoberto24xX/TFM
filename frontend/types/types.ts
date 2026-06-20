@@ -15,16 +15,16 @@ export interface AuthResponse {
   token: string;
 }
 
-export interface getListFavoritesResponse {
-  listFavoriteGasStation: gasStation[];
+export interface GetListFavoritesResponse {
+  listFavoriteGasStation: GasStation[];
 }
 
-export interface getListGasStationsInRangeResponse {
-  listGasStations: gasStation[];
+export interface GetListGasStationsInRangeResponse {
+  listGasStations: GasStation[];
 }
 
 export interface PlaceAutocompleteResponse {
-  predictions: predicction[];
+  predictions: Predicction[];
 }
 
 export interface PlaceDetailsResponse {
@@ -44,15 +44,15 @@ export interface PlaceDetailsResponse {
  * API RESPONSE MODELS
  *
  */
-export interface getListFavoritesModel {
-  gasStations: gasStationModel[];
+export interface GetListFavoritesModel {
+  gasStations: GasStationModel[];
 }
 
-export interface getListGasStationsInRangeModel {
-  listGasStations: gasStationModel[];
+export interface GetListGasStationsInRangeModel {
+  listGasStations: GasStationModel[];
 }
 
-export interface gasStationModel {
+export interface GasStationModel {
   id: number;
   hours: string;
   brand: string;
@@ -61,7 +61,7 @@ export interface gasStationModel {
   longitude: number;
   sellingType: string;
   municipality: string;
-  prices?: price;
+  prices?: Price;
 }
 
 /*
@@ -69,37 +69,37 @@ export interface gasStationModel {
  * FRONTEND DATA MODELS
  *
  */
-export interface gasStation {
+export interface GasStation {
   id: number;
   hours: string;
   brand: string;
   direction: string;
-  coordinates: coordinates;
+  coordinates: Coordinates;
   sellingType: string;
   municipality: string;
-  prices?: price;
+  prices?: Price;
 }
 
-export interface price {
+export interface Price {
   date: string;
   gasoline95: number;
   gasoline98: number;
   diesel: number;
 }
 
-export interface coordinates {
+export interface Coordinates {
   latitude: number;
   longitude: number;
 }
 
-export interface predicction {
+export interface Predicction {
   place_id: string;
   description: string;
   structured_formatting: {
     main_text: string;
     secondary_text: string;
   };
-  coordinates?: coordinates;
+  coordinates?: Coordinates;
 }
 
 export interface RouteModel {
@@ -110,8 +110,8 @@ export interface RouteModel {
     distanceMeters: number;
     duration: string;
     legs: {
-      startLocation: coordinates;
-      endLocation: coordinates;
+      startLocation: Coordinates;
+      endLocation: Coordinates;
       distanceMeters: number;
       duration: string;
     }[];
@@ -119,7 +119,7 @@ export interface RouteModel {
 }
 
 export interface RouteResponse {
-  coordinates: coordinates[];
+  coordinates: Coordinates[];
   distanceKm: number;
   durationMinutes: number;
   durationText: string;

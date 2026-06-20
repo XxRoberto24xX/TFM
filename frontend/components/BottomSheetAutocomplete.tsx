@@ -9,7 +9,7 @@ import ThemedText from "@/components/ThemedText";
 
 import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
 import { getPlaceCoordinates } from "@/services/api";
-import { predicction } from "@/types/types";
+import { Predicction } from "@/types/types";
 import { Colors } from "@/constants/colors";
 import { useLocationStore } from "@/stores/useLocationStore";
 
@@ -75,7 +75,7 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
     };
   }, [userLocation]);
 
-  const handlePlaceSelect = async (place: predicction) => {
+  const handlePlaceSelect = async (place: Predicction) => {
     Keyboard.dismiss();
 
     try {
@@ -89,7 +89,7 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
         }
       } else if (sessionToken !== null) {
         const coords = await getPlaceCoordinates(place.place_id, sessionToken);
-        const placeWithCoordinates: predicction = {
+        const placeWithCoordinates: Predicction = {
           ...place,
           coordinates: coords,
         };

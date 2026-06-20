@@ -21,8 +21,6 @@ export function mapPlaceAutocompleteResponseToFrontend(data: any): Predicction[]
     data.suggestions?.map((suggestion: any) => {
       const prediction = suggestion.placePrediction;
 
-      console.log(prediction);
-
       return {
         place_id: prediction.placeId,
         description: prediction.text.text,

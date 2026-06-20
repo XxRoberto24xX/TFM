@@ -75,7 +75,7 @@ export async function getPlaceAutocomplete(input: string, sessionToken: string):
     {
       input: input,
       sessionToken: sessionToken,
-      //includedRegionCodes: ["es"],
+      includedRegionCodes: ["es"],
       languageCode: "es",
     },
     {

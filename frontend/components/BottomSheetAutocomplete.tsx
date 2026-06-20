@@ -100,7 +100,6 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
           setDestiny(placeWithCoordinates);
           setQuery("destiny", placeWithCoordinates.structured_formatting.main_text);
         }
-        console.log("📌 Coordenadas:", coords.latitude, coords.longitude);
       } else {
         console.error("Error buscando lugares: el session token es nulo");
       }

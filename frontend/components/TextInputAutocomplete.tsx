@@ -109,10 +109,7 @@ function TextInputAutocomplete({ placeHolder, style, type, ref }: Props) {
           setActiveInput(type);
           setDisplayBottomSheet(true);
           if (!sessionToken) {
-            console.log("añado el token");
             startNewSession();
-          } else {
-            console.log(sessionToken);
           }
         }}
       />

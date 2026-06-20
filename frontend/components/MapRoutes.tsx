@@ -1,6 +1,6 @@
 import { memo, RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet } from "react-native";
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { LongPressEvent, Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 
 import { useFocusEffect } from "expo-router";
 
@@ -27,6 +27,9 @@ function MapRoutes({ bottomSheetRef }: Props) {
   const origin = useGoogleAutocompleteStore((state) => state.origin);
   const destiny = useGoogleAutocompleteStore((state) => state.destiny);
 
+  const setDestiny = useGoogleAutocompleteStore((state) => state.setDestiny);
+  const setQuery = useGoogleAutocompleteStore((state) => state.setQuery);
+
   const calculateRoute = useCallback(async (origin: coordinates, destination: coordinates) => {
     setIsLoading(true);
 
@@ -39,6 +42,23 @@ function MapRoutes({ bottomSheetRef }: Props) {
       setIsLoading(false);
     }
   }, []);
+
+  const handleLongPress = (event: LongPressEvent) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    setDestiny({
+      place_id: "-2",
+      description: `Lat: ${latitude.toFixed(5)}, Lng: ${longitude.toFixed(5)}`,
+      structured_formatting: {
+        main_text: `Lat: ${latitude.toFixed(5)}, Lng: ${longitude.toFixed(5)}`,
+        secondary_text: "Ubicación seleccionada",
+      },
+      coordinates: {
+        latitude: latitude,
+        longitude: longitude,
+      },
+    });
+    setQuery("destiny", `Lat: ${latitude.toFixed(5)}, Lng: ${longitude.toFixed(5)}`);
+  };
 
   const safeCoordinates = useMemo(() => {
     return routeResult?.coordinates ? [...routeResult.coordinates] : [];
@@ -107,6 +127,7 @@ function MapRoutes({ bottomSheetRef }: Props) {
       onPoiClick={() => {
         bottomSheetRef.current?.close();
       }}
+      onLongPress={handleLongPress}
       initialRegion={lastRegion ?? DEFAULT_REGION}>
       {origin?.coordinates && (
         <Marker

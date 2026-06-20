@@ -2,7 +2,7 @@ import { memo } from "react";
 import { Pressable, StyleSheet, Image, View } from "react-native";
 
 import { router } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 import ThemedText from "@/components/ThemedText";
 
@@ -53,9 +53,9 @@ function ListItemFavorite({ gasStation }: Props) {
         onPress={() => {
           onRemoveFromFavorites();
         }}>
-        <Ionicons
-          name={"bookmark"}
-          size={30}
+        <MaterialIcons
+          name={"bookmark-remove"}
+          size={36}
           color={Colors.textPrimary}
         />
       </Pressable>

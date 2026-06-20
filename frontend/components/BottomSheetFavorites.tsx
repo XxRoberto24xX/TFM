@@ -6,7 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 
 import BottomSheet, { BottomSheetBackgroundProps, BottomSheetFlatList } from "@gorhom/bottom-sheet";
-import FavoriteCard from "@/components/ListItemFavorite";
+import ListItemFavorite from "@/components/ListItemFavorite";
 import ThemedText from "@/components/ThemedText";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
@@ -96,7 +96,7 @@ function BottomSheetFavorites() {
         keyExtractor={(item) => item.id.toString()}
         ListEmptyComponent={favoritesPraceHolder}
         contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
-        renderItem={({ item }) => <FavoriteCard gasStation={item} />}
+        renderItem={({ item }) => <ListItemFavorite gasStation={item} />}
       />
     </BottomSheet>
   );

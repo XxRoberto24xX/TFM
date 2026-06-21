@@ -1,5 +1,5 @@
 import { memo, RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { StyleSheet } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Region } from "react-native-maps";
 
 import { useFocusEffect } from "expo-router";
@@ -19,16 +19,18 @@ interface Props {
 
 function MapHome({ ref }: Props) {
   /* VARIABLES */
+  const LOADING_THRESHOLD_MS = 500;
+
   const [returnedGasStations, setReturnedGasStations] = useState<GasStation[]>([]);
   const [mapKey, setMapKey] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const activeBrandFilter = useGasStationStore((state) => state.activeBrandFilter);
   const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
   const mapType = useGasStationStore((state) => state.mapType);
-  const userLocation = useLocationStore((state) => state.userLocation);
   const lastRegion = useLocationStore.getState().lastRegion;
 
-  const originalUserLocation = useRef(userLocation);
+  const loadingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /* USEMEMO VARIABLES */
   const paintedGasStations = useMemo(() => {
@@ -56,11 +58,16 @@ function MapHome({ ref }: Props) {
 
   /* HANDLERS */
   const onRegionChanged = async (region: Region) => {
+    loadingTimeoutRef.current = setTimeout(() => {
+      setIsLoading(true);
+    }, LOADING_THRESHOLD_MS);
+
+    useLocationStore.getState().setLastRegion(region);
+
     const north = region.latitude + region.latitudeDelta / 2;
     const south = region.latitude - region.latitudeDelta / 2;
     const east = region.longitude + region.longitudeDelta / 2;
     const west = region.longitude - region.longitudeDelta / 2;
-
     if (region && region.latitudeDelta < MAX_LATITUDE_DELTA_FOR_MARKERS) {
       try {
         const data = await getGasStationsInRange(north, south, east, west);
@@ -68,28 +75,29 @@ function MapHome({ ref }: Props) {
       } catch (callError) {
         const apiError = callError as ApiError;
         console.log("Get Elements In Region: " + apiError.message);
+
+        if (loadingTimeoutRef.current) {
+          clearTimeout(loadingTimeoutRef.current);
+          loadingTimeoutRef.current = null;
+        }
+        setIsLoading(false);
       }
     } else {
       setReturnedGasStations([]);
     }
   };
 
-  /* WATCHERS */
-  //if the location is not in cache the user will enter in the default region
-  //but eventually the location will be set and it shound show the user where it is
-  //this is extremely rare but can happen
   useEffect(() => {
-    if (originalUserLocation && userLocation !== null) {
-      const userRegion: Region = {
-        latitude: userLocation.coords.latitude,
-        longitude: userLocation.coords.longitude,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
-      };
+    const frame = requestAnimationFrame(() => {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+        loadingTimeoutRef.current = null;
+      }
+      setIsLoading(false);
+    });
 
-      ref?.current?.animateToRegion(userRegion);
-    }
-  }, [userLocation, ref]);
+    return () => cancelAnimationFrame(frame);
+  }, [paintedGasStations]);
 
   /* ON ACTIVE */
   useFocusEffect(
@@ -98,37 +106,84 @@ function MapHome({ ref }: Props) {
     }, []),
   );
 
+  /* ON UNMOUNT */
+  useEffect(() => {
+    return () => {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current);
+        loadingTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
   return (
-    <MapView
-      style={StyleSheet.absoluteFill}
-      key={mapKey}
-      ref={ref}
-      provider={PROVIDER_GOOGLE}
-      showsUserLocation={true}
-      showsMyLocationButton={false}
-      showsCompass={false}
-      toolbarEnabled={false}
-      mapType={mapType}
-      onPress={() => useGasStationStore.getState().setSelectedGasStation(null)}
-      onPoiClick={() => {
-        useGasStationStore.getState().setSelectedGasStation(null);
-      }}
-      onRegionChangeComplete={(region, details) => {
-        useLocationStore.getState().setLastRegion(region);
-        onRegionChanged(region);
-        if (details?.isGesture) {
-          useLocationStore.getState().setIsCenteredOnUser(false);
-        }
-      }}
-      initialRegion={lastRegion ?? DEFAULT_REGION}>
-      {paintedGasStations.map((station) => (
-        <MarkerGasStation
-          key={station.id}
-          gasStation={station}
-        />
-      ))}
-    </MapView>
+    <View style={StyleSheet.absoluteFill}>
+      <MapView
+        style={StyleSheet.absoluteFill}
+        key={mapKey}
+        ref={ref}
+        provider={PROVIDER_GOOGLE}
+        showsUserLocation={true}
+        showsMyLocationButton={false}
+        showsCompass={false}
+        toolbarEnabled={false}
+        mapType={mapType}
+        onPress={() => useGasStationStore.getState().setSelectedGasStation(null)}
+        onPoiClick={() => {
+          useGasStationStore.getState().setSelectedGasStation(null);
+        }}
+        onRegionChangeComplete={(region, details) => {
+          onRegionChanged(region);
+          if (details?.isGesture) {
+            useLocationStore.getState().setIsCenteredOnUser(false);
+          }
+        }}
+        initialRegion={lastRegion ?? DEFAULT_REGION}>
+        {paintedGasStations.map((station) => (
+          <MarkerGasStation
+            key={station.id}
+            gasStation={station}
+          />
+        ))}
+      </MapView>
+
+      {isLoading && (
+        <View style={styles.loadingOverlay}>
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator
+              size="large"
+              color="#FFFFFF"
+            />
+            <Text style={styles.loadingText}> Cargando Gasolineras ... </Text>
+          </View>
+        </View>
+      )}
+    </View>
   );
 }
 
 export default memo(MapHome);
+
+const styles = StyleSheet.create({
+  loadingOverlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 999,
+  },
+  loadingContainer: {
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    padding: 24,
+    borderRadius: 12,
+    alignItems: "center",
+    minWidth: 150,
+  },
+  loadingText: {
+    color: "#FFFFFF",
+    marginTop: 12,
+    fontSize: 14,
+    fontWeight: "500",
+    textAlign: "center",
+  },
+});

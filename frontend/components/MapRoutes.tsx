@@ -121,7 +121,7 @@ function MapRoutes({ bottomSheetRef }: Props) {
       }}
       onLongPress={handleLongPress}
       initialRegion={lastRegion ?? DEFAULT_REGION}>
-      {origin?.coordinates && (
+      {origin?.coordinates && origin?.place_id !== "-1" && (
         <Marker
           coordinate={origin.coordinates}
           title="Origen"

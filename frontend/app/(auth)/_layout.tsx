@@ -8,6 +8,7 @@ export default function _layout() {
         animation: "ios_from_right",
       }}>
       <Stack.Screen name="index" />
+      <Stack.Screen name="login" />
       <Stack.Screen name="register" />
       <Stack.Screen name="restorePassword" />
     </Stack>

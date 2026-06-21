@@ -1,16 +1,17 @@
-import { Dimensions, StyleSheet, View, Image, ActivityIndicator } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useState } from "react";
-import { Colors } from "@/constants/colors";
+import { ActivityIndicator, Dimensions, Image, StyleSheet, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+
 import { useRouter } from "expo-router";
+
+import ErrorMessage from "@/components/ErrorMessage";
+import FloatingButton from "@/components/FloatingButton";
+import TextInputBasic from "@/components/TextInputBasic";
+import ThemedText from "@/components/ThemedText";
 
 import { passwordResetEmail } from "@/services/api";
 import { ApiError } from "@/types/types";
-
-import FloatingButton from "@/components/FloatingButton";
-import ThemedText from "@/components/ThemedText";
-import TextInputBasic from "@/components/TextInputBasic";
-import ErrorMessage from "@/components/ErrorMessage";
+import { Colors } from "@/constants/colors";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 

@@ -1,9 +1,12 @@
-import { Stack } from "expo-router";
-import { Colors } from "@/constants/colors";
-import { LinearGradient } from "expo-linear-gradient";
 import { StyleSheet } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+
+import { LinearGradient } from "expo-linear-gradient";
+import { Stack } from "expo-router";
+
 import CustomDrawerLayout from "@/components/CustomDrawerLayout";
+
+import { Colors } from "@/constants/colors";
 
 export default function _layout() {
   return (

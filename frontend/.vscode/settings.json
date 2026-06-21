@@ -11,5 +11,8 @@
     "problemsWarningIcon.foreground": "#FFFF00",
 
     "errorLens.warningForeground": "#FFFF00"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
   }
 }

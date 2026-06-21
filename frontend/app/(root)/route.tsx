@@ -1,13 +1,17 @@
-import BottomSheetAutocomplete from "@/components/BottomSheetAutocomplete";
-import TextInputAutocomplete from "@/components/TextInputAutocomplete";
-import MapRoutes from "@/components/MapRoutes";
-import BottomSheet from "@gorhom/bottom-sheet";
 import { useCallback, useEffect, useRef } from "react";
 import { Linking, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useLocationStore } from "@/stores/useLocationStore";
-import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
+
+import BottomSheet from "@gorhom/bottom-sheet";
+
+import BottomSheetAutocomplete from "@/components/BottomSheetAutocomplete";
 import IconFloatingButton from "@/components/IconFloatingButton";
+import MapRoutes from "@/components/MapRoutes";
+import TextInputAutocomplete from "@/components/TextInputAutocomplete";
+
+import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
+import { useLocationStore } from "@/stores/useLocationStore";
+
 import { Predicction } from "@/types/types";
 
 const openGoogleMaps = (origin: Predicction, destination: Predicction) => {

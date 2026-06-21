@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Dimensions, Image, StyleSheet, View } from "react-native";
-import { MapType, Region } from "react-native-maps";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { MapType, Region } from "react-native-maps";
 
+import * as Location from "expo-location";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import * as Location from "expo-location";
 
-import FloatingButton from "@/components/FloatingButton";
-import ThemedText from "@/components/ThemedText";
-import ThemedTextInput from "@/components/TextInputBasic";
 import ErrorMessage from "@/components/ErrorMessage";
+import FloatingButton from "@/components/FloatingButton";
+import ThemedTextInput from "@/components/TextInputBasic";
+import ThemedText from "@/components/ThemedText";
 
-import { useLocationStore } from "@/stores/useLocationStore";
 import { useGasStationStore } from "@/stores/useGasStationsStore";
+import { useLocationStore } from "@/stores/useLocationStore";
+
 import { login } from "@/services/api";
 import { ApiError } from "@/types/types";
 import { Colors } from "@/constants/colors";
@@ -21,7 +22,7 @@ import { Colors } from "@/constants/colors";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function Login() {
-  /* VARIABLES */
+  /* VARIABLES   */
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -29,7 +30,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  /* HANDLERS */
+  /* HANDLERS  */
   const handleLogin = async () => {
     setLoading(true);
     setError("");

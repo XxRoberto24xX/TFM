@@ -1,7 +1,8 @@
 import { Region } from "react-native-maps";
-import { create } from "zustand";
 
 import * as Location from "expo-location";
+
+import { create } from "zustand";
 
 interface LocationState {
   lastRegion: Region | null;

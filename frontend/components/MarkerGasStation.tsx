@@ -2,6 +2,7 @@ import { memo } from "react";
 import { Marker } from "react-native-maps";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
+
 import { GasStation } from "@/types/types";
 
 interface Props {

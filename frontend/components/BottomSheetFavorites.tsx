@@ -1,15 +1,17 @@
 import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { Dimensions, Pressable, StyleSheet, View } from "react-native";
-import Animated, { useAnimatedStyle, interpolate, useSharedValue } from "react-native-reanimated";
+import Animated, { interpolate, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
 
+import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetBackgroundProps, BottomSheetFlatList } from "@gorhom/bottom-sheet";
+
 import ListItemFavorite from "@/components/ListItemFavorite";
 import ThemedText from "@/components/ThemedText";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
+
 import { Colors } from "@/constants/colors";
 
 const CustomBackground = ({ style }: BottomSheetBackgroundProps) => {

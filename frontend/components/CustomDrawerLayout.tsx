@@ -1,4 +1,4 @@
-import React, { useRef, ReactNode, memo } from "react";
+import React, { memo, ReactNode, useRef } from "react";
 import { Dimensions } from "react-native";
 import ReanimatedDrawerLayout, {
   DrawerLayoutMethods,

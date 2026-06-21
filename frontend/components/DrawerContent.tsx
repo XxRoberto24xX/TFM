@@ -1,15 +1,16 @@
 import { memo } from "react";
-import { Image, StyleSheet, ScrollView, View, Text, Pressable } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useRouter, useSegments } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "@/constants/colors";
-
+import { useRouter, useSegments } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
+import { Ionicons } from "@expo/vector-icons";
+
 import ThemedText from "@/components/ThemedText";
+
+import { Colors } from "@/constants/colors";
 
 import { closeDrawer } from "@/utils/DrawerController";
 

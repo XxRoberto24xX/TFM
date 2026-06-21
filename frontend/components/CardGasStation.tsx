@@ -1,19 +1,22 @@
 import { memo, useEffect, useState } from "react";
-import { Pressable, StyleSheet, View, Image, Animated } from "react-native";
+import { Animated, Image, Pressable, StyleSheet, View } from "react-native";
 import { PressableProps } from "react-native-gesture-handler";
 
-import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+
 import { Ionicons } from "@expo/vector-icons";
 
 import ThemedText from "@/components/ThemedText";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
+
 import { addToFavorites, removeFromFavorites } from "@/services/api";
-import { getMarkerGasDisplayInfo } from "@/utils/gasStationsUtils";
 import { ApiError } from "@/types/types";
-import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
 import { Colors } from "@/constants/colors";
+import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
+
+import { getMarkerGasDisplayInfo } from "@/utils/gasStationsUtils";
 
 function CardGasStation({ style }: PressableProps) {
   /* VARIABLES */

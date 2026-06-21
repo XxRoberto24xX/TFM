@@ -1,10 +1,10 @@
 import { memo } from "react";
 import { Pressable, PressableProps, StyleSheet } from "react-native";
 
-import ThemedText from "./ThemedText";
-
 import { Predicction } from "@/types/types";
 import { Colors } from "@/constants/colors";
+
+import ThemedText from "./ThemedText";
 
 interface Props extends PressableProps {
   prediction: Predicction;

@@ -8,6 +8,7 @@ import MarkerGasStation from "@/components/MarkerGasStation";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
 import { useLocationStore } from "@/stores/useLocationStore";
+
 import { getGasStationsInRange } from "@/services/api";
 import { ApiError, GasStation } from "@/types/types";
 import { DEFAULT_REGION, FILTER_TO_PRICE_KEY, MAX_LATITUDE_DELTA_FOR_MARKERS } from "@/constants/values";

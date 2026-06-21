@@ -1,20 +1,22 @@
-import { StyleSheet, View } from "react-native";
 import { useEffect, useRef } from "react";
-import { ApiError } from "@/types/types";
-import { getListFavorites } from "@/services/api";
-import { useHeaderHeight } from "expo-router/build/react-navigation";
+import { StyleSheet, View } from "react-native";
 import MapView, { Region } from "react-native-maps";
 
-import IconFloatingButton from "@/components/IconFloatingButton";
-import FilterChipGas from "@/components/FilterChipGas";
-import FilterChipBrands from "@/components/FilterChipBrands";
-import CardGasStation from "@/components/CardGasStation";
-import BottomSheetFavorites from "@/components/BottomSheetFavorites";
-import MapHome from "@/components/MapHome";
+import { useHeaderHeight } from "expo-router/build/react-navigation";
 import * as SecureStore from "expo-secure-store";
 
-import { useLocationStore } from "@/stores/useLocationStore";
+import BottomSheetFavorites from "@/components/BottomSheetFavorites";
+import CardGasStation from "@/components/CardGasStation";
+import FilterChipBrands from "@/components/FilterChipBrands";
+import FilterChipGas from "@/components/FilterChipGas";
+import IconFloatingButton from "@/components/IconFloatingButton";
+import MapHome from "@/components/MapHome";
+
 import { useGasStationStore } from "@/stores/useGasStationsStore";
+import { useLocationStore } from "@/stores/useLocationStore";
+
+import { getListFavorites } from "@/services/api";
+import { ApiError } from "@/types/types";
 
 export default function Home() {
   /* VARIABLES */

@@ -1,14 +1,17 @@
-import { StyleSheet, Image } from "react-native";
+import { Image, StyleSheet } from "react-native";
+
+import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
-import { Colors } from "@/constants/colors";
-import { Ionicons } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
+
+import { Ionicons } from "@expo/vector-icons";
 
 import IconFloatingButton from "@/components/IconFloatingButton";
 import ThemedText from "@/components/ThemedText";
-import { openDrawer } from "@/utils/DrawerController";
 
-import * as Haptics from "expo-haptics";
+import { Colors } from "@/constants/colors";
+
+import { openDrawer } from "@/utils/DrawerController";
 
 export default function MainLayout() {
   const router = useRouter();

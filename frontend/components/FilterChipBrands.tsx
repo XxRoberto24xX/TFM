@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { StyleSheet, ScrollView, Pressable, Image } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet } from "react-native";
 
 import * as Haptics from "expo-haptics";
 import * as SecureStore from "expo-secure-store";
@@ -7,8 +7,9 @@ import * as SecureStore from "expo-secure-store";
 import ThemedText from "@/components/ThemedText";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
-import { BRAND_FILTER_OPTIONS, BRAND_IMAGES } from "@/constants/values";
+
 import { Colors } from "@/constants/colors";
+import { BRAND_FILTER_OPTIONS, BRAND_IMAGES } from "@/constants/values";
 
 function FilterChipBrands() {
   /* VARIABLES */

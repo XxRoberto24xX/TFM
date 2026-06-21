@@ -1,5 +1,6 @@
-import { AutocompleteType, Predicction } from "@/types/types";
 import { create } from "zustand";
+
+import { AutocompleteType, Predicction } from "@/types/types";
 
 interface googleAutocompleteState {
   origin: Predicction | null;

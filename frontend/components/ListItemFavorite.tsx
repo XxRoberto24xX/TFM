@@ -1,16 +1,18 @@
 import { memo } from "react";
-import { Pressable, StyleSheet, Image, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 
 import { router } from "expo-router";
+
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 import ThemedText from "@/components/ThemedText";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
+
 import { removeFromFavorites } from "@/services/api";
 import { ApiError, GasStation } from "@/types/types";
-import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
 import { Colors } from "@/constants/colors";
+import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
 
 interface Props {
   gasStation: GasStation;

@@ -1,5 +1,6 @@
-import { useLocalSearchParams, Stack } from "expo-router";
 import { Text, View } from "react-native";
+
+import { Stack, useLocalSearchParams } from "expo-router";
 
 export default function GasStation() {
   const { id } = useLocalSearchParams<{ id: string }>();

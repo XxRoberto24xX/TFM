@@ -2,12 +2,13 @@ import { memo, Ref, useCallback, useRef } from "react";
 import { Keyboard, Pressable, StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 
+import * as Crypto from "expo-crypto";
 import { LinearGradient } from "expo-linear-gradient";
+
 import { Ionicons } from "@expo/vector-icons";
 
-import * as Crypto from "expo-crypto";
-
 import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
+
 import { getPlaceAutocomplete } from "@/services/api";
 import { AutocompleteType } from "@/types/types";
 import { Colors } from "@/constants/colors";

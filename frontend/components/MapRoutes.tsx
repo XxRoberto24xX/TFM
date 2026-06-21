@@ -6,8 +6,9 @@ import { useFocusEffect } from "expo-router";
 
 import BottomSheet from "@gorhom/bottom-sheet";
 
-import { useLocationStore } from "@/stores/useLocationStore";
 import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
+import { useLocationStore } from "@/stores/useLocationStore";
+
 import { computeRoute } from "@/services/api";
 import { RouteResponse } from "@/types/types";
 import { DEFAULT_REGION } from "@/constants/values";

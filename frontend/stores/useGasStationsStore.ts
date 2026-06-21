@@ -1,6 +1,8 @@
-import { GasStation } from "@/types/types";
 import { MapType } from "react-native-maps";
+
 import { create } from "zustand";
+
+import { GasStation } from "@/types/types";
 
 interface GasStationState {
   listFavorites: GasStation[];

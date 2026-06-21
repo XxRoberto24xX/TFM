@@ -1,8 +1,9 @@
 import { memo, useState } from "react";
-import { Pressable, StyleSheet, TextInput, View, type TextInputProps } from "react-native";
+import { Pressable, StyleSheet, TextInput, type TextInputProps, View } from "react-native";
+
+import * as Haptics from "expo-haptics";
 
 import { Ionicons } from "@expo/vector-icons";
-import * as Haptics from "expo-haptics";
 
 import { Colors } from "../constants/colors";
 

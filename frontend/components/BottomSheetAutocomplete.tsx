@@ -4,14 +4,16 @@ import { ActivityIndicator, Keyboard, StyleSheet, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 import BottomSheet, { BottomSheetBackgroundProps, BottomSheetFlatList, BottomSheetView } from "@gorhom/bottom-sheet";
+
 import ListItemPrediction from "@/components/ListItemPrediction";
 import ThemedText from "@/components/ThemedText";
 
 import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
+import { useLocationStore } from "@/stores/useLocationStore";
+
 import { getPlaceCoordinates } from "@/services/api";
 import { Predicction } from "@/types/types";
 import { Colors } from "@/constants/colors";
-import { useLocationStore } from "@/stores/useLocationStore";
 
 interface Props {
   bottomSheetRef: RefObject<BottomSheet | null>;

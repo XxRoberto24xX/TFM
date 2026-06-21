@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { StyleSheet, ScrollView, Pressable } from "react-native";
+import { Pressable, ScrollView, StyleSheet } from "react-native";
 
 import * as Haptics from "expo-haptics";
 import * as SecureStore from "expo-secure-store";
@@ -7,8 +7,9 @@ import * as SecureStore from "expo-secure-store";
 import ThemedText from "@/components/ThemedText";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
-import { GAS_FILTER_OPTIONS } from "@/constants/values";
+
 import { Colors } from "@/constants/colors";
+import { GAS_FILTER_OPTIONS } from "@/constants/values";
 
 function FilterChipGas() {
   const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);

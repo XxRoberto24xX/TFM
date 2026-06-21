@@ -1,5 +1,6 @@
-import { create, InternalAxiosRequestConfig, AxiosResponse } from "axios";
 import * as SecureStore from "expo-secure-store";
+
+import { AxiosResponse, create, InternalAxiosRequestConfig } from "axios";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 

@@ -1,8 +1,8 @@
 import { memo } from "react";
-import { Pressable, StyleSheet, type PressableProps } from "react-native";
+import { Pressable, type PressableProps, StyleSheet } from "react-native";
 
-import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
 
 import ThemedText from "@/components/ThemedText";
 

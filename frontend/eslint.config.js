@@ -1,13 +1,32 @@
-// https://docs.expo.dev/guides/using-eslint/
 const { defineConfig } = require("eslint/config");
 const expoConfig = require("eslint-config-expo/flat");
 const eslintPluginPrettierRecommended = require("eslint-plugin-prettier/recommended");
+const simpleImportSort = require("eslint-plugin-simple-import-sort");
 
 module.exports = defineConfig([
   expoConfig,
   eslintPluginPrettierRecommended,
   {
-    // Add here any directories or files you want to ignore from linting.
+    plugins: {
+      "simple-import-sort": simpleImportSort,
+    },
+    rules: {
+      "simple-import-sort/imports": [
+        "error",
+        {
+          groups: [
+            ["^react", "^react-native"],
+            ["^expo"],
+            ["^@?\\w"],
+            ["^@/components"],
+            ["^@/stores"],
+            ["^@/services", "^@/types", "^@/constants"],
+            ["^\\."],
+          ],
+        },
+      ],
+      "simple-import-sort/exports": "error",
+    },
     ignores: ["dist/*", ".expo/*", "node_modules/*", ".vscode/*"],
   },
 ]);

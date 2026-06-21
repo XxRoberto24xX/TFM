@@ -1,10 +1,11 @@
-import { Stack } from "expo-router";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Platform } from "react-native";
-import { StatusBar } from "expo-status-bar";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
 import { useFonts } from "expo-font";
 import { NavigationBar } from "expo-navigation-bar";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 
 const isAndroid = Platform.OS === "android";
 

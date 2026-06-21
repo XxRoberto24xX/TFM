@@ -1,4 +1,5 @@
-import apiClient from "./client";
+import polyline from "@mapbox/polyline";
+
 import {
   AuthResponse,
   Coordinates,
@@ -10,11 +11,12 @@ import {
   RouteModel,
   RouteResponse,
 } from "../types/types";
-import { mapGasStationModelToFrontend, mapPlaceAutocompleteResponseToFrontend } from "@/utils/mappers";
+import apiClient from "./client";
 import googleClient from "./googlePlacesClient";
 import googleRoutesClient from "./googleRoutesClient";
+
 import { formatDuration, parseDuration } from "@/utils/gasStationsUtils";
-import polyline from "@mapbox/polyline";
+import { mapGasStationModelToFrontend, mapPlaceAutocompleteResponseToFrontend } from "@/utils/mappers";
 
 export async function login(email: string, password: string): Promise<AuthResponse> {
   const response = await apiClient.post<AuthResponse>(

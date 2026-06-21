@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { StyleSheet, View, type TextInputProps } from "react-native";
+import { StyleSheet, type TextInputProps, View } from "react-native";
 
 import { Ionicons } from "@expo/vector-icons";
 

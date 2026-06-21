@@ -1,10 +1,10 @@
 import { memo } from "react";
-import { ImageSourcePropType, Pressable, PressableProps, StyleSheet, Image, View } from "react-native";
-
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import { Image, ImageSourcePropType, Pressable, PressableProps, StyleSheet, View } from "react-native";
 
 import * as Haptics from "expo-haptics";
+import { LinearGradient } from "expo-linear-gradient";
+
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 import { Colors } from "@/constants/colors";
 

@@ -2,18 +2,41 @@ import BottomSheetAutocomplete from "@/components/BottomSheetAutocomplete";
 import TextInputAutocomplete from "@/components/TextInputAutocomplete";
 import MapRoutes from "@/components/MapRoutes";
 import BottomSheet from "@gorhom/bottom-sheet";
-import { useEffect, useRef } from "react";
-import { StyleSheet, View } from "react-native";
+import { useCallback, useEffect, useRef } from "react";
+import { Linking, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocationStore } from "@/stores/useLocationStore";
 import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
+import IconFloatingButton from "@/components/IconFloatingButton";
+import { Predicction } from "@/types/types";
+
+const openGoogleMaps = (origin: Predicction, destination: Predicction) => {
+  const url = `https://www.google.com/maps/dir/?api=1&origin=${origin.coordinates?.latitude},${origin.coordinates?.longitude}&destination=${destination.coordinates?.latitude},${destination.coordinates?.longitude}&travelmode=driving`;
+
+  // Abrimos la URL
+  Linking.openURL(url).catch((err) => {
+    console.log("Error: No se pudo abrir Google Maps. Asegúrate de tener la app instalada.");
+  });
+};
 
 export default function Route() {
   /* VARIABLES */
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheet>(null);
 
+  const origin = useGoogleAutocompleteStore((state) => state.origin);
+  const destiny = useGoogleAutocompleteStore((state) => state.destiny);
+
   const userLocation = useLocationStore((state) => state.userLocation);
+
+  /* HANDLER */
+  const handlerShareToGoogleMaps = useCallback(() => {
+    if (origin && destiny) {
+      openGoogleMaps(origin, destiny);
+    } else {
+      console.log("No hay ruta que compartir");
+    }
+  }, [origin, destiny]);
 
   /* WATCHERS */
   useEffect(() => {
@@ -45,6 +68,11 @@ export default function Route() {
         style={{ marginTop: 16 }}
         type="destiny"
         placeHolder="Destino"
+      />
+      <IconFloatingButton
+        style={{ margin: 16, alignSelf: "flex-end" }}
+        imageSource={require("@/assets/icons/googleMaps.png")}
+        onPress={handlerShareToGoogleMaps}
       />
       <BottomSheetAutocomplete bottomSheetRef={bottomSheetRef} />
     </View>

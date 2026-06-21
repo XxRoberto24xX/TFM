@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Pressable, PressableProps, StyleSheet } from "react-native";
+import { ImageSourcePropType, Pressable, PressableProps, StyleSheet, Image, View } from "react-native";
 
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -9,12 +9,20 @@ import * as Haptics from "expo-haptics";
 import { Colors } from "@/constants/colors";
 
 interface Props extends PressableProps {
-  icon: keyof typeof Ionicons.glyphMap | keyof typeof MaterialIcons.glyphMap;
+  icon?: keyof typeof Ionicons.glyphMap | keyof typeof MaterialIcons.glyphMap;
   iconProvider?: "ionicons" | "material";
+  imageSource?: ImageSourcePropType | null;
   onPress: () => void;
 }
 
-function IconFloatingButton({ icon, iconProvider = "ionicons", onPress, style, ...pressableProps }: Props) {
+function IconFloatingButton({
+  icon,
+  iconProvider = "ionicons",
+  imageSource = null,
+  onPress,
+  style,
+  ...pressableProps
+}: Props) {
   return (
     <Pressable
       style={({ pressed }) => [
@@ -25,13 +33,21 @@ function IconFloatingButton({ icon, iconProvider = "ionicons", onPress, style, .
       onPress={() => {
         Haptics.selectionAsync();
         onPress();
-      }}>
+      }}
+      {...pressableProps}>
       <LinearGradient
         style={styles.gradient}
         colors={[Colors.primaryOrange, Colors.primaryPink]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}>
-        {iconProvider === "material" ? (
+        {imageSource ? (
+          <View style={styles.imageContainer}>
+            <Image
+              style={styles.image}
+              source={imageSource}
+            />
+          </View>
+        ) : iconProvider === "material" ? (
           <MaterialIcons
             name={icon as keyof typeof MaterialIcons.glyphMap}
             size={26}
@@ -79,6 +95,15 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   gradient: {
-    padding: 10,
+    padding: 8,
+  },
+  imageContainer: {
+    padding: 4,
+    borderRadius: 400,
+    backgroundColor: "white",
+  },
+  image: {
+    width: 25,
+    height: 25,
   },
 });

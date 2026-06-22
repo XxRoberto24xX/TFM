@@ -24,33 +24,17 @@ function MapRoutes({ bottomSheetRef }: Props) {
   const [mapKey, setMapKey] = useState(0);
   const [routeResult, setRouteResult] = useState<RouteResponse | null>(null);
 
-  const lastRegion = useLocationStore.getState().lastRegion;
+  const initialRegion = useLocationStore.getState().lastRegion || DEFAULT_REGION;
   const origin = useGoogleAutocompleteStore((state) => state.origin);
   const destiny = useGoogleAutocompleteStore((state) => state.destiny);
 
-  const handleLongPress = (event: LongPressEvent) => {
-    const { latitude, longitude } = event.nativeEvent.coordinate;
-    useGoogleAutocompleteStore.getState().setDestiny({
-      place_id: "-2",
-      description: `Lat: ${latitude.toFixed(5)}, Lng: ${longitude.toFixed(5)}`,
-      structured_formatting: {
-        main_text: `Lat: ${latitude.toFixed(5)}, Lng: ${longitude.toFixed(5)}`,
-        secondary_text: "Ubicación seleccionada",
-      },
-      coordinates: {
-        latitude: latitude,
-        longitude: longitude,
-      },
-    });
-    useGoogleAutocompleteStore
-      .getState()
-      .setQuery("destiny", `Lat: ${latitude.toFixed(5)}, Lng: ${longitude.toFixed(5)}`);
-  };
-
+  /* USE MEMO VARIABLES */
+  //need to bypasses a rendering bug with the maps library when painting the route
   const safeCoordinates = useMemo(() => {
     return routeResult?.coordinates ? [...routeResult.coordinates] : [];
   }, [routeResult]);
 
+  /* WATCHERS */
   useEffect(() => {
     const animationAndRouting = async () => {
       const map = mapRef?.current;
@@ -99,10 +83,40 @@ function MapRoutes({ bottomSheetRef }: Props) {
     animationAndRouting();
   }, [origin, destiny]);
 
+  /* HANDLERS */
+  const onLongPress = useCallback((event: LongPressEvent) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    useGoogleAutocompleteStore.getState().setDestiny({
+      place_id: "-2",
+      description: `Lat: ${latitude.toFixed(5)}, Lng: ${longitude.toFixed(5)}`,
+      structured_formatting: {
+        main_text: `Lat: ${latitude.toFixed(5)}, Lng: ${longitude.toFixed(5)}`,
+        secondary_text: "Ubicación seleccionada",
+      },
+      coordinates: {
+        latitude: latitude,
+        longitude: longitude,
+      },
+    });
+    useGoogleAutocompleteStore
+      .getState()
+      .setQuery("destiny", `Lat: ${latitude.toFixed(5)}, Lng: ${longitude.toFixed(5)}`);
+  }, []);
+
+  const onPressMap = useCallback(() => {
+    bottomSheetRef.current?.close();
+  }, [bottomSheetRef]);
+
   /* ON ACTIVE */
+  //need to bypasses a rendering bug with the maps library when painting markers
+  //when the focus is regained
   useFocusEffect(
     useCallback(() => {
       setMapKey((k) => k + 1);
+
+      return () => {
+        useGoogleAutocompleteStore.getState().resetStore();
+      };
     }, []),
   );
 
@@ -116,12 +130,10 @@ function MapRoutes({ bottomSheetRef }: Props) {
       showsMyLocationButton={false}
       showsCompass={false}
       toolbarEnabled={false}
-      onPress={() => bottomSheetRef.current?.close()}
-      onPoiClick={() => {
-        bottomSheetRef.current?.close();
-      }}
-      onLongPress={handleLongPress}
-      initialRegion={lastRegion ?? DEFAULT_REGION}>
+      onPress={onPressMap}
+      onPoiClick={onPressMap}
+      onLongPress={onLongPress}
+      initialRegion={initialRegion}>
       {origin?.coordinates && origin?.place_id !== "-1" && (
         <Marker
           coordinate={origin.coordinates}
@@ -131,7 +143,6 @@ function MapRoutes({ bottomSheetRef }: Props) {
         />
       )}
 
-      {/* 3. Marcador para el Destino (Morado) */}
       {destiny?.coordinates && (
         <Marker
           coordinate={destiny.coordinates}

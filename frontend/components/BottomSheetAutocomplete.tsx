@@ -19,7 +19,7 @@ interface Props {
   bottomSheetRef: RefObject<BottomSheet | null>;
 }
 
-const CustomBackground = ({ style }: BottomSheetBackgroundProps) => {
+const customBackground = ({ style }: BottomSheetBackgroundProps) => {
   return (
     <LinearGradient
       style={style}
@@ -42,19 +42,19 @@ const predictionPlaceHolder = () => (
 
 function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
   /* VARIABLES */
-  const snapPoints = useMemo(() => ["70%"], []);
-
   const userLocation = useLocationStore((state) => state.userLocation);
 
   const listPredictions = useGoogleAutocompleteStore((state) => state.listPredictions);
   const isLoading = useGoogleAutocompleteStore((state) => state.isLoading);
-  const sessionToken = useGoogleAutocompleteStore((state) => state.sesionToken);
-  const displayBottomSheet = useGoogleAutocompleteStore((state) => state.displayBottomSheet);
   const activeInput = useGoogleAutocompleteStore((state) => state.activeInput);
-  const mirrorValue = useGoogleAutocompleteStore((state) => (activeInput === "origin" ? state.destiny : state.origin));
+  const displayBottomSheet = useGoogleAutocompleteStore((state) => state.displayBottomSheet);
 
   /* USEMEMO */
+  const snapPoints = useMemo(() => ["70%"], []);
+
   const UserLocationOption = useMemo(() => {
+    const userLocation = useLocationStore.getState().userLocation;
+
     return {
       place_id: "-1",
       description: "Mi ubicación actual",
@@ -69,10 +69,17 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
           }
         : undefined,
     };
-  }, [userLocation]);
+  }, []);
 
   /* HANDLERS */
-  const handlePlaceSelect = async (place: Predicction) => {
+  const onPlaceSelect = useCallback(async (place: Predicction) => {
+    const sessionToken = useGoogleAutocompleteStore.getState().sesionToken;
+    const activeInput = useGoogleAutocompleteStore.getState().activeInput;
+    const mirrorValueId =
+      activeInput === "origin"
+        ? useGoogleAutocompleteStore.getState().origin?.place_id
+        : useGoogleAutocompleteStore.getState().destiny?.place_id;
+
     Keyboard.dismiss();
 
     try {
@@ -84,7 +91,7 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
           useGoogleAutocompleteStore.getState().setDestiny(place);
           useGoogleAutocompleteStore.getState().setQuery("destiny", place.structured_formatting.main_text);
         }
-      } else if (sessionToken !== null && mirrorValue?.place_id !== place.place_id) {
+      } else if (sessionToken !== null && mirrorValueId !== place.place_id) {
         const coords = await getPlaceCoordinates(place.place_id, sessionToken);
         const placeWithCoordinates: Predicction = {
           ...place,
@@ -116,9 +123,9 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
       useGoogleAutocompleteStore.getState().setDisplayBottomSheet(false);
       useGoogleAutocompleteStore.getState().setPredictions([]);
     }
-  };
+  }, []);
 
-  const handleSheetChanges = useCallback((index: number) => {
+  const onSheetChanges = useCallback((index: number) => {
     if (index === -1) {
       useGoogleAutocompleteStore.getState().handleCancelSearch();
       useGoogleAutocompleteStore.getState().setDisplayBottomSheet(false);
@@ -136,9 +143,21 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
     }
   }, [displayBottomSheet, bottomSheetRef]);
 
+  /* ON MOUNT */
   useEffect(() => {
     useGoogleAutocompleteStore.getState().setPredictions([]);
-  }, [activeInput]);
+  }, []);
+
+  /* ITEMS */
+  const renderItem = useCallback(
+    ({ item }: { item: Predicction }) => (
+      <ListItemPrediction
+        prediction={item}
+        onPress={onPlaceSelect}
+      />
+    ),
+    [onPlaceSelect],
+  );
 
   return (
     <BottomSheet
@@ -149,9 +168,9 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
       enableDynamicSizing={false}
       enableOverDrag={false}
       enablePanDownToClose={true}
-      onChange={handleSheetChanges}
-      handleIndicatorStyle={{ backgroundColor: "white" }}
-      backgroundComponent={CustomBackground}>
+      onChange={onSheetChanges}
+      handleIndicatorStyle={styles.handle}
+      backgroundComponent={customBackground}>
       {isLoading ? (
         <BottomSheetView style={styles.loadingContainer}>
           <ActivityIndicator
@@ -174,21 +193,12 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
             activeInput === "origin" && userLocation ? (
               <ListItemPrediction
                 prediction={UserLocationOption}
-                onPress={() => {
-                  handlePlaceSelect(UserLocationOption);
-                }}
+                onPress={onPlaceSelect}
               />
             ) : null
           }
-          contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
-          renderItem={({ item }) => (
-            <ListItemPrediction
-              prediction={item}
-              onPress={() => {
-                handlePlaceSelect(item);
-              }}
-            />
-          )}
+          contentContainerStyle={styles.listContainer}
+          renderItem={renderItem}
         />
       )}
     </BottomSheet>
@@ -217,5 +227,12 @@ const styles = StyleSheet.create({
   emptyText: {
     color: "rgba(255, 255, 255, 0.8)",
     textAlign: "center",
+  },
+  handle: {
+    backgroundColor: "white",
+  },
+  listContainer: {
+    gap: 8,
+    paddingBottom: 8,
   },
 });

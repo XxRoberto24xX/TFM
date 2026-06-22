@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { Pressable, StyleSheet, TextInput, type TextInputProps, View } from "react-native";
 
 import * as Haptics from "expo-haptics";
@@ -24,6 +24,11 @@ function TextInputBasic({
 }: Props) {
   const [hide, setHide] = useState(hideContent);
 
+  const onPressIcon = useCallback(() => {
+    Haptics.selectionAsync();
+    setHide(!hide);
+  }, [hide]);
+
   return (
     <View style={[styles.inputPlaceholder, style]}>
       <TextInput
@@ -37,10 +42,7 @@ function TextInputBasic({
       {icon && (
         <Pressable
           style={styles.icon}
-          onPress={() => {
-            Haptics.selectionAsync();
-            setHide(!hide);
-          }}>
+          onPress={onPressIcon}>
           <Ionicons
             name={hide ? "eye-off" : "eye"}
             size={24}

@@ -12,15 +12,14 @@ interface Props extends PressableProps {
   icon?: keyof typeof Ionicons.glyphMap | keyof typeof MaterialIcons.glyphMap;
   iconProvider?: "ionicons" | "material";
   imageSource?: ImageSourcePropType | null;
-  onPress: () => void;
 }
 
 function IconFloatingButton({
   icon,
   iconProvider = "ionicons",
   imageSource = null,
-  onPress,
   style,
+  onPress,
   ...pressableProps
 }: Props) {
   return (
@@ -30,9 +29,9 @@ function IconFloatingButton({
         pressed && styles.buttonPressed,
         typeof style === "function" ? style({ pressed }) : style,
       ]}
-      onPress={() => {
+      onPress={(event) => {
+        onPress?.(event);
         Haptics.selectionAsync();
-        onPress();
       }}
       {...pressableProps}>
       <LinearGradient

@@ -1,4 +1,4 @@
-import React, { memo, ReactNode, useRef } from "react";
+import React, { memo, ReactNode, useEffect, useRef } from "react";
 import { Dimensions } from "react-native";
 import ReanimatedDrawerLayout, {
   DrawerLayoutMethods,
@@ -20,7 +20,7 @@ interface CustomDrawerLayoutProps {
 function CustomDrawerLayout({ children }: CustomDrawerLayoutProps) {
   const drawerRef = useRef<DrawerLayoutMethods>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setDrawerRef({
       openDrawer: () => {
         drawerRef.current?.openDrawer({

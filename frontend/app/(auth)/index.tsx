@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { MapType, Region } from "react-native-maps";
 
 import * as Location from "expo-location";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
@@ -12,18 +12,6 @@ import { useLocationStore } from "@/stores/useLocationStore";
 import { Colors } from "@/constants/colors";
 
 export default function Index() {
-  const router = useRouter();
-
-  const [isLocationFinish, setIsLocationFinish] = useState<boolean>(false);
-  const [isPreferencesFinish, setIisPreferencesFinish] = useState<boolean>(false);
-
-  /* WATCHERS */
-  useEffect(() => {
-    if (isLocationFinish && isPreferencesFinish) {
-      router.replace("/login");
-    }
-  }, [isLocationFinish, isPreferencesFinish, router]);
-
   /* ON MOUNT */
   useEffect(() => {
     const getUserLocation = async () => {
@@ -54,10 +42,8 @@ export default function Index() {
         if (error.message.includes("unsatisfied device settings")) {
           console.log("El usuario tiene el GPS apagado y rechazó activarlo en los ajustes.");
         } else {
-          console.error("Otro error relacionado con la ubicación:", error);
+          console.log("Otro error relacionado con la ubicación:", error);
         }
-      } finally {
-        setIsLocationFinish(true);
       }
     };
 
@@ -71,13 +57,17 @@ export default function Index() {
 
         const brandOption = await SecureStore.getItemAsync("BrandOptionSelected");
         useGasStationStore.getState().setActiveBrandFilter(brandOption ?? "Todos");
-      } finally {
-        setIisPreferencesFinish(true);
+      } catch (error: any) {
+        console.log("Error al recuperar las preferencias de los usuarios", error);
       }
     };
 
-    getUserLocation();
-    getUserPreferences();
+    const initializeApp = async () => {
+      await Promise.all([getUserLocation(), getUserPreferences()]);
+      router.replace("/login");
+    };
+
+    initializeApp();
   }, []);
 
   return (

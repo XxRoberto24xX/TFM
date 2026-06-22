@@ -21,13 +21,12 @@ function FilterChipGas() {
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.scrollContainer}>
       {GAS_FILTER_OPTIONS.map((item) => {
-        const isSelected = activeGasFilter === item;
         return (
           <Pressable
             style={({ pressed }) => [
               styles.chip,
               pressed && styles.chipIsBeenPressed,
-              isSelected && styles.chipSelected,
+              activeGasFilter === item && styles.chipSelected,
             ]}
             key={item}
             onPress={() => {

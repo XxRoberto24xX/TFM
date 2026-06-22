@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { ActivityIndicator, Dimensions, Image, StyleSheet, View } from "react-native";
+import { useCallback, useState } from "react";
+import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
 import ErrorMessage from "@/components/ErrorMessage";
@@ -13,27 +13,49 @@ import ThemedText from "@/components/ThemedText";
 import { login, register } from "@/services/api";
 import { ApiError } from "@/types/types";
 import { Colors } from "@/constants/colors";
-
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
+import { LAYOUT } from "@/constants/values";
 
 export default function Register() {
-  const router = useRouter();
+  /* VARIABLES */
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleRegister = async () => {
+  const imageSource = require("@/assets/backgrounds/fondoLoginPequeno.png");
+
+  /* HANDLERS */
+  const onEmailChange = useCallback((text: string) => {
+    setEmail(text);
+  }, []);
+
+  const onPasswordChange = useCallback((text: string) => {
+    setPassword(text);
+  }, []);
+
+  const onPassword2Change = useCallback((text: string) => {
+    setPassword2(text);
+  }, []);
+
+  const onPressLoginRedirect = useCallback(() => {
+    router.back();
+  }, []);
+
+  const onPressRegister = useCallback(async () => {
     setLoading(true);
     setError("");
+
+    if (password !== password2) {
+      setError("Las contraseñas no coinciden");
+      return;
+    }
 
     try {
       await register(email, password);
       const response = await login(email, password);
-      await SecureStore.setItemAsync("token", response.token).then(() => {
-        router.replace("/home");
-      });
+      await SecureStore.setItemAsync("token", response.token);
+      router.replace("/home");
     } catch (callError) {
       const apiError = callError as ApiError;
       console.log("Register: " + apiError.message);
@@ -41,7 +63,7 @@ export default function Register() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [email, password, password2]);
 
   return (
     <KeyboardAwareScrollView
@@ -51,17 +73,18 @@ export default function Register() {
       extraScrollHeight={30}
       showsVerticalScrollIndicator={false}>
       <Image
-        source={require("@/assets/backgrounds/fondoLoginPequeno.png")}
+        source={imageSource}
         style={styles.backgroundImage}
       />
 
       <ThemedText
-        style={{ marginTop: 35 }}
+        style={styles.title}
         size="h1"
         color={Colors.textTertiary}
         weight="bold">
         Registrarse
       </ThemedText>
+
       <ThemedText
         size="l"
         color={Colors.textTertiary}
@@ -70,53 +93,47 @@ export default function Register() {
       </ThemedText>
 
       <TextInputBasic
-        style={{ marginTop: 45 }}
+        style={styles.emailInput}
         placeholder="Correo"
         value={email}
-        onChangeText={(text) => {
-          setEmail(text);
-        }}
+        onChangeText={onEmailChange}
       />
 
       <TextInputBasic
-        style={{ marginTop: 20 }}
+        style={styles.passwordInput}
         placeholder="Contraseña"
         icon={true}
         hideContent={true}
         value={password}
-        onChangeText={(text) => {
-          setPassword(text);
-        }}
+        onChangeText={onPasswordChange}
       />
 
       <TextInputBasic
-        style={{ marginTop: 20 }}
-        placeholder="Contraseña"
+        style={styles.passwordInput}
+        placeholder="Confirmar Contraseña"
         icon={true}
         hideContent={true}
         value={password2}
-        onChangeText={(text) => {
-          setPassword2(text);
-        }}
+        onChangeText={onPassword2Change}
       />
 
       {error ? (
-        <ErrorMessage style={{ marginTop: 20 }}>Las contraseñas no coinciden</ErrorMessage>
+        <ErrorMessage style={styles.errorMessage}>{error}</ErrorMessage>
       ) : (
-        <View style={{ height: 36 }}></View>
+        <View style={styles.errorSpacer}></View>
       )}
 
       {loading ? (
         <ActivityIndicator
-          style={{ marginTop: 45, height: 54 }}
+          style={styles.activityIndicator}
           size="large"
           color={Colors.primaryPink}
         />
       ) : (
         <FloatingButton
-          style={{ marginTop: 45 }}
+          style={styles.floatingButton}
           text="Crear Cuenta"
-          onPress={() => handleRegister()}
+          onPress={onPressRegister}
         />
       )}
 
@@ -128,12 +145,10 @@ export default function Register() {
           ¿Ya tienes cuenta?
         </ThemedText>
         <ThemedText
-          style={{ textDecorationLine: "underline" }}
+          style={styles.links}
           size="s"
           color={Colors.textTertiary}
-          onPress={() => {
-            router.back();
-          }}>
+          onPress={onPressLoginRedirect}>
           Inicia Sesión
         </ThemedText>
       </View>
@@ -150,8 +165,30 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   backgroundImage: {
-    width: SCREEN_WIDTH,
-    height: SCREEN_WIDTH * 0.66,
+    width: LAYOUT.window.width,
+    height: LAYOUT.window.width * 0.66,
+  },
+  title: {
+    marginTop: 35,
+  },
+  emailInput: {
+    marginTop: 45,
+  },
+  passwordInput: {
+    marginTop: 20,
+  },
+  errorMessage: {
+    marginTop: 20,
+  },
+  errorSpacer: {
+    height: 36,
+  },
+  activityIndicator: {
+    marginTop: 45,
+    height: 54,
+  },
+  floatingButton: {
+    marginTop: 45,
   },
   inlineMessageCreateAccount: {
     flexDirection: "row",
@@ -159,5 +196,8 @@ const styles = StyleSheet.create({
     width: "80%",
     marginTop: 50,
     gap: 5,
+  },
+  links: {
+    textDecorationLine: "underline",
   },
 });

@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useCallback } from "react";
 import { Image, Pressable, StyleSheet, View } from "react-native";
 
 import { router } from "expo-router";
@@ -33,10 +33,14 @@ function ListItemFavorite({ gasStation }: Props) {
     }
   };
 
+  const onItemPressed = useCallback(() => {
+    router.push({ pathname: "[id]", params: { id: gasStation.direction } });
+  }, [gasStation]);
+
   return (
     <Pressable
       style={({ pressed }) => [styles.container, pressed && styles.containerPressed]}
-      onPress={() => router.push({ pathname: "[id]", params: { id: gasStation.direction } })}>
+      onPress={onItemPressed}>
       <View style={styles.imageView}>
         <Image
           style={styles.image}
@@ -46,15 +50,12 @@ function ListItemFavorite({ gasStation }: Props) {
       <View style={styles.infoView}>
         <ThemedText size="l">{gasStation.direction}</ThemedText>
         <ThemedText
-          style={{ marginTop: 6 }}
+          style={styles.municipalityText}
           size="s">
           {gasStation.municipality}
         </ThemedText>
       </View>
-      <Pressable
-        onPress={() => {
-          onRemoveFromFavorites();
-        }}>
+      <Pressable onPress={onRemoveFromFavorites}>
         <MaterialIcons
           name={"bookmark-remove"}
           size={36}
@@ -86,6 +87,9 @@ const styles = StyleSheet.create({
   infoView: {
     flexDirection: "column",
     flex: 1,
+  },
+  municipalityText: {
+    marginTop: 6,
   },
   imageView: {
     backgroundColor: Colors.white,

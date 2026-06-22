@@ -1,20 +1,24 @@
 import { memo } from "react";
-import { Pressable, PressableProps, StyleSheet } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 
 import { Predicction } from "@/types/types";
 import { Colors } from "@/constants/colors";
 
 import ThemedText from "./ThemedText";
 
-interface Props extends PressableProps {
+interface Props {
   prediction: Predicction;
+  onPress: (place: Predicction) => void;
 }
 
-function ListItemPrediction({ prediction, ...pressableProps }: Props) {
+function ListItemPrediction({ prediction, onPress }: Props) {
+  const onPressItem = () => {
+    onPress(prediction);
+  };
   return (
     <Pressable
       style={({ pressed }) => [styles.container, pressed && styles.containerPressed]}
-      {...pressableProps}>
+      onPress={onPressItem}>
       <ThemedText size="l">{prediction.structured_formatting.main_text}</ThemedText>
       <ThemedText
         style={{ marginTop: 6 }}

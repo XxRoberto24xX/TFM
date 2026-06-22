@@ -17,7 +17,6 @@ import { Predicction } from "@/types/types";
 const openGoogleMaps = (origin: Predicction, destination: Predicction) => {
   const url = `https://www.google.com/maps/dir/?api=1&origin=${origin.coordinates?.latitude},${origin.coordinates?.longitude}&destination=${destination.coordinates?.latitude},${destination.coordinates?.longitude}&travelmode=driving`;
 
-  // Abrimos la URL
   Linking.openURL(url).catch((err) => {
     console.log("Error: No se pudo abrir Google Maps. Asegúrate de tener la app instalada.");
   });
@@ -28,22 +27,22 @@ export default function Route() {
   const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  const origin = useGoogleAutocompleteStore((state) => state.origin);
-  const destiny = useGoogleAutocompleteStore((state) => state.destiny);
-
-  const userLocation = useLocationStore((state) => state.userLocation);
-
   /* HANDLER */
-  const handlerShareToGoogleMaps = useCallback(() => {
+  const onShareToGoogleMaps = useCallback(() => {
+    const origin = useGoogleAutocompleteStore.getState().origin;
+    const destiny = useGoogleAutocompleteStore.getState().origin;
+
     if (origin && destiny) {
       openGoogleMaps(origin, destiny);
     } else {
       console.log("No hay ruta que compartir");
     }
-  }, [origin, destiny]);
+  }, []);
 
   /* WATCHERS */
   useEffect(() => {
+    const userLocation = useLocationStore.getState().userLocation;
+
     if (userLocation) {
       useGoogleAutocompleteStore.getState().setOrigin({
         place_id: "-1",
@@ -59,7 +58,7 @@ export default function Route() {
       });
       useGoogleAutocompleteStore.getState().setQuery("origin", "Ubicación Actual");
     }
-  }, [userLocation]);
+  }, []);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -69,14 +68,14 @@ export default function Route() {
         placeHolder="Origen"
       />
       <TextInputAutocomplete
-        style={{ marginTop: 16 }}
+        style={styles.destination}
         type="destiny"
         placeHolder="Destino"
       />
       <IconFloatingButton
-        style={{ margin: 16, alignSelf: "flex-end" }}
+        style={styles.googleMapsButton}
         imageSource={require("@/assets/icons/googleMaps.png")}
-        onPress={handlerShareToGoogleMaps}
+        onPress={onShareToGoogleMaps}
       />
       <BottomSheetAutocomplete bottomSheetRef={bottomSheetRef} />
     </View>
@@ -89,5 +88,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     paddingTop: 16,
+  },
+  destination: {
+    marginTop: 16,
+  },
+  googleMapsButton: {
+    margin: 16,
+    alignSelf: "flex-end",
   },
 });

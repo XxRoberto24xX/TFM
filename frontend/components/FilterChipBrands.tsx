@@ -22,14 +22,12 @@ function FilterChipBrands() {
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.scrollContainer}>
       {BRAND_FILTER_OPTIONS.map((item) => {
-        const isSelected = activeBrandFilter === item;
-        const imageSource = BRAND_IMAGES[item.toUpperCase()];
         return (
           <Pressable
             style={({ pressed }) => [
               styles.chip,
               pressed && styles.chipIsBeenPressed,
-              isSelected && styles.chipSelected,
+              activeBrandFilter === item && styles.chipSelected,
             ]}
             key={item}
             onPress={() => {
@@ -39,7 +37,7 @@ function FilterChipBrands() {
             }}>
             <Image
               style={styles.image}
-              source={imageSource}
+              source={BRAND_IMAGES[item.toUpperCase()]}
             />
             <ThemedText
               size="m"

@@ -23,7 +23,7 @@ function MarkerGasStation({ gasStation }: Props) {
   );
 }
 
-const areEqual = (prevProps: any, nextProps: any) => {
+const areEqual = (prevProps: { gasStation: GasStation }, nextProps: { gasStation: GasStation }) => {
   return (
     prevProps.gasStation.id === nextProps.gasStation.id &&
     JSON.stringify(prevProps.gasStation.prices) === JSON.stringify(nextProps.gasStation.prices)

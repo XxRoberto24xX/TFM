@@ -65,7 +65,7 @@ function DrawerContent() {
   const handleLogout = async () => {
     await SecureStore.deleteItemAsync("token");
     closeDrawer();
-    router.replace("/");
+    router.replace("/login");
   };
 
   return (

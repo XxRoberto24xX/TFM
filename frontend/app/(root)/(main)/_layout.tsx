@@ -2,7 +2,7 @@ import { Image, StyleSheet } from "react-native";
 
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
-import { Stack, useRouter } from "expo-router";
+import { router, Stack } from "expo-router";
 
 import { Ionicons } from "@expo/vector-icons";
 
@@ -14,8 +14,6 @@ import { Colors } from "@/constants/colors";
 import { openDrawer } from "@/utils/DrawerController";
 
 export default function MainLayout() {
-  const router = useRouter();
-
   return (
     <Stack
       screenOptions={{

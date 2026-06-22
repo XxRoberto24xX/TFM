@@ -22,9 +22,11 @@ interface googleAutocompleteState {
   setQuery: (type: AutocompleteType, value: string) => void;
   handleCancelSearch: () => void;
   setActiveInput: (type: AutocompleteType | null) => void;
+
+  resetStore: () => void;
 }
 
-export const useGoogleAutocompleteStore = create<googleAutocompleteState>((set) => ({
+const initialValues = {
   origin: null,
   destiny: null,
   originQuery: "",
@@ -34,6 +36,10 @@ export const useGoogleAutocompleteStore = create<googleAutocompleteState>((set) 
   sesionToken: null,
   displayBottomSheet: false,
   activeInput: null,
+};
+
+export const useGoogleAutocompleteStore = create<googleAutocompleteState>((set) => ({
+  ...initialValues,
 
   setOrigin: (origin) => set({ origin }),
   setDestiny: (destiny) => set({ destiny }),
@@ -68,4 +74,6 @@ export const useGoogleAutocompleteStore = create<googleAutocompleteState>((set) 
       };
     }),
   setActiveInput: (type) => set({ activeInput: type }),
+
+  resetStore: () => set(initialValues),
 }));

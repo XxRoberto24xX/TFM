@@ -1,4 +1,4 @@
-import { ImageSourcePropType } from "react-native";
+import { Dimensions, ImageSourcePropType } from "react-native";
 import { Region } from "react-native-maps";
 
 import { Price } from "@/types/types";
@@ -45,4 +45,13 @@ export const DEFAULT_REGION: Region = {
   longitude: -3.7038,
   latitudeDelta: 0.05,
   longitudeDelta: 0.05,
+};
+
+const { width, height } = Dimensions.get("window");
+
+export const LAYOUT = {
+  window: {
+    width,
+    height,
+  },
 };

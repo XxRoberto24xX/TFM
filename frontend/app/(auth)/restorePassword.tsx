@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { ActivityIndicator, Dimensions, Image, StyleSheet, View } from "react-native";
+import { useCallback, useState } from "react";
+import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 
 import ErrorMessage from "@/components/ErrorMessage";
 import FloatingButton from "@/components/FloatingButton";
@@ -12,16 +12,26 @@ import ThemedText from "@/components/ThemedText";
 import { passwordResetEmail } from "@/services/api";
 import { ApiError } from "@/types/types";
 import { Colors } from "@/constants/colors";
-
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
+import { LAYOUT } from "@/constants/values";
 
 export default function RestorePassword() {
-  const router = useRouter();
+  /* VARIABLES */
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("sdfafdf");
+  const [error, setError] = useState("");
 
-  const handleSendPasswordEmail = async () => {
+  const imageSource = require("@/assets/backgrounds/fondoLoginGrande.png");
+
+  /* HANDLERS */
+  const onEmailChange = useCallback((text: string) => {
+    setEmail(text);
+  }, []);
+
+  const onPressBackToLogin = useCallback(() => {
+    router.back();
+  }, []);
+
+  const onPressSendPasswordEmail = useCallback(async () => {
     setLoading(true);
     setError("");
 
@@ -29,12 +39,12 @@ export default function RestorePassword() {
       await passwordResetEmail(email);
     } catch (callError) {
       const apiError = callError as ApiError;
-      console.log("Register: " + apiError.message);
+      console.log("RestorePassword: " + apiError.message);
       setError(apiError.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, [email]);
 
   return (
     <KeyboardAwareScrollView
@@ -44,17 +54,18 @@ export default function RestorePassword() {
       extraScrollHeight={30}
       showsVerticalScrollIndicator={false}>
       <Image
-        source={require("@/assets/backgrounds/fondoLoginGrande.png")}
+        source={imageSource}
         style={styles.backgroundImage}
       />
 
       <ThemedText
-        style={{ textAlign: "center", marginTop: 35 }}
+        style={styles.title}
         size="h1"
         color={Colors.textTertiary}
         weight="bold">
-        Recuperacion de Cuenta
+        Recuperación de Cuenta
       </ThemedText>
+
       <ThemedText
         size="l"
         color={Colors.textTertiary}
@@ -63,31 +74,29 @@ export default function RestorePassword() {
       </ThemedText>
 
       <TextInputBasic
-        style={{ marginTop: 45 }}
+        style={styles.emailInput}
         placeholder="Correo"
         value={email}
-        onChangeText={(text) => {
-          setEmail(text);
-        }}
+        onChangeText={onEmailChange}
       />
 
       {error ? (
-        <ErrorMessage style={{ marginTop: 20 }}>En desarrollo</ErrorMessage>
+        <ErrorMessage style={styles.errorMessage}>En desarrollo</ErrorMessage>
       ) : (
-        <View style={{ height: 36 }}></View>
+        <View style={styles.errorSpacer}></View>
       )}
 
       {loading ? (
         <ActivityIndicator
-          style={{ marginTop: 45, height: 54 }}
+          style={styles.activityIndicator}
           size="large"
           color={Colors.primaryPink}
         />
       ) : (
         <FloatingButton
-          style={{ marginTop: 45 }}
-          text="Crear Cuenta"
-          onPress={() => handleSendPasswordEmail()}
+          style={styles.floatingButton}
+          text="Enviar Correo"
+          onPress={onPressSendPasswordEmail}
         />
       )}
 
@@ -95,9 +104,7 @@ export default function RestorePassword() {
         style={styles.link}
         size="s"
         color={Colors.textTertiary}
-        onPress={() => {
-          router.back();
-        }}>
+        onPress={onPressBackToLogin}>
         Volver al inicio de Sesión
       </ThemedText>
     </KeyboardAwareScrollView>
@@ -113,8 +120,28 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   backgroundImage: {
-    width: SCREEN_WIDTH,
-    height: SCREEN_WIDTH * 0.8,
+    width: LAYOUT.window.width,
+    height: LAYOUT.window.width * 0.8,
+  },
+  title: {
+    textAlign: "center",
+    marginTop: 35,
+  },
+  emailInput: {
+    marginTop: 45,
+  },
+  errorMessage: {
+    marginTop: 20,
+  },
+  errorSpacer: {
+    height: 36,
+  },
+  activityIndicator: {
+    marginTop: 45,
+    height: 54,
+  },
+  floatingButton: {
+    marginTop: 45,
   },
   link: {
     marginTop: 50,

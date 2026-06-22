@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import MapView, { Region } from "react-native-maps";
 
@@ -25,10 +25,10 @@ export default function Home() {
 
   const userLocation = useLocationStore((state) => state.userLocation);
   const isCenteredOnUser = useLocationStore((state) => state.isCenteredOnUser);
-  const mapType = useGasStationStore((state) => state.mapType);
 
   /* HANDLERS */
-  const onGoToUserLocation = () => {
+  const onGoToUserLocation = useCallback(() => {
+    const userLocation = useLocationStore.getState().userLocation;
     if (userLocation && mapRef.current) {
       const userRegion: Region = {
         latitude: userLocation.coords.latitude,
@@ -41,9 +41,10 @@ export default function Home() {
       useLocationStore.getState().setLastRegion(userRegion);
       useLocationStore.getState().setIsCenteredOnUser(true);
     }
-  };
+  }, []);
 
-  const onMapTypeChange = () => {
+  const onMapTypeChange = useCallback(() => {
+    const mapType = useGasStationStore.getState().mapType;
     const mapTypeChange = async () => {
       if (mapType === "standard") {
         useGasStationStore.getState().setMapType("hybrid");
@@ -55,7 +56,7 @@ export default function Home() {
     };
 
     mapTypeChange();
-  };
+  }, []);
 
   /* ON MOUNT */
   useEffect(() => {
@@ -78,11 +79,11 @@ export default function Home() {
       <View style={[styles.mainViewContainer, { paddingTop: headerHeight }]}>
         <FilterChipBrands />
         <IconFloatingButton
-          style={{ alignSelf: "flex-end", margin: 8 }}
-          icon={"layers"}
-          onPress={() => onMapTypeChange()}
+          style={styles.mapTypeButton}
+          icon="layers"
+          onPress={onMapTypeChange}
         />
-        <View style={{ marginTop: "auto" }}>
+        <View style={styles.bottomView}>
           <CardGasStation style={styles.gasStationPreview} />
           <View style={styles.bottomViewContainer}>
             <FilterChipGas />
@@ -90,7 +91,7 @@ export default function Home() {
               <IconFloatingButton
                 icon={isCenteredOnUser ? "gps-fixed" : "gps-not-fixed"}
                 iconProvider="material"
-                onPress={() => onGoToUserLocation()}
+                onPress={onGoToUserLocation}
               />
             )}
           </View>
@@ -119,5 +120,12 @@ const styles = StyleSheet.create({
     gap: 10,
     marginEnd: 10,
     marginBottom: 10,
+  },
+  mapTypeButton: {
+    alignSelf: "flex-end",
+    margin: 8,
+  },
+  bottomView: {
+    marginTop: "auto",
   },
 });

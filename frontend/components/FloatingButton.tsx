@@ -10,10 +10,9 @@ import { Colors } from "../constants/colors";
 
 interface Props extends PressableProps {
   text: string;
-  onPress: () => void;
 }
 
-function FloatingButton({ text, onPress, style, ...pressableProps }: Props) {
+function FloatingButton({ text, onPress, style, onPressIn, ...pressableProps }: Props) {
   return (
     <Pressable
       style={({ pressed }) => [
@@ -21,9 +20,9 @@ function FloatingButton({ text, onPress, style, ...pressableProps }: Props) {
         pressed && styles.buttonPressed,
         typeof style === "function" ? style({ pressed }) : style, // <- made to introduce de style only if its a stylesheet
       ]}
-      onPress={() => {
+      onPress={(event) => {
+        onPress?.(event);
         Haptics.selectionAsync();
-        onPress();
       }}
       {...pressableProps}>
       <LinearGradient
@@ -32,7 +31,7 @@ function FloatingButton({ text, onPress, style, ...pressableProps }: Props) {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}>
         <ThemedText
-          style={{ textAlign: "center" }}
+          style={styles.text}
           size="xl">
           {text}
         </ThemedText>
@@ -74,5 +73,8 @@ const styles = StyleSheet.create({
   gradient: {
     paddingVertical: 15,
     paddingHorizontal: 45,
+  },
+  text: {
+    textAlign: "center",
   },
 });

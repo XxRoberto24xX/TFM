@@ -12,9 +12,10 @@ import ThemedText from "@/components/ThemedText";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
 
+import { GasStation } from "@/types/types";
 import { Colors } from "@/constants/colors";
 
-const CustomBackground = ({ style }: BottomSheetBackgroundProps) => {
+const customBackground = ({ style }: BottomSheetBackgroundProps) => {
   return (
     <LinearGradient
       style={style}
@@ -35,6 +36,8 @@ const favoritesPraceHolder = () => (
   </View>
 );
 
+const renderItem = ({ item }: { item: GasStation }) => <ListItemFavorite gasStation={item} />;
+
 function BottomSheetFavorites() {
   /* VARIABLES */
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -44,6 +47,7 @@ function BottomSheetFavorites() {
 
   const listFavorites = useGasStationStore((state) => state.listFavorites);
 
+  /* ANIMATED STYLES */
   const iconStyle = useAnimatedStyle(() => {
     const rotation = interpolate(animatedIndex.value, [0, 1], [0, 180], "clamp");
     return {
@@ -55,7 +59,7 @@ function BottomSheetFavorites() {
   const snapPoints = useMemo(() => [80, Dimensions.get("window").height * 0.4], []);
 
   /* HANDELERS */
-  const handelToggleBottomSheet = useCallback(() => {
+  const onToggleBottomSheet = useCallback(() => {
     if (isExpanded) {
       bottomSheetRef.current?.snapToIndex(0);
     } else {
@@ -63,25 +67,27 @@ function BottomSheetFavorites() {
     }
   }, [isExpanded]);
 
+  const onBottomSheetChange = useCallback((index: number) => {
+    setIsExpanded(index === 1);
+  }, []);
+
   return (
     <BottomSheet
       ref={bottomSheetRef}
       animatedIndex={animatedIndex}
-      style={{ borderTopLeftRadius: 30, borderTopRightRadius: 30, overflow: "hidden" }}
+      style={styles.bottomSheet}
       snapPoints={snapPoints}
       index={0}
-      onChange={(index) => {
-        setIsExpanded(index === 1);
-      }}
+      onChange={onBottomSheetChange}
       enableDynamicSizing={false}
       enableOverDrag={false}
-      handleIndicatorStyle={{ backgroundColor: "white" }}
-      backgroundComponent={CustomBackground}>
+      handleIndicatorStyle={styles.handlerIndicator}
+      backgroundComponent={customBackground}>
       <View style={styles.saveHeader}>
         <ThemedText size="h2">Guardados</ThemedText>
         <Pressable
-          style={{ marginStart: "auto" }}
-          onPress={handelToggleBottomSheet}>
+          style={styles.iconContainer}
+          onPress={onToggleBottomSheet}>
           <Animated.View style={iconStyle}>
             <Ionicons
               name="chevron-up"
@@ -93,12 +99,12 @@ function BottomSheetFavorites() {
       </View>
 
       <BottomSheetFlatList
-        style={{ paddingHorizontal: 24 }}
+        style={styles.list}
         data={listFavorites}
         keyExtractor={(item) => item.id.toString()}
         ListEmptyComponent={favoritesPraceHolder}
-        contentContainerStyle={{ gap: 8, paddingBottom: 8 }}
-        renderItem={({ item }) => <ListItemFavorite gasStation={item} />}
+        contentContainerStyle={styles.listContainer}
+        renderItem={renderItem}
       />
     </BottomSheet>
   );
@@ -107,11 +113,28 @@ function BottomSheetFavorites() {
 export default memo(BottomSheetFavorites);
 
 const styles = StyleSheet.create({
+  bottomSheet: {
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    overflow: "hidden",
+  },
+  handlerIndicator: {
+    backgroundColor: "white",
+  },
   saveHeader: {
     flexDirection: "row",
-    alignContent: "center",
     paddingHorizontal: 24,
     paddingBottom: 24,
+  },
+  iconContainer: {
+    marginStart: "auto",
+  },
+  list: {
+    paddingHorizontal: 24,
+  },
+  listContainer: {
+    gap: 8,
+    paddingBottom: 8,
   },
   emptyContainer: {
     alignItems: "center",

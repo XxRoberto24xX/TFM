@@ -22,32 +22,33 @@ interface Props {
 
 function TextInputAutocomplete({ placeHolder, style, type, ref }: Props) {
   /* VARIABLES */
+  const INPUT_DEBOUNCE = 300;
+
   const query = useGoogleAutocompleteStore((state) => (type === "origin" ? state.originQuery : state.destinyQuery));
   const sessionToken = useGoogleAutocompleteStore((state) => state.sesionToken);
 
   const debounceTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   /* FUNCTIONS */
-  const searchPlaces = useCallback(
-    async (text: string) => {
-      try {
-        if (sessionToken !== null) {
-          const data = await getPlaceAutocomplete(text, sessionToken);
-          useGoogleAutocompleteStore.getState().setPredictions(data.predictions || []);
-        } else {
-          console.error("Input Error buscando lugares: el session token es nulo");
-        }
-      } catch (error) {
-        console.error("Error buscando lugares:", error);
-      } finally {
-        useGoogleAutocompleteStore.getState().setIsLoading(false);
+  const searchPlaces = useCallback(async (text: string) => {
+    const token = useGoogleAutocompleteStore.getState().sesionToken;
+
+    try {
+      if (token !== null) {
+        const data = await getPlaceAutocomplete(text, token);
+        useGoogleAutocompleteStore.getState().setPredictions(data.predictions || []);
+      } else {
+        console.error("Input Error buscando lugares: el session token es nulo");
       }
-    },
-    [sessionToken],
-  );
+    } catch (error) {
+      console.error("Error buscando lugares:", error);
+    } finally {
+      useGoogleAutocompleteStore.getState().setIsLoading(false);
+    }
+  }, []);
 
   /* HANDLERS */
-  const handleTextChange = useCallback(
+  const onTextChange = useCallback(
     (text: string) => {
       useGoogleAutocompleteStore.getState().setQuery(type, text);
 
@@ -64,12 +65,12 @@ function TextInputAutocomplete({ placeHolder, style, type, ref }: Props) {
       useGoogleAutocompleteStore.getState().setIsLoading(true);
       debounceTimeout.current = setTimeout(() => {
         searchPlaces(text);
-      }, 300);
+      }, INPUT_DEBOUNCE);
     },
     [type, searchPlaces],
   );
 
-  const handleClear = useCallback(() => {
+  const onPressClear = useCallback(() => {
     if (type === "origin") {
       useGoogleAutocompleteStore.getState().setOrigin(null);
     } else {
@@ -80,7 +81,19 @@ function TextInputAutocomplete({ placeHolder, style, type, ref }: Props) {
     useGoogleAutocompleteStore.getState().setSessionToken(null);
     useGoogleAutocompleteStore.getState().setDisplayBottomSheet(false);
     Keyboard.dismiss();
+
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
   }, [type]);
+
+  const onInputFocusGained = useCallback(() => {
+    useGoogleAutocompleteStore.getState().setActiveInput(type);
+    useGoogleAutocompleteStore.getState().setDisplayBottomSheet(true);
+    if (!sessionToken) {
+      useGoogleAutocompleteStore.getState().setSessionToken(Crypto.randomUUID());
+    }
+  }, [sessionToken, type]);
 
   return (
     <LinearGradient
@@ -95,19 +108,13 @@ function TextInputAutocomplete({ placeHolder, style, type, ref }: Props) {
         placeholderTextColor={Colors.textPrimary}
         cursorColor={Colors.textPrimary}
         value={query}
-        onChangeText={handleTextChange}
-        onFocus={() => {
-          useGoogleAutocompleteStore.getState().setActiveInput(type);
-          useGoogleAutocompleteStore.getState().setDisplayBottomSheet(true);
-          if (!sessionToken) {
-            useGoogleAutocompleteStore.getState().setSessionToken(Crypto.randomUUID());
-          }
-        }}
+        onChangeText={onTextChange}
+        onFocus={onInputFocusGained}
       />
       {query.length > 0 && (
         <Pressable
           style={styles.icon}
-          onPress={handleClear}>
+          onPress={onPressClear}>
           <Ionicons
             name="close-circle"
             size={20}

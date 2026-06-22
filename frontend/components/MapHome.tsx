@@ -1,6 +1,6 @@
 import { memo, RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import MapView, { PROVIDER_GOOGLE, Region } from "react-native-maps";
+import MapView, { Details, PROVIDER_GOOGLE, Region } from "react-native-maps";
 
 import { useFocusEffect } from "expo-router";
 
@@ -11,24 +11,24 @@ import { useLocationStore } from "@/stores/useLocationStore";
 
 import { getGasStationsInRange } from "@/services/api";
 import { ApiError, GasStation } from "@/types/types";
+import { Colors } from "@/constants/colors";
 import { DEFAULT_REGION, FILTER_TO_PRICE_KEY, MAX_LATITUDE_DELTA_FOR_MARKERS } from "@/constants/values";
 
 interface Props {
   ref?: RefObject<MapView | null>;
 }
 
+const LOADING_THRESHOLD_MS = 500;
+
 function MapHome({ ref }: Props) {
   /* VARIABLES */
-  const LOADING_THRESHOLD_MS = 500;
-
   const [returnedGasStations, setReturnedGasStations] = useState<GasStation[]>([]);
   const [mapKey, setMapKey] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const activeBrandFilter = useGasStationStore((state) => state.activeBrandFilter);
-  const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
+  const initialRegion = useLocationStore.getState().lastRegion || DEFAULT_REGION;
+
   const mapType = useGasStationStore((state) => state.mapType);
-  const lastRegion = useLocationStore.getState().lastRegion;
 
   const loadingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -37,6 +37,9 @@ function MapHome({ ref }: Props) {
     if (!returnedGasStations || returnedGasStations.length === 0) {
       return [];
     }
+
+    const activeBrandFilter = useGasStationStore.getState().activeBrandFilter;
+    const activeGasFilter = useGasStationStore.getState().activeGasFilter;
 
     const filteredStations = returnedGasStations.filter((station) => {
       const matchesBrand =
@@ -54,10 +57,14 @@ function MapHome({ ref }: Props) {
     }
 
     return filteredStations;
-  }, [returnedGasStations, activeBrandFilter, activeGasFilter]);
+  }, [returnedGasStations]);
 
   /* HANDLERS */
-  const onRegionChanged = async (region: Region) => {
+  const onRegionChanged = useCallback(async (region: Region, details: Details) => {
+    if (loadingTimeoutRef.current) {
+      clearTimeout(loadingTimeoutRef.current);
+    }
+
     loadingTimeoutRef.current = setTimeout(() => {
       setIsLoading(true);
     }, LOADING_THRESHOLD_MS);
@@ -85,8 +92,17 @@ function MapHome({ ref }: Props) {
     } else {
       setReturnedGasStations([]);
     }
-  };
 
+    if (details?.isGesture) {
+      useLocationStore.getState().setIsCenteredOnUser(false);
+    }
+  }, []);
+
+  const onMapPressed = useCallback(() => {
+    useGasStationStore.getState().setSelectedGasStation(null);
+  }, []);
+
+  /* WATCHERS */
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
       if (loadingTimeoutRef.current) {
@@ -100,6 +116,8 @@ function MapHome({ ref }: Props) {
   }, [paintedGasStations]);
 
   /* ON ACTIVE */
+  //need to bypasses a rendering bug with the maps library when painting markers
+  //when the focus is regained
   useFocusEffect(
     useCallback(() => {
       setMapKey((k) => k + 1);
@@ -128,17 +146,10 @@ function MapHome({ ref }: Props) {
         showsCompass={false}
         toolbarEnabled={false}
         mapType={mapType}
-        onPress={() => useGasStationStore.getState().setSelectedGasStation(null)}
-        onPoiClick={() => {
-          useGasStationStore.getState().setSelectedGasStation(null);
-        }}
-        onRegionChangeComplete={(region, details) => {
-          onRegionChanged(region);
-          if (details?.isGesture) {
-            useLocationStore.getState().setIsCenteredOnUser(false);
-          }
-        }}
-        initialRegion={lastRegion ?? DEFAULT_REGION}>
+        onPress={onMapPressed}
+        onPoiClick={onMapPressed}
+        onRegionChangeComplete={onRegionChanged}
+        initialRegion={initialRegion}>
         {paintedGasStations.map((station) => (
           <MarkerGasStation
             key={station.id}
@@ -152,7 +163,7 @@ function MapHome({ ref }: Props) {
           <View style={styles.loadingContainer}>
             <ActivityIndicator
               size="large"
-              color="#FFFFFF"
+              color={Colors.textPrimary}
             />
             <Text style={styles.loadingText}> Cargando Gasolineras ... </Text>
           </View>

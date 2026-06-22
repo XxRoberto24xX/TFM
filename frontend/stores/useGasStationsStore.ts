@@ -18,9 +18,13 @@ interface GasStationState {
   setActiveGasFilter: (gasType: string) => void;
   setSelectedGasStation: (station: GasStation | null) => void;
   setMapType: (mapType: MapType) => void;
+
+  isFavorite: (id: number | undefined) => boolean;
+  isBrandFilterSelected: (value: string) => boolean;
+  isGasFilterSelected: (value: string) => boolean;
 }
 
-export const useGasStationStore = create<GasStationState>((set) => ({
+export const useGasStationStore = create<GasStationState>((set, get) => ({
   listFavorites: [],
   activeBrandFilter: "Todos",
   activeGasFilter: "E5 95",
@@ -47,4 +51,17 @@ export const useGasStationStore = create<GasStationState>((set) => ({
   setActiveGasFilter: (gasType) => set({ activeGasFilter: gasType }),
   setSelectedGasStation: (station) => set({ selectedGasStation: station }),
   setMapType: (mapType) => set({ mapType: mapType }),
+
+  isFavorite: (id) => {
+    if (!id) return false;
+    return get().listFavorites.some((fav) => fav.id === id);
+  },
+
+  isBrandFilterSelected: (value) => {
+    return value === get().activeBrandFilter;
+  },
+
+  isGasFilterSelected: (value) => {
+    return value === get().activeGasFilter;
+  },
 }));

@@ -53,8 +53,6 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
   const snapPoints = useMemo(() => ["70%"], []);
 
   const UserLocationOption = useMemo(() => {
-    const userLocation = useLocationStore.getState().userLocation;
-
     return {
       place_id: "-1",
       description: "Mi ubicación actual",
@@ -69,7 +67,7 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
           }
         : undefined,
     };
-  }, []);
+  }, [userLocation]);
 
   /* HANDLERS */
   const onPlaceSelect = useCallback(async (place: Predicction) => {

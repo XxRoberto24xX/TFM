@@ -29,6 +29,8 @@ function MapHome({ ref }: Props) {
   const initialRegion = useLocationStore.getState().lastRegion || DEFAULT_REGION;
 
   const mapType = useGasStationStore((state) => state.mapType);
+  const activeBrandFilter = useGasStationStore((state) => state.activeBrandFilter);
+  const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
 
   const loadingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -37,9 +39,6 @@ function MapHome({ ref }: Props) {
     if (!returnedGasStations || returnedGasStations.length === 0) {
       return [];
     }
-
-    const activeBrandFilter = useGasStationStore.getState().activeBrandFilter;
-    const activeGasFilter = useGasStationStore.getState().activeGasFilter;
 
     const filteredStations = returnedGasStations.filter((station) => {
       const matchesBrand =
@@ -57,7 +56,7 @@ function MapHome({ ref }: Props) {
     }
 
     return filteredStations;
-  }, [returnedGasStations]);
+  }, [returnedGasStations, activeBrandFilter, activeGasFilter]);
 
   /* HANDLERS */
   const onRegionChanged = useCallback(async (region: Region, details: Details) => {

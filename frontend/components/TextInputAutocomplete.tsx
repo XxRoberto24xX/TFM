@@ -25,17 +25,16 @@ function TextInputAutocomplete({ placeHolder, style, type, ref }: Props) {
   const INPUT_DEBOUNCE = 300;
 
   const query = useGoogleAutocompleteStore((state) => (type === "origin" ? state.originQuery : state.destinyQuery));
-  const sessionToken = useGoogleAutocompleteStore((state) => state.sesionToken);
 
   const debounceTimeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   /* FUNCTIONS */
   const searchPlaces = useCallback(async (text: string) => {
-    const token = useGoogleAutocompleteStore.getState().sesionToken;
+    const sessionToken = useGoogleAutocompleteStore.getState().sesionToken;
 
     try {
-      if (token !== null) {
-        const data = await getPlaceAutocomplete(text, token);
+      if (sessionToken !== null) {
+        const data = await getPlaceAutocomplete(text, sessionToken);
         useGoogleAutocompleteStore.getState().setPredictions(data.predictions || []);
       } else {
         console.error("Input Error buscando lugares: el session token es nulo");
@@ -88,12 +87,14 @@ function TextInputAutocomplete({ placeHolder, style, type, ref }: Props) {
   }, [type]);
 
   const onInputFocusGained = useCallback(() => {
+    const sessionToken = useGoogleAutocompleteStore.getState().sesionToken;
+
     useGoogleAutocompleteStore.getState().setActiveInput(type);
     useGoogleAutocompleteStore.getState().setDisplayBottomSheet(true);
     if (!sessionToken) {
       useGoogleAutocompleteStore.getState().setSessionToken(Crypto.randomUUID());
     }
-  }, [sessionToken, type]);
+  }, [type]);
 
   return (
     <LinearGradient

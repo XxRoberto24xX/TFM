@@ -1,6 +1,7 @@
-import { memo, useCallback, useEffect, useState } from "react";
-import { Animated, GestureResponderEvent, Image, Pressable, StyleSheet, View } from "react-native";
+import { memo, useCallback, useEffect, useRef } from "react";
+import { GestureResponderEvent, Image, Pressable, StyleSheet, View } from "react-native";
 import { PressableProps } from "react-native-gesture-handler";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -20,7 +21,8 @@ import { getMarkerGasDisplayInfo } from "@/utils/gasStationsUtils";
 
 function CardGasStation({ style }: PressableProps) {
   /* VARIABLES */
-  const [slideAnim] = useState(() => new Animated.Value(300));
+  const translateY = useSharedValue(300);
+  const translateYRef = useRef(translateY);
 
   const selectedGasStation = useGasStationStore((state) => state.selectedGasStation);
   const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
@@ -28,17 +30,27 @@ function CardGasStation({ style }: PressableProps) {
 
   const imageSource = selectedGasStation ? BRAND_IMAGES[selectedGasStation.brand] || DEFAULT_IMAGE : DEFAULT_IMAGE;
 
-  /* ANIMATION EFFECTS */
+  /* ANIMATED STYLES */
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: translateY.value }],
+    };
+  });
+
   useEffect(() => {
-    Animated.timing(slideAnim, {
-      toValue: selectedGasStation ? 0 : 300,
-      duration: selectedGasStation ? 300 : 250,
-      useNativeDriver: true,
-    }).start();
-  }, [selectedGasStation, slideAnim]);
+    const targetValue = selectedGasStation ? 0 : 300;
+    const duration = selectedGasStation ? 300 : 250;
+
+    translateYRef.current.value = withTiming(targetValue, {
+      duration: duration,
+    });
+  }, [selectedGasStation]);
 
   /* HANDLERS */
   const onToggleFavorite = useCallback(async () => {
+    const selectedGasStation = useGasStationStore.getState().selectedGasStation;
+    const isFavorite = useGasStationStore.getState().isFavorite(selectedGasStation?.id);
+
     if (selectedGasStation) {
       try {
         if (!isFavorite) {
@@ -53,27 +65,22 @@ function CardGasStation({ style }: PressableProps) {
         console.log("Toggle Favorite: " + apiError.message);
       }
     }
-  }, [isFavorite, selectedGasStation]);
+  }, []);
 
-  const onCardClick = useCallback(
-    (event: GestureResponderEvent) => {
-      event.stopPropagation();
-      if (selectedGasStation) {
-        router.push({
-          pathname: "[id]",
-          params: { id: selectedGasStation.id },
-        });
-      }
-    },
-    [selectedGasStation],
-  );
+  const onCardClick = useCallback((event: GestureResponderEvent) => {
+    const selectedGasStation = useGasStationStore.getState().selectedGasStation;
+
+    event.stopPropagation();
+    if (selectedGasStation) {
+      router.push({
+        pathname: "[id]",
+        params: { id: selectedGasStation.id },
+      });
+    }
+  }, []);
 
   return (
-    <Animated.View
-      style={{
-        transform: [{ translateY: slideAnim }],
-        pointerEvents: selectedGasStation ? "auto" : "none",
-      }}>
+    <Animated.View style={[animatedStyle, { pointerEvents: selectedGasStation ? "auto" : "none" }]}>
       <Pressable
         style={({ pressed }) => [
           styles.container,

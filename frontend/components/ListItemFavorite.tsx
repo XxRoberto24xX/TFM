@@ -23,7 +23,7 @@ function ListItemFavorite({ gasStation }: Props) {
   const imageSource = BRAND_IMAGES[gasStation.brand] || DEFAULT_IMAGE;
 
   /* HANDLERS */
-  const onRemoveFromFavorites = async () => {
+  const onRemoveFromFavorites = useCallback(async () => {
     try {
       await removeFromFavorites(gasStation.id);
       useGasStationStore.getState().removeFavorite(gasStation.id);
@@ -31,7 +31,7 @@ function ListItemFavorite({ gasStation }: Props) {
       const apiError = callError as ApiError;
       console.log("Toggle Favorite: " + apiError.message);
     }
-  };
+  }, [gasStation]);
 
   const onItemPressed = useCallback(() => {
     router.push({ pathname: "[id]", params: { id: gasStation.direction } });

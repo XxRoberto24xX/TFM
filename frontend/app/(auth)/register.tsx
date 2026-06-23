@@ -6,7 +6,7 @@ import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
 import ErrorMessage from "@/components/ErrorMessage";
-import FloatingButton from "@/components/FloatingButton";
+import FloatingButtonText from "@/components/FloatingButtonText";
 import TextInputBasic from "@/components/TextInputBasic";
 import ThemedText from "@/components/ThemedText";
 
@@ -130,7 +130,7 @@ export default function Register() {
           color={Colors.primaryPink}
         />
       ) : (
-        <FloatingButton
+        <FloatingButtonText
           style={styles.floatingButton}
           text="Crear Cuenta"
           onPress={onPressRegister}

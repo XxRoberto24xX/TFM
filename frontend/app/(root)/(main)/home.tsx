@@ -7,9 +7,9 @@ import * as SecureStore from "expo-secure-store";
 
 import BottomSheetFavorites from "@/components/BottomSheetFavorites";
 import CardGasStation from "@/components/CardGasStation";
-import FilterChipBrands from "@/components/FilterChipBrands";
-import FilterChipGas from "@/components/FilterChipGas";
-import IconFloatingButton from "@/components/IconFloatingButton";
+import ChipsFilterBrands from "@/components/ChipsFilterBrands";
+import ChipsFilterGas from "@/components/ChipsFilterGas";
+import FloatingButtonIcon from "@/components/FloatingButtonIcon";
 import MapHome from "@/components/MapHome";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
@@ -77,8 +77,8 @@ export default function Home() {
     <View style={styles.mapContainer}>
       <MapHome ref={mapRef} />
       <View style={[styles.mainViewContainer, { paddingTop: headerHeight }]}>
-        <FilterChipBrands />
-        <IconFloatingButton
+        <ChipsFilterBrands />
+        <FloatingButtonIcon
           style={styles.mapTypeButton}
           icon="layers"
           onPress={onMapTypeChange}
@@ -86,9 +86,9 @@ export default function Home() {
         <View style={styles.bottomView}>
           <CardGasStation style={styles.gasStationPreview} />
           <View style={styles.bottomViewContainer}>
-            <FilterChipGas />
+            <ChipsFilterGas />
             {userLocation && (
-              <IconFloatingButton
+              <FloatingButtonIcon
                 icon={isCenteredOnUser ? "gps-fixed" : "gps-not-fixed"}
                 iconProvider="material"
                 onPress={onGoToUserLocation}
@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
   bottomViewContainer: {
     flexDirection: "row",
     justifyContent: "flex-start",
+    alignItems: "center",
     gap: 10,
     marginEnd: 10,
     marginBottom: 10,

@@ -5,7 +5,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { router } from "expo-router";
 
 import ErrorMessage from "@/components/ErrorMessage";
-import FloatingButton from "@/components/FloatingButton";
+import FloatingButtonText from "@/components/FloatingButtonText";
 import TextInputBasic from "@/components/TextInputBasic";
 import ThemedText from "@/components/ThemedText";
 
@@ -93,7 +93,7 @@ export default function RestorePassword() {
           color={Colors.primaryPink}
         />
       ) : (
-        <FloatingButton
+        <FloatingButtonText
           style={styles.floatingButton}
           text="Enviar Correo"
           onPress={onPressSendPasswordEmail}

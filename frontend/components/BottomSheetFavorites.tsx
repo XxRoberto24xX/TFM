@@ -2,10 +2,10 @@ import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { Dimensions, Pressable, StyleSheet, View } from "react-native";
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 
-import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 
 import { Ionicons } from "@expo/vector-icons";
-import BottomSheet, { BottomSheetBackgroundProps, BottomSheetFlatList } from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 
 import ListItemFavorite from "@/components/ListItemFavorite";
 import ThemedText from "@/components/ThemedText";
@@ -15,16 +15,7 @@ import { useGasStationStore } from "@/stores/useGasStationsStore";
 import { GasStation } from "@/types/types";
 import { Colors } from "@/constants/colors";
 
-const customBackground = ({ style }: BottomSheetBackgroundProps) => {
-  return (
-    <LinearGradient
-      style={style}
-      colors={[Colors.primaryOrange, Colors.primaryPink]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-    />
-  );
-};
+import BottomSheetThemed from "./layouts/BottomSheetThemed";
 
 const favoritesPraceHolder = () => (
   <View style={styles.emptyContainer}>
@@ -35,8 +26,6 @@ const favoritesPraceHolder = () => (
     </ThemedText>
   </View>
 );
-
-const renderItem = ({ item }: { item: GasStation }) => <ListItemFavorite gasStation={item} />;
 
 function BottomSheetFavorites() {
   /* VARIABLES */
@@ -71,18 +60,28 @@ function BottomSheetFavorites() {
     setIsExpanded(index === 1);
   }, []);
 
+  const onFavoriteSelect = useCallback((gasStation: GasStation) => {
+    router.push({ pathname: "[id]", params: { id: gasStation.direction } });
+  }, []);
+
+  /* ITEMS */
+  const renderItem = useCallback(
+    ({ item }: { item: GasStation }) => (
+      <ListItemFavorite
+        gasStation={item}
+        onPress={onFavoriteSelect}
+      />
+    ),
+    [onFavoriteSelect],
+  );
+
   return (
-    <BottomSheet
+    <BottomSheetThemed
       ref={bottomSheetRef}
       animatedIndex={animatedIndex}
-      style={styles.bottomSheet}
-      snapPoints={snapPoints}
       index={0}
-      onChange={onBottomSheetChange}
-      enableDynamicSizing={false}
-      enableOverDrag={false}
-      handleIndicatorStyle={styles.handlerIndicator}
-      backgroundComponent={customBackground}>
+      snapPoints={snapPoints}
+      onChange={onBottomSheetChange}>
       <View style={styles.saveHeader}>
         <ThemedText size="h2">Guardados</ThemedText>
         <Pressable
@@ -106,21 +105,13 @@ function BottomSheetFavorites() {
         contentContainerStyle={styles.listContainer}
         renderItem={renderItem}
       />
-    </BottomSheet>
+    </BottomSheetThemed>
   );
 }
 
 export default memo(BottomSheetFavorites);
 
 const styles = StyleSheet.create({
-  bottomSheet: {
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    overflow: "hidden",
-  },
-  handlerIndicator: {
-    backgroundColor: "white",
-  },
   saveHeader: {
     flexDirection: "row",
     paddingHorizontal: 24,
@@ -130,7 +121,7 @@ const styles = StyleSheet.create({
     marginStart: "auto",
   },
   list: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 8,
   },
   listContainer: {
     gap: 8,

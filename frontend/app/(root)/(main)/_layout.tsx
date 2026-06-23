@@ -1,12 +1,11 @@
 import { Image, StyleSheet } from "react-native";
 
-import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, Stack } from "expo-router";
 
 import { Ionicons } from "@expo/vector-icons";
 
-import IconFloatingButton from "@/components/IconFloatingButton";
+import FloatingButtonIcon from "@/components/FloatingButtonIcon";
 import ThemedText from "@/components/ThemedText";
 
 import { Colors } from "@/constants/colors";
@@ -48,11 +47,10 @@ export default function MainLayout() {
           headerBackground: () => null,
 
           headerLeft: () => (
-            <IconFloatingButton
+            <FloatingButtonIcon
               style={{ marginHorizontal: 10 }}
               icon="menu"
               onPress={() => {
-                Haptics.selectionAsync();
                 openDrawer();
               }}
             />
@@ -78,11 +76,10 @@ export default function MainLayout() {
           ),
 
           headerRight: () => (
-            <IconFloatingButton
+            <FloatingButtonIcon
               style={{ marginHorizontal: 10 }}
               icon="map"
               onPress={() => {
-                Haptics.selectionAsync();
                 router.push("/route");
               }}
             />

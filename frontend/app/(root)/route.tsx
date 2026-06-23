@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import BottomSheet from "@gorhom/bottom-sheet";
 
 import BottomSheetAutocomplete from "@/components/BottomSheetAutocomplete";
-import IconFloatingButton from "@/components/IconFloatingButton";
+import FloatingButtonIcon from "@/components/FloatingButtonIcon";
 import MapRoutes from "@/components/MapRoutes";
 import TextInputAutocomplete from "@/components/TextInputAutocomplete";
 
@@ -72,7 +72,7 @@ export default function Route() {
         type="destiny"
         placeHolder="Destino"
       />
-      <IconFloatingButton
+      <FloatingButtonIcon
         style={styles.googleMapsButton}
         imageSource={require("@/assets/icons/googleMaps.png")}
         onPress={onShareToGoogleMaps}

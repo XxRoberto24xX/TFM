@@ -1,40 +1,33 @@
-import { memo } from "react";
-import { Pressable, type PressableProps, StyleSheet } from "react-native";
+import { memo, ReactNode } from "react";
+import { GestureResponderEvent, Pressable, PressableProps, StyleProp, StyleSheet, ViewStyle } from "react-native";
 
 import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 
-import ThemedText from "@/components/ThemedText";
-
-import { Colors } from "../constants/colors";
+import { Colors } from "../../constants/colors";
 
 interface Props extends PressableProps {
-  text: string;
+  children: ReactNode;
+  style?: StyleProp<ViewStyle>;
 }
 
-function FloatingButton({ text, onPress, style, onPressIn, ...pressableProps }: Props) {
+function FloatingButton({ children, style, onPress, ...pressableProps }: Props) {
+  /* HANDLERS */
+  const onButtonPress = (event: GestureResponderEvent) => {
+    onPress?.(event);
+    Haptics.selectionAsync();
+  };
+
   return (
     <Pressable
-      style={({ pressed }) => [
-        styles.buttonContainer,
-        pressed && styles.buttonPressed,
-        typeof style === "function" ? style({ pressed }) : style, // <- made to introduce de style only if its a stylesheet
-      ]}
-      onPress={(event) => {
-        onPress?.(event);
-        Haptics.selectionAsync();
-      }}
+      style={({ pressed }) => [style, styles.buttonContainer, pressed && styles.buttonPressed]}
+      onPress={onButtonPress}
       {...pressableProps}>
       <LinearGradient
-        style={styles.gradient}
         colors={[Colors.primaryOrange, Colors.primaryPink]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}>
-        <ThemedText
-          style={styles.text}
-          size="xl">
-          {text}
-        </ThemedText>
+        {children}
       </LinearGradient>
     </Pressable>
   );
@@ -44,8 +37,6 @@ export default memo(FloatingButton);
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    alignSelf: "center",
-    minWidth: 200,
     borderRadius: 30,
     overflow: "hidden",
 
@@ -69,12 +60,5 @@ const styles = StyleSheet.create({
 
     // Shadow for Android
     elevation: 2,
-  },
-  gradient: {
-    paddingVertical: 15,
-    paddingHorizontal: 45,
-  },
-  text: {
-    textAlign: "center",
   },
 });

@@ -101,6 +101,11 @@ function MapHome({ ref }: Props) {
     useGasStationStore.getState().setSelectedGasStation(null);
   }, []);
 
+  const onMarkerSelect = useCallback((gasStation: GasStation) => {
+    useGasStationStore.getState().setSelectedGasStation(gasStation);
+    useLocationStore.getState().setIsCenteredOnUser(false);
+  }, []);
+
   /* WATCHERS */
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
@@ -153,6 +158,7 @@ function MapHome({ ref }: Props) {
           <MarkerGasStation
             key={station.id}
             gasStation={station}
+            onPress={onMarkerSelect}
           />
         ))}
       </MapView>

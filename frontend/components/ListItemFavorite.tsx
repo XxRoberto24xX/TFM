@@ -1,8 +1,6 @@
 import { memo, useCallback } from "react";
 import { Image, Pressable, StyleSheet, View } from "react-native";
 
-import { router } from "expo-router";
-
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 import ThemedText from "@/components/ThemedText";
@@ -14,11 +12,14 @@ import { ApiError, GasStation } from "@/types/types";
 import { Colors } from "@/constants/colors";
 import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
 
+import ListItem from "./layouts/ListItem";
+
 interface Props {
   gasStation: GasStation;
+  onPress: (place: GasStation) => void;
 }
 
-function ListItemFavorite({ gasStation }: Props) {
+function ListItemFavorite({ gasStation, onPress }: Props) {
   /* VARIABLES */
   const imageSource = BRAND_IMAGES[gasStation.brand] || DEFAULT_IMAGE;
 
@@ -33,14 +34,12 @@ function ListItemFavorite({ gasStation }: Props) {
     }
   }, [gasStation]);
 
-  const onItemPressed = useCallback(() => {
-    router.push({ pathname: "[id]", params: { id: gasStation.direction } });
-  }, [gasStation]);
+  const onPressItem = () => {
+    onPress(gasStation);
+  };
 
   return (
-    <Pressable
-      style={({ pressed }) => [styles.container, pressed && styles.containerPressed]}
-      onPress={onItemPressed}>
+    <ListItem onPress={onPressItem}>
       <View style={styles.imageView}>
         <Image
           style={styles.image}
@@ -67,23 +66,13 @@ function ListItemFavorite({ gasStation }: Props) {
         size={30}
         color={Colors.textPrimary}
       />
-    </Pressable>
+    </ListItem>
   );
 }
 
 export default memo(ListItemFavorite);
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    flexDirection: "row",
-    borderRadius: 16,
-    padding: 8,
-    gap: 8,
-  },
-  containerPressed: {
-    backgroundColor: "rgba(0, 0, 0, 0.05)",
-  },
   infoView: {
     flexDirection: "column",
     flex: 1,

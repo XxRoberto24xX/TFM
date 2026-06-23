@@ -1,24 +1,26 @@
 import { memo } from "react";
-import { Marker } from "react-native-maps";
-
-import { useGasStationStore } from "@/stores/useGasStationsStore";
+import { Marker, MarkerPressEvent } from "react-native-maps";
 
 import { GasStation } from "@/types/types";
 
 interface Props {
   gasStation: GasStation;
+  onPress: (gasStation: GasStation) => void;
 }
 
-function MarkerGasStation({ gasStation }: Props) {
+function MarkerGasStation({ gasStation, onPress }: Props) {
+  /* HANDLERS */
+  const onPressMarker = (event: MarkerPressEvent) => {
+    event.stopPropagation();
+    onPress(gasStation);
+  };
+
   return (
     <Marker
       coordinate={gasStation.coordinates}
       pinColor="red"
       tracksViewChanges={false}
-      onPress={(e) => {
-        e.stopPropagation();
-        useGasStationStore.getState().setSelectedGasStation(gasStation);
-      }}
+      onPress={onPressMarker}
     />
   );
 }

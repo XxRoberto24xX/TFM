@@ -1,9 +1,7 @@
 import { memo, RefObject, useCallback, useEffect, useMemo } from "react";
 import { ActivityIndicator, Keyboard, StyleSheet, View } from "react-native";
 
-import { LinearGradient } from "expo-linear-gradient";
-
-import BottomSheet, { BottomSheetBackgroundProps, BottomSheetFlatList, BottomSheetView } from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetFlatList, BottomSheetView } from "@gorhom/bottom-sheet";
 
 import ListItemPrediction from "@/components/ListItemPrediction";
 import ThemedText from "@/components/ThemedText";
@@ -15,20 +13,11 @@ import { getPlaceCoordinates } from "@/services/api";
 import { Predicction } from "@/types/types";
 import { Colors } from "@/constants/colors";
 
+import BottomSheetThemed from "./layouts/BottomSheetThemed";
+
 interface Props {
   bottomSheetRef: RefObject<BottomSheet | null>;
 }
-
-const customBackground = ({ style }: BottomSheetBackgroundProps) => {
-  return (
-    <LinearGradient
-      style={style}
-      colors={[Colors.primaryOrange, Colors.primaryPink]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-    />
-  );
-};
 
 const predictionPlaceHolder = () => (
   <View style={styles.emptyContainer}>
@@ -123,7 +112,7 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
     }
   }, []);
 
-  const onSheetChanges = useCallback((index: number) => {
+  const onBottomSheetChange = useCallback((index: number) => {
     if (index === -1) {
       useGoogleAutocompleteStore.getState().handleCancelSearch();
       useGoogleAutocompleteStore.getState().setDisplayBottomSheet(false);
@@ -158,17 +147,12 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
   );
 
   return (
-    <BottomSheet
-      style={styles.BottomSheet}
+    <BottomSheetThemed
       ref={bottomSheetRef}
       index={-1}
       snapPoints={snapPoints}
-      enableDynamicSizing={false}
-      enableOverDrag={false}
       enablePanDownToClose={true}
-      onChange={onSheetChanges}
-      handleIndicatorStyle={styles.handle}
-      backgroundComponent={customBackground}>
+      onChange={onBottomSheetChange}>
       {isLoading ? (
         <BottomSheetView style={styles.loadingContainer}>
           <ActivityIndicator
@@ -199,18 +183,13 @@ function BottomSheetAutocomplete({ bottomSheetRef }: Props) {
           renderItem={renderItem}
         />
       )}
-    </BottomSheet>
+    </BottomSheetThemed>
   );
 }
 
 export default memo(BottomSheetAutocomplete);
 
 const styles = StyleSheet.create({
-  BottomSheet: {
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    overflow: "hidden",
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
@@ -225,9 +204,6 @@ const styles = StyleSheet.create({
   emptyText: {
     color: "rgba(255, 255, 255, 0.8)",
     textAlign: "center",
-  },
-  handle: {
-    backgroundColor: "white",
   },
   listContainer: {
     gap: 8,

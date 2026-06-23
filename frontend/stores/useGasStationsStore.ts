@@ -20,8 +20,7 @@ interface GasStationState {
   setMapType: (mapType: MapType) => void;
 
   isFavorite: (id: number | undefined) => boolean;
-  isBrandFilterSelected: (value: string) => boolean;
-  isGasFilterSelected: (value: string) => boolean;
+  isFilterSelected: (value: string) => boolean;
 }
 
 export const useGasStationStore = create<GasStationState>((set, get) => ({
@@ -57,11 +56,7 @@ export const useGasStationStore = create<GasStationState>((set, get) => ({
     return get().listFavorites.some((fav) => fav.id === id);
   },
 
-  isBrandFilterSelected: (value) => {
-    return value === get().activeBrandFilter;
-  },
-
-  isGasFilterSelected: (value) => {
-    return value === get().activeGasFilter;
+  isFilterSelected: (value) => {
+    return value === get().activeBrandFilter || value === get().activeGasFilter;
   },
 }));

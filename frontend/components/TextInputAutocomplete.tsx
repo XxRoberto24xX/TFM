@@ -113,9 +113,7 @@ function TextInputAutocomplete({ placeHolder, style, type, ref }: Props) {
         onFocus={onInputFocusGained}
       />
       {query.length > 0 && (
-        <Pressable
-          style={styles.icon}
-          onPress={onPressClear}>
+        <Pressable onPress={onPressClear}>
           <Ionicons
             name="close-circle"
             size={20}
@@ -154,8 +152,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Roboto_Medium",
     color: Colors.textPrimary,
-  },
-  icon: {
-    marginLeft: "auto",
   },
 });

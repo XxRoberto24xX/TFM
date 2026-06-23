@@ -30,7 +30,7 @@ export default function Route() {
   /* HANDLER */
   const onShareToGoogleMaps = useCallback(() => {
     const origin = useGoogleAutocompleteStore.getState().origin;
-    const destiny = useGoogleAutocompleteStore.getState().origin;
+    const destiny = useGoogleAutocompleteStore.getState().destiny;
 
     if (origin && destiny) {
       openGoogleMaps(origin, destiny);

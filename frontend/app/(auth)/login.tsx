@@ -154,13 +154,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
   },
   title: {
-    marginTop: 35,
+    marginTop: 32,
   },
   emailInput: {
-    marginTop: 45,
+    marginTop: 48,
   },
   passwordInput: {
-    marginTop: 25,
+    marginTop: 24,
   },
   links: {
     textDecorationLine: "underline",
@@ -175,17 +175,17 @@ const styles = StyleSheet.create({
   inlineMessagePassword: {
     flexDirection: "row-reverse",
     width: "80%",
-    marginTop: 20,
+    marginTop: 16,
   },
   inlineMessageCreateAccount: {
     flexDirection: "row",
     justifyContent: "center",
     width: "80%",
-    marginTop: 50,
+    marginTop: 48,
     gap: 5,
   },
   activityIndicator: {
-    marginTop: 45,
+    marginTop: 47,
     height: 54,
   },
   floatingButton: {

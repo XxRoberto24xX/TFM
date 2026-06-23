@@ -1,21 +1,21 @@
 import React, { memo } from "react";
 import { Image, ImageSourcePropType, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 
 import { Colors } from "@/constants/colors";
 
 import FloatingButton from "./layouts/FloatingButton";
 
 interface Props {
-  icon?: keyof typeof Ionicons.glyphMap | keyof typeof MaterialIcons.glyphMap;
-  iconProvider?: "ionicons" | "material";
+  icon?: keyof typeof MaterialCommunityIcons.glyphMap | keyof typeof MaterialIcons.glyphMap;
+  iconProvider?: "comunity" | "material";
   imageSource?: ImageSourcePropType | null;
   style?: StyleProp<ViewStyle>;
   onPress: () => void;
 }
 
-const FloatingButtonText = ({ icon, iconProvider, imageSource, style, onPress }: Props) => {
+const FloatingButtonText = ({ icon, iconProvider = "material", imageSource, style, onPress }: Props) => {
   return (
     <FloatingButton
       style={style}
@@ -31,13 +31,13 @@ const FloatingButtonText = ({ icon, iconProvider, imageSource, style, onPress }:
         ) : iconProvider === "material" ? (
           <MaterialIcons
             name={icon as keyof typeof MaterialIcons.glyphMap}
-            size={26}
+            size={32}
             color={Colors.textPrimary}
           />
         ) : (
-          <Ionicons
-            name={icon as keyof typeof Ionicons.glyphMap}
-            size={26}
+          <MaterialCommunityIcons
+            name={icon as keyof typeof MaterialCommunityIcons.glyphMap}
+            size={32}
             color={Colors.textPrimary}
           />
         )}
@@ -50,7 +50,7 @@ export default memo(FloatingButtonText);
 
 const styles = StyleSheet.create({
   container: {
-    padding: 8,
+    padding: 6,
   },
   imageContainer: {
     padding: 4,

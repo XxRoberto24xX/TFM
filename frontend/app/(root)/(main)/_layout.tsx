@@ -3,7 +3,7 @@ import { Image, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, Stack } from "expo-router";
 
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 
 import FloatingButtonIcon from "@/components/FloatingButtonIcon";
 import ThemedText from "@/components/ThemedText";
@@ -48,7 +48,6 @@ export default function MainLayout() {
 
           headerLeft: () => (
             <FloatingButtonIcon
-              style={{ marginHorizontal: 10 }}
               icon="menu"
               onPress={() => {
                 openDrawer();
@@ -77,8 +76,7 @@ export default function MainLayout() {
 
           headerRight: () => (
             <FloatingButtonIcon
-              style={{ marginHorizontal: 10 }}
-              icon="map"
+              icon="route"
               onPress={() => {
                 router.push("/route");
               }}
@@ -92,11 +90,10 @@ export default function MainLayout() {
           title: "Coches",
           headerRight: () => {
             return (
-              <Ionicons
+              <MaterialIcons
                 name="add"
                 size={30}
-                color="white"
-                style={{ marginRight: 15 }}
+                color={Colors.textPrimary}
               />
             );
           },

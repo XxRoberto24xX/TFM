@@ -70,7 +70,7 @@ export default function Register() {
       contentContainerStyle={styles.container}
       enableOnAndroid={true}
       keyboardShouldPersistTaps="handled"
-      extraScrollHeight={30}
+      extraScrollHeight={80}
       showsVerticalScrollIndicator={false}>
       <Image
         source={imageSource}
@@ -179,6 +179,7 @@ const styles = StyleSheet.create({
   },
   errorMessage: {
     marginTop: 20,
+    maxWidth: "80%",
   },
   errorSpacer: {
     height: 36,

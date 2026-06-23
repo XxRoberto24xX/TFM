@@ -6,7 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter, useSegments } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import ThemedText from "@/components/ThemedText";
 
@@ -16,7 +16,7 @@ import { closeDrawer } from "@/utils/DrawerController";
 
 interface DrawerMenuItemProps {
   label: string;
-  iconName: keyof typeof Ionicons.glyphMap;
+  iconName: keyof typeof MaterialCommunityIcons.glyphMap;
   onPress: () => void;
 }
 
@@ -28,9 +28,9 @@ function DrawerMenuItem({ label, iconName, onPress }: DrawerMenuItemProps) {
         onPress();
         closeDrawer();
       }}>
-      <Ionicons
+      <MaterialCommunityIcons
         name={iconName}
-        size={24}
+        size={28}
         color={Colors.textPrimary}
       />
       <ThemedText size="l">{label}</ThemedText>
@@ -52,9 +52,6 @@ function DrawerContent() {
 
     const cleanPath = path.replace(/^\/+/, "");
     const cleanCurrent = currentRoute.replace(/^\/+/, "");
-
-    console.log(cleanPath);
-    console.log(cleanCurrent);
 
     if (cleanCurrent !== cleanPath) {
       router.push(path);
@@ -104,13 +101,13 @@ function DrawerContent() {
           />
           <DrawerMenuItem
             label="Cuenta"
-            iconName="person-circle"
+            iconName="account"
             onPress={() => handleNavigation("/(root)/(main)/account")}
           />
 
           <DrawerMenuItem
             label="Cerrar Sesión"
-            iconName="log-out-outline"
+            iconName="logout"
             onPress={handleLogout}
           />
         </View>

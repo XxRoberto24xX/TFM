@@ -8,6 +8,7 @@ import com.robgon.backend.proyections.IGasStationProyection;
 import com.robgon.backend.repositories.IGasStationRepository;
 import com.robgon.backend.repositories.IPricesRepository;
 import jakarta.annotation.PostConstruct;
+import org.apache.commons.text.WordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -70,7 +71,14 @@ public class ScheduleFuelService {
             GasStationModel gasStation = new GasStationModel();
 
             gasStation.setId(node.path("IDEESS").asLong());
-            gasStation.setDirection(node.path("Dirección").asText(null));
+
+            String rawDirection = node.path("Dirección").asText(null);
+            String formatedDirection = null;
+            if(rawDirection != null){
+                formatedDirection = WordUtils.capitalizeFully(rawDirection);
+            }
+            gasStation.setDirection(formatedDirection);
+
             gasStation.setHours(node.path("Horario").asText(null));
 
             double lat = parseDouble(replaceComa(node.path("Latitud").asText()));

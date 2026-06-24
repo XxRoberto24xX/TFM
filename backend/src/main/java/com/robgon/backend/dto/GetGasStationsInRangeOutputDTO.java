@@ -5,10 +5,12 @@ import com.robgon.backend.proyections.IGasStationProyectionWithPrice;
 import java.util.List;
 
 public class GetGasStationsInRangeOutputDTO {
-    public List<IGasStationProyectionWithPrice> listGasStations;
+    private List<IGasStationProyectionWithPrice> listGasStations;
+    private FuelPriceSummary priceMargins;
 
-    public GetGasStationsInRangeOutputDTO(List<IGasStationProyectionWithPrice> listGasStations) {
+    public GetGasStationsInRangeOutputDTO(List<IGasStationProyectionWithPrice> listGasStations, FuelPriceSummary priceMargins) {
         this.listGasStations = listGasStations;
+        this.priceMargins = priceMargins;
     }
 
     public List<IGasStationProyectionWithPrice> getListGasStations() {
@@ -17,5 +19,13 @@ public class GetGasStationsInRangeOutputDTO {
 
     public void setListGasStations(List<IGasStationProyectionWithPrice> listGasStations) {
         this.listGasStations = listGasStations;
+    }
+
+    public FuelPriceSummary getPriceSummary() {
+        return priceMargins;
+    }
+
+    public void setPriceSummary(FuelPriceSummary priceSummary) {
+        this.priceMargins = priceSummary;
     }
 }

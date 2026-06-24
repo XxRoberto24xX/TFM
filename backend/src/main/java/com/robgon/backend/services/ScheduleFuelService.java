@@ -2,6 +2,7 @@ package com.robgon.backend.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.robgon.backend.dto.FuelPriceSummary;
 import com.robgon.backend.models.GasStationModel;
 import com.robgon.backend.models.PricesModel;
 import com.robgon.backend.proyections.IGasStationProyection;
@@ -16,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -33,6 +35,9 @@ public class ScheduleFuelService {
 
     @Autowired
     private IPricesRepository pricesRepository;
+
+    @Autowired
+    private FuelPriceMargins fuelPriceMargins;
 
     private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -222,6 +227,29 @@ public class ScheduleFuelService {
                 );
             }
         }
+
+        if (!parsedApiData.isEmpty()) {
+            FuelPriceSummary.FuelRange statsG95 = calcularRango(parsedApiData, PricesModel::getGasoline95);
+            FuelPriceSummary.FuelRange statsG98 = calcularRango(parsedApiData, PricesModel::getGasoline98);
+            FuelPriceSummary.FuelRange statsDiesel = calcularRango(parsedApiData, PricesModel::getDiesel);
+
+            FuelPriceSummary nuevoResumen = new FuelPriceSummary(statsG95, statsG98, statsDiesel);
+
+            // Guardamos el resultado en el Singleton de memoria
+            fuelPriceMargins.updateMargins(nuevoResumen);
+        }
+    }
+
+    private FuelPriceSummary.FuelRange calcularRango(List<PricesModel> prices, ToDoubleFunction<PricesModel> mapper) {
+        DoubleSummaryStatistics stats = prices.stream()
+                .mapToDouble(mapper)
+                .filter(price -> price > 0.0)
+                .summaryStatistics();
+
+        double min = (stats.getCount() > 0) ? stats.getMin() : 0.0;
+        double max = (stats.getCount() > 0) ? stats.getMax() : 0.0;
+
+        return new FuelPriceSummary.FuelRange(min, max);
     }
 
     private boolean isGasStationDifferent(IGasStationProyection db, GasStationModel api) {

@@ -26,6 +26,9 @@ public class GasStationService {
     @Autowired
     private IUserRepository userRepository;
 
+    @Autowired
+    private FuelPriceMargins fuelPriceMargins;
+
     public GetGasStationInfoOutputDTO getGasStationInfo(GetGasStationInfoInputDTO gasStationInfoInputDTO){
         IGasStationProyection gasStationInfo = gasStationRepository.findOnlyInfoById(gasStationInfoInputDTO.getGasStationId())
                 .orElseThrow(() -> new RuntimeException("Gas station not found"));
@@ -55,7 +58,7 @@ public class GasStationService {
 
         List<IGasStationProyectionWithPrice> listGasStations = gasStationRepository.findStationsInBoundingBox(envelopeWkt);
 
-        return new GetGasStationsInRangeOutputDTO(listGasStations);
+        return new GetGasStationsInRangeOutputDTO(listGasStations, fuelPriceMargins.getMargins());
     }
 
     public GetActualPricesOutputDTO getActualPrices (GetActualPricesInputDTO getActualPricesInputDTO){

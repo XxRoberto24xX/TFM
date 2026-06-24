@@ -1,8 +1,6 @@
 package com.robgon.backend.services;
 
 import com.robgon.backend.dto.*;
-import com.robgon.backend.models.GasStationModel;
-import com.robgon.backend.models.UserModel;
 import com.robgon.backend.proyections.IGasStationProyection;
 import com.robgon.backend.proyections.IGasStationProyectionWithPrice;
 import com.robgon.backend.proyections.IPriceProyection;
@@ -15,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class GasStationService {
@@ -39,11 +38,22 @@ public class GasStationService {
 
     public GetGasStationsInRangeOutputDTO getGasStationsInRange(GetGasStationsInRangeInputDTO getGasStationsInRangeInputDTO){
 
-        List<IGasStationProyectionWithPrice> listGasStations = gasStationRepository.findStationsInBoundingBox(
-                getGasStationsInRangeInputDTO.getSouth(),
-                getGasStationsInRangeInputDTO.getNorth(),
-                getGasStationsInRangeInputDTO.getWest(),
-                getGasStationsInRangeInputDTO.getEast());
+        Double south = getGasStationsInRangeInputDTO.getSouth();
+        Double north = getGasStationsInRangeInputDTO.getNorth();
+        Double west = getGasStationsInRangeInputDTO.getWest();
+        Double east = getGasStationsInRangeInputDTO.getEast();
+
+        // creation to the input polygon using the data given
+        String envelopeWkt = String.format(Locale.US,
+        "POLYGON((%f %f, %f %f, %f %f, %f %f, %f %f))",
+            west, south,
+            west, north,
+            east, north,
+            east, south,
+            west, south
+        );
+
+        List<IGasStationProyectionWithPrice> listGasStations = gasStationRepository.findStationsInBoundingBox(envelopeWkt);
 
         return new GetGasStationsInRangeOutputDTO(listGasStations);
     }
@@ -67,28 +77,12 @@ public class GasStationService {
 
     public void addToFavorites(ChangeFavoritesInputDTO changeFavoritesInputDTO){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        UserModel user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        GasStationModel gasStation = gasStationRepository.findById(changeFavoritesInputDTO.getGasStationId())
-                .orElseThrow(() -> new RuntimeException("Gas station not found"));
-
-        user.getFavoriteGasStations().add(gasStation);
-        userRepository.save(user);
+        userRepository.addFavorite(authentication.getName(), changeFavoritesInputDTO.getGasStationId());
     }
 
     public void removeFromFavorites(ChangeFavoritesInputDTO changeFavoritesInputDTO){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        UserModel user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        GasStationModel gasStation = gasStationRepository.findById(changeFavoritesInputDTO.getGasStationId())
-                .orElseThrow(() -> new RuntimeException("Gas station not found"));
-
-        user.getFavoriteGasStations().remove(gasStation);
-        userRepository.save(user);
+        userRepository.removeFavorite(authentication.getName(), changeFavoritesInputDTO.getGasStationId());
     }
 
     public GetListFavoritesOutputDTO getListFavorites(){

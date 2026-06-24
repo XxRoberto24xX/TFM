@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.robgon.backend.models.GasStationModel;
 import com.robgon.backend.models.PricesModel;
+import com.robgon.backend.proyections.IGasStationProyection;
 import com.robgon.backend.repositories.IGasStationRepository;
 import com.robgon.backend.repositories.IPricesRepository;
 import jakarta.annotation.PostConstruct;
@@ -13,11 +14,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 
 import static java.lang.Double.parseDouble;
 
@@ -30,6 +33,7 @@ public class ScheduleFuelService {
     @Autowired
     private IPricesRepository pricesRepository;
 
+    private final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @PostConstruct
@@ -68,8 +72,15 @@ public class ScheduleFuelService {
             gasStation.setId(node.path("IDEESS").asLong());
             gasStation.setDirection(node.path("Dirección").asText(null));
             gasStation.setHours(node.path("Horario").asText(null));
-            gasStation.setLatitude(parseDouble(replaceComa(node.path("Latitud").asText())));
-            gasStation.setLongitude(parseDouble(replaceComa(node.path("Longitud (WGS84)").asText())));
+
+            double lat = parseDouble(replaceComa(node.path("Latitud").asText()));
+            double lng = parseDouble(replaceComa(node.path("Longitud (WGS84)").asText()));
+
+            Coordinate coordinate = new Coordinate(lng, lat);
+            Point gpsPoint = geometryFactory.createPoint(coordinate);
+
+            gasStation.setLocation(gpsPoint);
+
             gasStation.setBrand(node.path("Rótulo").asText(null));
             gasStation.setMunicipality(node.path("Municipio").asText(null));
             String tipoVenta = node.path("Tipo Venta").asText(null);
@@ -92,10 +103,10 @@ public class ScheduleFuelService {
         JsonNode prices = root.path("ListaEESSPrecio");
         List<PricesModel> listPricesData = new ArrayList<>();
 
-        Map<Long, GasStationModel> listDBGasStations = gasStationRepository.findAll()
+        Map<Long, IGasStationProyection> listDBGasStations = gasStationRepository.findAllForSync()
                 .stream()
                 .collect(Collectors.toMap(
-                        GasStationModel::getId,
+                        IGasStationProyection::getId,
                         gs -> gs
                 ));
 
@@ -104,12 +115,15 @@ public class ScheduleFuelService {
         }
 
         for(JsonNode node : prices){
+            long stationId = node.path("IDEESS").asLong();
+            IGasStationProyection stationProyection = listDBGasStations.get(stationId);
+
+            GasStationModel stationStub = new GasStationModel();
+            stationStub.setId(stationProyection.getId());
+
             PricesModel price = new PricesModel();
 
-            long stationId = node.path("IDEESS").asLong();
-            GasStationModel station = listDBGasStations.get(stationId);
-
-            price.setGasStation(station);
+            price.setGasStation(stationStub);
             price.setDate(LocalDate.now());
             price.setGasoline95(parseDouble(replaceComa(node.path("Precio Gasolina 95 E5").asText())));
             price.setGasoline98(parseDouble(replaceComa(node.path("Precio Gasolina 98 E5").asText())));
@@ -121,42 +135,32 @@ public class ScheduleFuelService {
     }
 
     private void syncGasStationsData(List<GasStationModel> parsedApiData){
-        Map<Long, GasStationModel> actualGasStations = gasStationRepository.findAll()
+        Map<Long, IGasStationProyection> actualGasStations = gasStationRepository.findAllForSync()
                 .stream()
                 .collect(Collectors.toMap(
-                        GasStationModel::getId,
+                        IGasStationProyection::getId,
                         gs -> gs
                 ));
-        
-        List<GasStationModel> toSave = new ArrayList<>();
-        
-        for(GasStationModel apiGasStation : parsedApiData){
-            GasStationModel dbGasStation = actualGasStations.get(apiGasStation.getId());
-            
-            if(dbGasStation == null){
-                toSave.add(apiGasStation);
-            } else{
-                if (isGasStationDifferent(dbGasStation, apiGasStation)) {
-                    dbGasStation.setDirection(apiGasStation.getDirection());
-                    dbGasStation.setHours(apiGasStation.getHours());
-                    dbGasStation.setLatitude(apiGasStation.getLatitude());
-                    dbGasStation.setLongitude(apiGasStation.getLongitude());
-                    dbGasStation.setSellingType(apiGasStation.getSellingType());
-                    dbGasStation.setBrand(apiGasStation.getBrand());
-                    dbGasStation.setMunicipality(apiGasStation.getMunicipality());
 
-                    toSave.add(dbGasStation);
-                }
+        for (GasStationModel apiGasStation : parsedApiData) {
+            String wkt = String.format(Locale.US, "POINT(%f %f)",
+                    apiGasStation.getLocation().getX(),
+                    apiGasStation.getLocation().getY());
 
-                actualGasStations.remove(apiGasStation.getId());
-            }
+            gasStationRepository.upsertGasStation(
+                    apiGasStation.getId(),
+                    apiGasStation.getDirection(),
+                    apiGasStation.getHours(),
+                    wkt,
+                    apiGasStation.getSellingType(),
+                    apiGasStation.getBrand(),
+                    apiGasStation.getMunicipality()
+            );
+
+            actualGasStations.remove(apiGasStation.getId());
         }
 
         List<Long> toDelete = new ArrayList<>(actualGasStations.keySet());
-
-        if(!toSave.isEmpty()){
-            gasStationRepository.saveAll(toSave);
-        }
 
         if (!toDelete.isEmpty()) {
             gasStationRepository.deleteByIdIn(toDelete);
@@ -171,41 +175,55 @@ public class ScheduleFuelService {
                         p -> p
                 ));
 
-        List<PricesModel> toSave = new ArrayList<>();
 
-        for( PricesModel apiPrice : parsedApiData){
+        for (PricesModel apiPrice : parsedApiData) {
             PricesModel dbPrice = actualPrices.get(apiPrice.getGasStation().getId());
 
-            if(dbPrice == null){
-                toSave.add(apiPrice);
-            }else{
-                if (isPricesDifferent(dbPrice, apiPrice)) {
-                    if(dbPrice.getDate().isEqual(apiPrice.getDate())){
+            boolean registrarPrecio = false;
+
+            if (dbPrice == null) {
+                registrarPrecio = true;
+            } else {
+                if (dbPrice.getDate().isEqual(apiPrice.getDate())) {
+                    if (isPricesDifferent(dbPrice, apiPrice)) {
                         dbPrice.setGasoline95(apiPrice.getGasoline95());
                         dbPrice.setGasoline98(apiPrice.getGasoline98());
                         dbPrice.setDiesel(apiPrice.getDiesel());
 
-                        toSave.add(dbPrice);
-                    }else{
-                        toSave.add(apiPrice);
+                        pricesRepository.upsertPrice(
+                                dbPrice.getGasStation().getId(),
+                                dbPrice.getDate(),
+                                dbPrice.getGasoline95(),
+                                dbPrice.getGasoline98(),
+                                dbPrice.getDiesel()
+                        );
                     }
+                } else {
+                    registrarPrecio = true;
                 }
-            }
-        }
 
-        if(!toSave.isEmpty()){
-            pricesRepository.saveAll(toSave);
+            }
+
+            if (registrarPrecio) {
+                pricesRepository.upsertPrice(
+                        apiPrice.getGasStation().getId(),
+                        apiPrice.getDate(),
+                        apiPrice.getGasoline95(),
+                        apiPrice.getGasoline98(),
+                        apiPrice.getDiesel()
+                );
+            }
         }
     }
 
-    private boolean isGasStationDifferent(GasStationModel a, GasStationModel b) {
-        return !Objects.equals(a.getDirection(), b.getDirection())
-                || !Objects.equals(a.getHours(), b.getHours())
-                || a.getLatitude() != b.getLatitude()
-                || a.getLongitude() != b.getLongitude()
-                || !Objects.equals(a.getSellingType(), b.getSellingType())
-                || !Objects.equals(a.getBrand(), b.getBrand())
-                || !Objects.equals(a.getMunicipality(), b.getMunicipality());
+    private boolean isGasStationDifferent(IGasStationProyection db, GasStationModel api) {
+        return !Objects.equals(db.getDirection(), api.getDirection())
+                || !Objects.equals(db.getHours(), api.getHours())
+                || db.getLatitude() != api.getLatitude()
+                || db.getLongitude() != api.getLongitude()
+                || !Objects.equals(db.getSellingType(), api.getSellingType())
+                || !Objects.equals(db.getBrand(), api.getBrand())
+                || !Objects.equals(db.getMunicipality(), api.getMunicipality());
     }
 
     private boolean isPricesDifferent(PricesModel a, PricesModel b) {

@@ -1,8 +1,8 @@
 package com.robgon.backend.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import org.locationtech.jts.geom.Point;
 
 import java.util.Set;
 
@@ -19,11 +19,8 @@ public class GasStationModel {
     @Column
     private String hours;
 
-    @Column
-    private Double latitude;
-
-    @Column
-    private Double longitude;
+    @Column(name = "location", columnDefinition = "POINT SRID 4326", nullable = false)
+    private Point location;
 
     @Column
     private String sellingType;
@@ -66,20 +63,22 @@ public class GasStationModel {
         this.hours = hours;
     }
 
+    public Point getLocation() {
+        return location;
+    }
+
+    public void setLocation(Point location) {
+        this.location = location;
+    }
+
+    @Transient
     public double getLatitude() {
-        return latitude;
+        return location != null ? location.getY() : 0.0;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
+    @Transient
     public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+        return location != null ? location.getX() : 0.0;
     }
 
     public String getMunicipality() {

@@ -33,4 +33,4 @@ build/
 .vscode/
 
 # Configuración de variables de entorno locales
-.env.template
+.env

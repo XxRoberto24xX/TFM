@@ -76,7 +76,7 @@ public interface IGasStationRepository extends JpaRepository<GasStationModel, Lo
     List<IGasStationProyectionWithPrice> findStationsInBoundingBox(@Param("envelopeWkt") String envelopeWkt);
 
     @Query(value = """
-    SELECT
+    SELECT DISTINCT
         g.id as id,
         g.direction as direction,
         g.hours as hours,
@@ -84,17 +84,33 @@ public interface IGasStationRepository extends JpaRepository<GasStationModel, Lo
         ST_X(g.location) as longitude,
         g.selling_type as sellingType,
         g.brand as brand,
-        g.municipality as municipality
+        g.municipality as municipality,
+        p.id as priceId,
+        p.date as priceDate,
+        p.gasoline95 as gasoline95,
+        p.gasoline98 as gasoline98,
+        p.diesel as diesel
     FROM gas_stations g
-    WHERE ST_Distance_Sphere(g.location, ST_GeomFromText(:polylineWkt, 4326)) <= :distanceMeters
+    LEFT JOIN prices p ON p.gas_station_id = g.id AND p.date = (
+        SELECT MAX(p2.date) FROM prices p2 WHERE p2.gas_station_id = g.id
+    )
+    WHERE
+      ST_Contains(
+          ST_Buffer(ST_Envelope(ST_Transform(ST_GeomFromText(:polylineWkt, 4326, 'axis-order=long-lat'), 32630)), :distanceMeters),
+          g.location_utm
+      )
+      AND ST_Distance(
+          ST_Simplify(ST_Transform(ST_GeomFromText(:polylineWkt, 4326, 'axis-order=long-lat'), 32630), 200.0),
+          g.location_utm
+      ) <= :distanceMeters
     """, nativeQuery = true)
-    List<IGasStationProyection> findStationsNearRoute(
+    List<IGasStationProyectionWithPrice> findStationsNearRouteUtm(
             @Param("polylineWkt") String polylineWkt,
             @Param("distanceMeters") double distanceMeters
     );
 
     @Query(value = """
-    SELECT 
+    SELECT
         g.id as id,
         g.direction as direction,
         g.hours as hours,

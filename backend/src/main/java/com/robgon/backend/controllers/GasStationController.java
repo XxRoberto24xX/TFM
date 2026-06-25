@@ -23,6 +23,11 @@ public class GasStationController {
         return ResponseEntity.ok(gasStationService.getGasStationsInRange(getGasStationsInRangeInputDTO));
     }
 
+    @PostMapping("/getGasStationsInRoute")
+    public ResponseEntity<?> getGasStationsInRoute(@Valid @RequestBody GetGasStationsInRouteInputDTO getGasStationsInRangeInputDTO ){
+        return ResponseEntity.ok(gasStationService.getGasStationsInRoute(getGasStationsInRangeInputDTO));
+    }
+
     @PostMapping("/getActualPrices")
     public ResponseEntity<?> getActualPrices(@Valid @RequestBody GetActualPricesInputDTO getActualPricesInputDTO){
         return ResponseEntity.ok(gasStationService.getActualPrices(getActualPricesInputDTO));

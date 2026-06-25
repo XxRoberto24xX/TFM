@@ -12,8 +12,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.StringJoiner;
 
 @Service
 public class GasStationService {
@@ -59,6 +61,27 @@ public class GasStationService {
         List<IGasStationProyectionWithPrice> listGasStations = gasStationRepository.findStationsInBoundingBox(envelopeWkt);
 
         return new GetGasStationsInRangeOutputDTO(listGasStations, fuelPriceMargins.getMargins());
+    }
+
+    public GetGasStationsInRouteOutputDTO getGasStationsInRoute(GetGasStationsInRouteInputDTO getGasStationsInRouteInputDTO) {
+        List<CoordinateDTO> coordinates = getGasStationsInRouteInputDTO.getCoordinates();
+
+        if (coordinates == null || coordinates.isEmpty()) {
+            return new GetGasStationsInRouteOutputDTO(new ArrayList<>(), fuelPriceMargins.getMargins());
+        }
+
+        StringJoiner joiner = new StringJoiner(", ", "LINESTRING(", ")");
+        for (CoordinateDTO coordinate : coordinates) {
+            joiner.add(coordinate.getLongitude() + " " + coordinate.getLatitude());
+        }
+        String polylineWkt = joiner.toString();
+
+        List<IGasStationProyectionWithPrice> listGasStations = gasStationRepository.findStationsNearRouteUtm(
+                polylineWkt,
+                getGasStationsInRouteInputDTO.getDistance()
+        );
+
+        return new GetGasStationsInRouteOutputDTO(listGasStations, fuelPriceMargins.getMargins());
     }
 
     public GetActualPricesOutputDTO getActualPrices (GetActualPricesInputDTO getActualPricesInputDTO){

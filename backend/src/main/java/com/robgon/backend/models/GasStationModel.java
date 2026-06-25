@@ -22,6 +22,14 @@ public class GasStationModel {
     @Column(name = "location", columnDefinition = "POINT SRID 4326", nullable = false)
     private Point location;
 
+    @Column(
+            name = "location_utm",
+            columnDefinition = "GEOMETRY",
+            insertable = false,
+            updatable = false
+    )
+    private byte[] locationUtm;
+
     @Column
     private String sellingType;
 

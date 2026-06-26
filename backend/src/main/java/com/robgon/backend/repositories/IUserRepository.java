@@ -14,6 +14,7 @@ import java.util.Optional;
 @Repository
 public interface IUserRepository extends JpaRepository<UserModel, String> {
     Optional<UserModel> findByEmail(String email);
+    boolean existsByEmail(String email);
 
     @Query("""
         SELECT u.password as password

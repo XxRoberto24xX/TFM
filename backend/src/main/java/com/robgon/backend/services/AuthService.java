@@ -1,8 +1,6 @@
 package com.robgon.backend.services;
 
-import com.robgon.backend.dto.ChangePasswordInputDTO;
-import com.robgon.backend.dto.LoginInputDTO;
-import com.robgon.backend.dto.RegisterInputDTO;
+import com.robgon.backend.dto.*;
 import com.robgon.backend.models.UserModel;
 import com.robgon.backend.proyections.IUserPasswordProyection;
 import com.robgon.backend.repositories.IUserRepository;
@@ -24,14 +22,41 @@ public class AuthService
     @Autowired
     private JwtUtil jwtUtil;
 
-    public String login(LoginInputDTO loginInputDTO){
+    public AccessOutputdto login(LoginInputDTO loginInputDTO){
         IUserPasswordProyection dbpassword = userRepository.findPasswordByEmail(loginInputDTO.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if(!passwordEncoder.matches(loginInputDTO.getPassword(), dbpassword.getPassword()))
             throw new RuntimeException("Invalid Password");
 
-        return jwtUtil.generateToken(loginInputDTO.getEmail());
+        String accessToken = jwtUtil.generateAccessToken(loginInputDTO.getEmail());
+        String refreshToken = jwtUtil.generateRefreshToken(loginInputDTO.getEmail());
+
+        return new AccessOutputdto(accessToken, refreshToken);
+    }
+
+    public AccessOutputdto refreshSession(RefreshInputDTO refreshInputDTO) {
+        String oldRefreshToken = refreshInputDTO.getRefreshToken();
+
+        if (oldRefreshToken == null || !jwtUtil.validateToken(oldRefreshToken)) {
+            throw new RuntimeException("Invalid or expired refresh token");
+        }
+
+        String tokenType = jwtUtil.extractTokenType(oldRefreshToken);
+        if (!"REFRESH".equals(tokenType)) {
+            throw new RuntimeException("Provided token is not a valid refresh token");
+        }
+
+        String email = jwtUtil.extractUsername(oldRefreshToken);
+
+        if (!userRepository.existsByEmail(email)) {
+            throw new RuntimeException("User associated with this token no longer exists");
+        }
+
+        String newAccessToken = jwtUtil.generateAccessToken(email);
+        String newRefreshToken = jwtUtil.generateRefreshToken(email);
+
+        return new AccessOutputdto(newAccessToken, newRefreshToken);
     }
 
     public void register(RegisterInputDTO registerInputDTO){

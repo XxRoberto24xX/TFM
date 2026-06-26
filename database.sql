@@ -46,11 +46,13 @@ CREATE TABLE `gas_stations` (
   `brand` varchar(255) DEFAULT NULL,
   `direction` varchar(255) DEFAULT NULL,
   `hours` varchar(255) DEFAULT NULL,
-  `latitude` double DEFAULT NULL,
-  `longitude` double DEFAULT NULL,
   `municipality` varchar(255) DEFAULT NULL,
   `selling_type` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `location` point NOT NULL /*!80003 SRID 4326 */,
+  `location_utm` geometry GENERATED ALWAYS AS (st_transform(st_geomfromtext(st_astext(`location`),4326,_cp850'axis-order=long-lat'),32630)) STORED NOT NULL,
+  PRIMARY KEY (`id`),
+  SPATIAL KEY `location` (`location`),
+  SPATIAL KEY `location_utm` (`location_utm`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -68,12 +70,16 @@ CREATE TABLE `prices` (
   `gasoline95` double DEFAULT NULL,
   `gasoline98` double DEFAULT NULL,
   `gas_station_id` bigint NOT NULL,
+  `diesel_premium` double DEFAULT NULL,
+  `diesel_renewable` double DEFAULT NULL,
+  `gasoline95premium` double DEFAULT NULL,
+  `glp` double DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UKguw1iuqbs7p2ulqaxpaiiw3ei` (`gas_station_id`,`date`),
   KEY `idx_gasstation_date` (`gas_station_id`,`date`),
   KEY `idx_prices_date` (`date`),
   CONSTRAINT `FKqihlq70k7g01rge0lit5gql0y` FOREIGN KEY (`gas_station_id`) REFERENCES `gas_stations` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11410 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=190197 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -103,9 +109,7 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `username` varchar(255) NOT NULL,
-  PRIMARY KEY (`email`),
-  UNIQUE KEY `UKr43af9ap4edm43mmtq01oddj6` (`username`)
+  PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -125,7 +129,7 @@ DELIMITER ;;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;;
 /*!50003 SET @saved_time_zone      = @@time_zone */ ;;
 /*!50003 SET time_zone             = 'SYSTEM' */ ;;
-/*!50106 CREATE*/ /*!50106 EVENT `delete_old_prices` ON SCHEDULE EVERY 1 DAY STARTS '2026-05-28 14:09:38' ON COMPLETION NOT PRESERVE ENABLE DO DELETE FROM prices
+/*!50106 CREATE*/ /*!50117 DEFINER=`root`@`localhost`*/ /*!50106 EVENT `delete_old_prices` ON SCHEDULE EVERY 1 DAY STARTS '2026-05-28 14:09:38' ON COMPLETION NOT PRESERVE ENABLE DO DELETE FROM prices
   WHERE date < (CURRENT_DATE - INTERVAL 14 DAY) */ ;;
 /*!50003 SET time_zone             = @saved_time_zone */ ;;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;;
@@ -144,4 +148,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-28 14:09:58
+-- Dump completed on 2026-06-26 12:09:33

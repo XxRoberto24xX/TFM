@@ -6,6 +6,8 @@ import com.robgon.backend.proyections.IUserPasswordProyection;
 import com.robgon.backend.repositories.IUserRepository;
 import com.robgon.backend.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -72,16 +74,24 @@ public class AuthService
     }
 
     public void changePassword(ChangePasswordInputDTO changePasswordInputDTO){
-        IUserPasswordProyection dbpassword = userRepository.findPasswordByEmail(changePasswordInputDTO.getEmail())
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        IUserPasswordProyection dbpassword = userRepository.findPasswordByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if(!passwordEncoder.matches(changePasswordInputDTO.getOldPassword(), dbpassword.getPassword()))
             throw new RuntimeException("Invalid Password");
 
         UserModel user = new UserModel();
-        user.setEmail(changePasswordInputDTO.getEmail());
+        user.setEmail(email);
         user.setPassword(passwordEncoder.encode(changePasswordInputDTO.getNewPassword()));
 
         userRepository.save(user);
+    }
+
+    public void delete(){
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        userRepository.deleteByEmail(email);
     }
 }

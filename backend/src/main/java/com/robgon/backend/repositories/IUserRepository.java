@@ -16,6 +16,9 @@ public interface IUserRepository extends JpaRepository<UserModel, String> {
     Optional<UserModel> findByEmail(String email);
     boolean existsByEmail(String email);
 
+    @Transactional
+    void deleteByEmail(String email);
+
     @Query("""
         SELECT u.password as password
         FROM UserModel u

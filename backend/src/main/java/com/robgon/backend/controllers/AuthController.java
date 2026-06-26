@@ -39,4 +39,10 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/delete")
+    public ResponseEntity<?> delete(){
+        authService.delete();
+        return ResponseEntity.ok().build();
+    }
+
 }

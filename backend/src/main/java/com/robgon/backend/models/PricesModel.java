@@ -43,6 +43,18 @@ public class PricesModel {
     @Column
     private Double diesel;
 
+    @Column
+    private Double glp;
+
+    @Column
+    private Double dieselPremium;
+
+    @Column
+    private Double gasoline95Premium;
+
+    @Column
+    private Double dieselRenewable;
+
     public Long getId() {
         return id;
     }
@@ -89,5 +101,37 @@ public class PricesModel {
 
     public void setGasoline98(Double gasoline98) {
         this.gasoline98 = gasoline98;
+    }
+
+    public Double getGlp() {
+        return glp;
+    }
+
+    public void setGlp(Double glp) {
+        this.glp = glp;
+    }
+
+    public Double getDieselPremium() {
+        return dieselPremium;
+    }
+
+    public void setDieselPremium(Double dieselPremium) {
+        this.dieselPremium = dieselPremium;
+    }
+
+    public Double getGasoline95Premium() {
+        return gasoline95Premium;
+    }
+
+    public void setGasoline95Premium(Double gasoline95Premium) {
+        this.gasoline95Premium = gasoline95Premium;
+    }
+
+    public Double getDieselRenewable() {
+        return dieselRenewable;
+    }
+
+    public void setDieselRenewable(Double dieselRenewable) {
+        this.dieselRenewable = dieselRenewable;
     }
 }

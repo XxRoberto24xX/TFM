@@ -34,18 +34,26 @@ public interface IPricesRepository extends JpaRepository<PricesModel, Long> {
     @Modifying
     @Transactional
     @Query(value = """
-        INSERT INTO prices (gas_station_id, date, gasoline95, gasoline98, diesel)
-        VALUES (:stationId, :date, :gasoline95, :gasoline98, :diesel)
+        INSERT INTO prices (gas_station_id, date, gasoline95, gasoline98, diesel, glp, diesel_premium, gasoline95premium, diesel_renewable)
+        VALUES (:stationId, :date, :gasoline95, :gasoline98, :diesel, :glp, :dieselPremium, :gasoline95Premium, :dieselRenewable)
         ON DUPLICATE KEY UPDATE
             gasoline95 = VALUES(gasoline95),
             gasoline98 = VALUES(gasoline98),
-            diesel = VALUES(diesel)
+            diesel = VALUES(diesel),
+            glp = VALUES(glp),
+            diesel_premium = VALUES(diesel_premium),
+            gasoline95premium = VALUES(gasoline95premium),
+            diesel_renewable = VALUES(diesel_renewable)
         """, nativeQuery = true)
     void upsertPrice(
             @Param("stationId") Long stationId,
             @Param("date") LocalDate date,
             @Param("gasoline95") Double gasoline95,
             @Param("gasoline98") Double gasoline98,
-            @Param("diesel") Double diesel
+            @Param("diesel") Double diesel,
+            @Param("glp") Double glp,
+            @Param("dieselPremium") Double dieselPremium,
+            @Param("gasoline95Premium") Double gasoline95Premium,
+            @Param("dieselRenewable") Double dieselRenewable
     );
 }

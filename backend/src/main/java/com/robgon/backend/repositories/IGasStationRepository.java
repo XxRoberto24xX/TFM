@@ -66,7 +66,11 @@ public interface IGasStationRepository extends JpaRepository<GasStationModel, Lo
         p.date as priceDate,
         p.gasoline95 as gasoline95,
         p.gasoline98 as gasoline98,
-        p.diesel as diesel
+        p.diesel as diesel,
+        p.glp as glp,
+        p.diesel_premium as dieselPremium,
+        p.gasoline95premium as gasoline95Premium,
+        p.diesel_renewable as dieselRenewable
     FROM gas_stations g
     LEFT JOIN prices p ON p.gas_station_id = g.id AND p.date = (
         SELECT MAX(p2.date) FROM prices p2 WHERE p2.gas_station_id = g.id
@@ -89,7 +93,11 @@ public interface IGasStationRepository extends JpaRepository<GasStationModel, Lo
         p.date as priceDate,
         p.gasoline95 as gasoline95,
         p.gasoline98 as gasoline98,
-        p.diesel as diesel
+        p.diesel as diesel,
+        p.glp as glp,
+        p.diesel_premium as dieselPremium,
+        p.gasoline95premium as gasoline95Premium,
+        p.diesel_renewable as dieselRenewable
     FROM gas_stations g
     LEFT JOIN prices p ON p.gas_station_id = g.id AND p.date = (
         SELECT MAX(p2.date) FROM prices p2 WHERE p2.gas_station_id = g.id

@@ -27,6 +27,18 @@ public interface IGasStationProyectionWithPrice {
     @JsonIgnore
     @Value("#{target.diesel}")
     Double getRawDiesel();
+    @JsonIgnore
+    @Value("#{target.glp}")
+    Double getRawGLP();
+    @JsonIgnore
+    @Value("#{target.dieselPremium}")
+    Double getRawDieselPremium();
+    @JsonIgnore
+    @Value("#{target.gasoline95Premium}")
+    Double getRawGasoline95Premium();
+    @JsonIgnore
+    @Value("#{target.dieselRenewable}")
+    Double getRawDieselRenewable();
 
     default IPriceProyection getPrices() {
         if (getRawDate() == null) return null;
@@ -40,6 +52,14 @@ public interface IGasStationProyectionWithPrice {
             public Double getGasoline98() { return getRawG98(); }
             @Override
             public Double getDiesel() { return getRawDiesel(); }
+            @Override
+            public Double getGlp() { return getRawGLP(); }
+            @Override
+            public Double getDieselPremium() { return getRawDieselPremium(); }
+            @Override
+            public Double getGasoline95Premium() { return getRawGasoline95Premium(); }
+            @Override
+            public Double getDieselRenewable() { return getRawDieselRenewable(); }
         };
     }
 }

@@ -14,7 +14,7 @@ public class FuelPriceMargins {
     public FuelPriceSummary getMargins() {
         if (this.currentSummary == null) {
             FuelPriceSummary.FuelRange emptyRange = new FuelPriceSummary.FuelRange(0.0, 0.0);
-            return new FuelPriceSummary(emptyRange, emptyRange, emptyRange);
+            return new FuelPriceSummary(emptyRange, emptyRange, emptyRange, emptyRange, emptyRange, emptyRange, emptyRange);
         }
         return this.currentSummary;
     }

@@ -141,6 +141,10 @@ public class ScheduleFuelService {
             price.setGasoline95(parseDouble(replaceComa(node.path("Precio Gasolina 95 E5").asText())));
             price.setGasoline98(parseDouble(replaceComa(node.path("Precio Gasolina 98 E5").asText())));
             price.setDiesel(parseDouble(replaceComa(node.path("Precio Gasoleo A").asText())));
+            price.setGlp(parseDouble(replaceComa(node.path("Precio Gases licuados del petróleo").asText())));
+            price.setGasoline95Premium(parseDouble(replaceComa(node.path("Precio Gasolina 95 E5 Premium").asText())));
+            price.setDieselPremium(parseDouble(replaceComa(node.path("Precio Gasoleo Premium").asText())));
+            price.setDieselRenewable(parseDouble(replaceComa(node.path("Precio Diésel Renovable").asText())));
 
             listPricesData.add(price);
         }
@@ -208,7 +212,11 @@ public class ScheduleFuelService {
                                 dbPrice.getDate(),
                                 dbPrice.getGasoline95(),
                                 dbPrice.getGasoline98(),
-                                dbPrice.getDiesel()
+                                dbPrice.getDiesel(),
+                                dbPrice.getGlp(),
+                                dbPrice.getGasoline95Premium(),
+                                dbPrice.getDieselPremium(),
+                                dbPrice.getDieselRenewable()
                         );
                     }
                 } else {
@@ -223,7 +231,11 @@ public class ScheduleFuelService {
                         apiPrice.getDate(),
                         apiPrice.getGasoline95(),
                         apiPrice.getGasoline98(),
-                        apiPrice.getDiesel()
+                        apiPrice.getDiesel(),
+                        apiPrice.getGlp(),
+                        apiPrice.getGasoline95Premium(),
+                        apiPrice.getDieselPremium(),
+                        apiPrice.getDieselRenewable()
                 );
             }
         }
@@ -232,10 +244,13 @@ public class ScheduleFuelService {
             FuelPriceSummary.FuelRange statsG95 = calcularRango(parsedApiData, PricesModel::getGasoline95);
             FuelPriceSummary.FuelRange statsG98 = calcularRango(parsedApiData, PricesModel::getGasoline98);
             FuelPriceSummary.FuelRange statsDiesel = calcularRango(parsedApiData, PricesModel::getDiesel);
+            FuelPriceSummary.FuelRange statsGlp = calcularRango(parsedApiData, PricesModel::getGlp);
+            FuelPriceSummary.FuelRange statsGasoline95Premium = calcularRango(parsedApiData, PricesModel::getGasoline95Premium);
+            FuelPriceSummary.FuelRange statsDieselPremium = calcularRango(parsedApiData, PricesModel::getDieselPremium);
+            FuelPriceSummary.FuelRange statsDieselRenewable = calcularRango(parsedApiData, PricesModel::getDieselRenewable);
 
-            FuelPriceSummary nuevoResumen = new FuelPriceSummary(statsG95, statsG98, statsDiesel);
+            FuelPriceSummary nuevoResumen = new FuelPriceSummary(statsG95, statsG98, statsDiesel, statsGlp, statsGasoline95Premium, statsDieselPremium, statsDieselRenewable);
 
-            // Guardamos el resultado en el Singleton de memoria
             fuelPriceMargins.updateMargins(nuevoResumen);
         }
     }
@@ -265,7 +280,11 @@ public class ScheduleFuelService {
     private boolean isPricesDifferent(PricesModel a, PricesModel b) {
         return !Objects.equals(a.getGasoline95(), b.getGasoline95())
                 || !Objects.equals(a.getGasoline98(), b.getGasoline98())
-                || !Objects.equals(a.getDiesel(), b.getDiesel());
+                || !Objects.equals(a.getDiesel(), b.getDiesel())
+                || !Objects.equals(a.getGlp(), b.getGlp())
+                || !Objects.equals(a.getGasoline95Premium(), b.getGasoline95Premium())
+                || !Objects.equals(a.getDieselPremium(), b.getDieselPremium())
+                || !Objects.equals(a.getDieselRenewable(), b.getDieselRenewable());
     }
 
     private String replaceComa(String value){

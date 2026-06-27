@@ -47,7 +47,8 @@ export default function Login() {
 
     try {
       const response = await login(email, password);
-      await SecureStore.setItemAsync("token", response.token);
+      await SecureStore.setItemAsync("accessToken", response.accessToken);
+      await SecureStore.setItemAsync("refreshToken", response.refreshToken);
       router.replace("/home");
     } catch (callError) {
       const apiError = callError as ApiError;

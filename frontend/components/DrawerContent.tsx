@@ -10,6 +10,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import ThemedText from "@/components/ThemedText";
 
+import { useGasStationStore } from "@/stores/useGasStationsStore";
+
 import { Colors } from "@/constants/colors";
 
 import { closeDrawer } from "@/utils/DrawerController";
@@ -60,7 +62,11 @@ function DrawerContent() {
   };
 
   const handleLogout = async () => {
-    await SecureStore.deleteItemAsync("token");
+    await SecureStore.deleteItemAsync("accessToken");
+    await SecureStore.deleteItemAsync("refreshToken");
+
+    useGasStationStore.getState().setFavorites(null);
+
     closeDrawer();
     router.replace("/login");
   };

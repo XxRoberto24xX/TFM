@@ -5,13 +5,13 @@ import { create } from "zustand";
 import { GasStation } from "@/types/types";
 
 interface GasStationState {
-  listFavorites: GasStation[];
+  listFavorites: GasStation[] | null;
   activeBrandFilter: string;
   activeGasFilter: string;
   selectedGasStation: GasStation | null;
   mapType: MapType;
 
-  setFavorites: (listFavorites: GasStation[]) => void;
+  setFavorites: (listFavorites: GasStation[] | null) => void;
   addFavorite: (station: GasStation) => void;
   removeFavorite: (id: number) => void;
   setActiveBrandFilter: (brand: string) => void;
@@ -33,17 +33,23 @@ export const useGasStationStore = create<GasStationState>((set, get) => ({
   setFavorites: (listFavorites) => set({ listFavorites: listFavorites }),
   addFavorite: (station) =>
     set((state) => {
-      const exists = state.listFavorites.some((fav) => fav.id === station.id);
+      const exists = state.listFavorites?.some((fav) => fav.id === station.id);
       if (exists) return {};
 
-      return {
-        listFavorites: [...state.listFavorites, station],
-      };
+      if (state.listFavorites === null) {
+        return {
+          listFavorites: [station],
+        };
+      } else {
+        return {
+          listFavorites: [...state.listFavorites, station],
+        };
+      }
     }),
 
   removeFavorite: (id) =>
     set((state) => ({
-      listFavorites: state.listFavorites.filter((fav) => fav.id !== id),
+      listFavorites: state.listFavorites?.filter((fav) => fav.id !== id),
     })),
 
   setActiveBrandFilter: (brand) => set({ activeBrandFilter: brand }),
@@ -53,7 +59,7 @@ export const useGasStationStore = create<GasStationState>((set, get) => ({
 
   isFavorite: (id) => {
     if (!id) return false;
-    return get().listFavorites.some((fav) => fav.id === id);
+    return get().listFavorites?.some((fav) => fav.id === id) ?? false;
   },
 
   isFilterSelected: (value) => {

@@ -1,6 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 
-import { AxiosResponse, create, InternalAxiosRequestConfig } from "axios";
+import axios, { AxiosResponse, create, InternalAxiosRequestConfig } from "axios";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -19,7 +19,7 @@ apiClient.interceptors.request.use(
     }
 
     try {
-      const token = await SecureStore.getItemAsync("token");
+      const token = await SecureStore.getItemAsync("accessToken");
 
       if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -38,26 +38,55 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error) => {
+    const originalRequest = error.config;
     let errorMessage;
     let status = error.response?.status;
 
     if (error.response) {
-      // The server responded but with an error
+      // THE SERVER RESPONDED BUT WITH AN ERROR CODE
       errorMessage = error.response.data?.message || `Server Error (${status})`;
-    } else if (error.request) {
-      // The request was made but the server did not respond
 
-      // If the server responded with a 401, it means the token is invalid or expired, so we clear it from storage so the user can introduce again their credentials
-      if (status === 401) {
-        await SecureStore.deleteItemAsync("token");
+      if (status === 401 && !originalRequest._retry) {
+        // THE ERROR CODE WAS A FORBIDEN ONE SO THE ACCESS TOKEN IS THE RESPONSIBLE
+        originalRequest._retry = true;
+
+        try {
+          const currentRefreshToken = await SecureStore.getItemAsync("refreshToken");
+
+          if (currentRefreshToken) {
+            // making the request here we avoid passing our own interceptors
+            const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+              refreshToken: currentRefreshToken,
+            });
+
+            if (response.status === 200) {
+              const { accessToken, refreshToken: newRefreshToken } = response.data;
+
+              await SecureStore.setItemAsync("accessToken", accessToken);
+              await SecureStore.setItemAsync("refreshToken", newRefreshToken);
+
+              // we modify the original reques header, rewite the new accesstoken and make the reques again
+              originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+              return apiClient(originalRequest);
+            }
+          }
+        } catch (refreshError) {
+          // THE REFRESH TOKEN IS ALSO EXPIRED AND THE LOGIN NEEDS TO ME MADE AGAIN
+          await SecureStore.deleteItemAsync("accessToken");
+          await SecureStore.deleteItemAsync("refreshToken");
+
+          errorMessage = "Your session has expired. Please log in again.";
+        }
       }
-
-      errorMessage = "Unnable to connect to the server. Please check your internet connection.";
+    } else if (error.request) {
+      // THE REQUEST WAS MADE BUT THE SERVER DID NOT RESPOND
+      errorMessage = "Unable to connect to the server. Please check your internet connection.";
     } else {
-      // The error was made by the frontend code and the request was not sent
+      // THE ERROR WAS MADE BY THE FRONTEND CODE AND THE REQUEST WAS NOT SEND
       errorMessage = error.message;
     }
 
+    // Devolvemos el error formateado tal cual lo espera tu estructura actual
     return Promise.reject({
       message: errorMessage,
       status: status,

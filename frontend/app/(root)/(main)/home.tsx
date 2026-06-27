@@ -61,12 +61,15 @@ export default function Home() {
   /* ON MOUNT */
   useEffect(() => {
     const fetchFavorites = async () => {
-      try {
-        const data = await getListFavorites();
-        useGasStationStore.getState().setFavorites(data.listFavoriteGasStation);
-      } catch (callError) {
-        const apiError = callError as ApiError;
-        console.log("Fetch Favoritos: " + apiError.message);
+      if (useGasStationStore.getState().listFavorites === null) {
+        console.log("Ahora si que tengo que hacer yo la paticion");
+        try {
+          const data = await getListFavorites();
+          useGasStationStore.getState().setFavorites(data.listFavoriteGasStation);
+        } catch (callError) {
+          const apiError = callError as ApiError;
+          console.log("Fetch Favoritos: " + apiError.message);
+        }
       }
     };
 

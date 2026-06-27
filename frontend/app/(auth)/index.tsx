@@ -9,6 +9,8 @@ import * as SecureStore from "expo-secure-store";
 import { useGasStationStore } from "@/stores/useGasStationsStore";
 import { useLocationStore } from "@/stores/useLocationStore";
 
+import { getListFavorites } from "@/services/api";
+import { ApiError } from "@/types/types";
 import { Colors } from "@/constants/colors";
 
 export default function Index() {
@@ -62,9 +64,22 @@ export default function Index() {
       }
     };
 
+    const getUserFavorites = async () => {
+      const data = await getListFavorites();
+      useGasStationStore.getState().setFavorites(data.listFavoriteGasStation);
+    };
+
     const initializeApp = async () => {
-      await Promise.all([getUserLocation(), getUserPreferences()]);
-      router.replace("/login");
+      try {
+        await Promise.all([getUserLocation(), getUserPreferences()]);
+        await getUserFavorites();
+        router.replace("/home");
+      } catch (callError) {
+        const apiError = callError as ApiError;
+        console.log("Sesión inválida o expirada en el inicio: " + apiError.message);
+
+        router.replace("/login");
+      }
     };
 
     initializeApp();

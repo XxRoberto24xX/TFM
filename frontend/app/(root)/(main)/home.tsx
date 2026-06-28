@@ -62,7 +62,6 @@ export default function Home() {
   useEffect(() => {
     const fetchFavorites = async () => {
       if (useGasStationStore.getState().listFavorites === null) {
-        console.log("Ahora si que tengo que hacer yo la paticion");
         try {
           const data = await getListFavorites();
           useGasStationStore.getState().setFavorites(data.listFavoriteGasStation);

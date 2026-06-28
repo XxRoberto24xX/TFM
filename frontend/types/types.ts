@@ -22,6 +22,28 @@ export interface GetListFavoritesResponse {
 
 export interface GetListGasStationsInRangeResponse {
   listGasStations: GasStation[];
+  priceMargins: {
+    gasoline95: Margin;
+    gasoline98: Margin;
+    diesel: Margin;
+    glp: Margin;
+    dieselPremium: Margin;
+    gasoline95Premium: Margin;
+    dieselRenewable: Margin;
+  };
+}
+
+export interface GetListGasStationsInRouteResponse {
+  listGasStations: GasStation[];
+  priceMargins: {
+    gasoline95: Margin;
+    gasoline98: Margin;
+    diesel: Margin;
+    glp: Margin;
+    dieselPremium: Margin;
+    gasoline95Premium: Margin;
+    dieselRenewable: Margin;
+  };
 }
 
 export interface PlaceAutocompleteResponse {
@@ -51,6 +73,28 @@ export interface GetListFavoritesModel {
 
 export interface GetListGasStationsInRangeModel {
   listGasStations: GasStationModel[];
+  priceMargins: {
+    gasoline95: Margin;
+    gasoline98: Margin;
+    diesel: Margin;
+    glp: Margin;
+    dieselPremium: Margin;
+    gasoline95Premium: Margin;
+    dieselRenewable: Margin;
+  };
+}
+
+export interface GetListGasStationsInRouteResponseModel {
+  listGasStations: GasStationModel[];
+  priceMargins: {
+    gasoline95: Margin;
+    gasoline98: Margin;
+    diesel: Margin;
+    glp: Margin;
+    dieselPremium: Margin;
+    gasoline95Premium: Margin;
+    dieselRenewable: Margin;
+  };
 }
 
 export interface GasStationModel {
@@ -101,6 +145,11 @@ export interface Predicction {
     secondary_text: string;
   };
   coordinates?: Coordinates;
+}
+
+export interface Margin {
+  min: number;
+  max: number;
 }
 
 export interface RouteModel {

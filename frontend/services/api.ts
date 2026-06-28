@@ -7,6 +7,7 @@ import {
   GetListFavoritesResponse,
   GetListGasStationsInRangeModel,
   GetListGasStationsInRangeResponse,
+  GetListGasStationsInRouteResponse,
   PlaceAutocompleteResponse,
   RouteModel,
   RouteResponse,
@@ -68,6 +69,21 @@ export async function getGasStationsInRange(
   });
   return {
     listGasStations: response.data.listGasStations.map(mapGasStationModelToFrontend),
+    priceMargins: response.data.priceMargins,
+  };
+}
+
+export async function getGasStationsInRoute(
+  coordinates: Coordinates[],
+  distance: number,
+): Promise<GetListGasStationsInRouteResponse> {
+  const response = await apiClient.post<GetListGasStationsInRangeModel>("/gasStations/getGasStationsInRoute", {
+    coordinates,
+    distance,
+  });
+  return {
+    listGasStations: response.data.listGasStations.map(mapGasStationModelToFrontend),
+    priceMargins: response.data.priceMargins,
   };
 }
 

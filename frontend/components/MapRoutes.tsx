@@ -9,9 +9,11 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
 import { useLocationStore } from "@/stores/useLocationStore";
 
-import { computeRoute } from "@/services/api";
-import { RouteResponse } from "@/types/types";
+import { computeRoute, getGasStationsInRoute } from "@/services/api";
+import { GasStation, RouteResponse } from "@/types/types";
 import { DEFAULT_REGION } from "@/constants/values";
+
+import MarkerGasStation from "./MarkerGasStation";
 
 interface Props {
   bottomSheetRef: RefObject<BottomSheet | null>;
@@ -23,6 +25,7 @@ function MapRoutes({ bottomSheetRef }: Props) {
 
   const [mapKey, setMapKey] = useState(0);
   const [routeResult, setRouteResult] = useState<RouteResponse | null>(null);
+  const [returnedGasStations, setReturnedGasStations] = useState<GasStation[]>([]);
 
   const initialRegion = useLocationStore.getState().lastRegion || DEFAULT_REGION;
   const origin = useGoogleAutocompleteStore((state) => state.origin);
@@ -41,14 +44,17 @@ function MapRoutes({ bottomSheetRef }: Props) {
       if (!map) return;
 
       setRouteResult(null);
+      setReturnedGasStations([]);
 
       const originCoords = origin?.coordinates;
       const destinyCoords = destiny?.coordinates;
 
       if (originCoords && destinyCoords) {
         try {
-          const result = await computeRoute(originCoords, destinyCoords);
-          setRouteResult(result);
+          const resultantRoute = await computeRoute(originCoords, destinyCoords);
+          const data = await getGasStationsInRoute(resultantRoute.coordinates, 5000);
+          setRouteResult(resultantRoute);
+          setReturnedGasStations(data.listGasStations);
         } catch (error) {
           console.error("Error calculando la ruta:", error);
         }
@@ -107,6 +113,10 @@ function MapRoutes({ bottomSheetRef }: Props) {
     bottomSheetRef.current?.close();
   }, [bottomSheetRef]);
 
+  const onMarkerSelect = useCallback((gasStation: GasStation) => {
+    console.log(gasStation);
+  }, []);
+
   /* ON ACTIVE */
   //need to bypasses a rendering bug with the maps library when painting markers
   //when the focus is regained
@@ -159,6 +169,14 @@ function MapRoutes({ bottomSheetRef }: Props) {
           strokeWidth={4}
         />
       )}
+
+      {returnedGasStations.map((station) => (
+        <MarkerGasStation
+          key={station.id}
+          gasStation={station}
+          onPress={onMarkerSelect}
+        />
+      ))}
     </MapView>
   );
 }

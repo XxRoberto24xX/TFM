@@ -46,7 +46,7 @@ apiClient.interceptors.response.use(
       // THE SERVER RESPONDED BUT WITH AN ERROR CODE
       errorMessage = error.response.data?.message || `Server Error (${status})`;
 
-      if (status === 401 && !originalRequest._retry) {
+      if ((status === 401 || status === 403) && !originalRequest._retry) {
         // THE ERROR CODE WAS A FORBIDEN ONE SO THE ACCESS TOKEN IS THE RESPONSIBLE
         originalRequest._retry = true;
 

@@ -2,7 +2,8 @@ import { MapType } from "react-native-maps";
 
 import { create } from "zustand";
 
-import { GasStation } from "@/types/types";
+import { GasStation, Margin } from "@/types/types";
+import { FILTER_TO_PRICE_KEY } from "@/constants/values";
 
 interface GasStationState {
   listFavorites: GasStation[] | null;
@@ -10,6 +11,7 @@ interface GasStationState {
   activeGasFilter: string;
   selectedGasStation: GasStation | null;
   mapType: MapType;
+  returnedMargins: Record<string, Margin> | null;
 
   setFavorites: (listFavorites: GasStation[] | null) => void;
   addFavorite: (station: GasStation) => void;
@@ -18,9 +20,11 @@ interface GasStationState {
   setActiveGasFilter: (gasType: string) => void;
   setSelectedGasStation: (station: GasStation | null) => void;
   setMapType: (mapType: MapType) => void;
+  setReturnedMargins: (margins: Record<string, Margin>) => void;
 
   isFavorite: (id: number | undefined) => boolean;
   isFilterSelected: (value: string) => boolean;
+  getActiveGasMargin: () => Margin | null;
 }
 
 export const useGasStationStore = create<GasStationState>((set, get) => ({
@@ -29,6 +33,7 @@ export const useGasStationStore = create<GasStationState>((set, get) => ({
   activeGasFilter: "E5 95",
   selectedGasStation: null,
   mapType: "standard",
+  returnedMargins: null,
 
   setFavorites: (listFavorites) => set({ listFavorites: listFavorites }),
   addFavorite: (station) =>
@@ -56,6 +61,7 @@ export const useGasStationStore = create<GasStationState>((set, get) => ({
   setActiveGasFilter: (gasType) => set({ activeGasFilter: gasType }),
   setSelectedGasStation: (station) => set({ selectedGasStation: station }),
   setMapType: (mapType) => set({ mapType: mapType }),
+  setReturnedMargins: (margins) => set({ returnedMargins: margins }),
 
   isFavorite: (id) => {
     if (!id) return false;
@@ -64,5 +70,18 @@ export const useGasStationStore = create<GasStationState>((set, get) => ({
 
   isFilterSelected: (value) => {
     return value === get().activeBrandFilter || value === get().activeGasFilter;
+  },
+
+  getActiveGasMargin: () => {
+    const { activeGasFilter, returnedMargins } = get();
+
+    if (!activeGasFilter || !returnedMargins) return null;
+
+    const priceKey = FILTER_TO_PRICE_KEY[activeGasFilter];
+    if (priceKey) {
+      return returnedMargins[priceKey] ?? null;
+    }
+
+    return null;
   },
 }));

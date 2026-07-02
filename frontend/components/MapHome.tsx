@@ -14,6 +14,8 @@ import { ApiError, GasStation } from "@/types/types";
 import { Colors } from "@/constants/colors";
 import { DEFAULT_REGION, FILTER_TO_PRICE_KEY, MAX_LATITUDE_DELTA_FOR_MARKERS } from "@/constants/values";
 
+import { getPriceColor } from "@/utils/gasStationsUtils";
+
 interface Props {
   ref?: RefObject<MapView | null>;
 }
@@ -31,6 +33,7 @@ function MapHome({ ref }: Props) {
   const mapType = useGasStationStore((state) => state.mapType);
   const activeBrandFilter = useGasStationStore((state) => state.activeBrandFilter);
   const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
+  const activeGasMargin = useGasStationStore((state) => state.getActiveGasMargin());
 
   const loadingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -78,6 +81,7 @@ function MapHome({ ref }: Props) {
       try {
         const data = await getGasStationsInRange(north, south, east, west);
         setReturnedGasStations(data.listGasStations);
+        useGasStationStore.getState().setReturnedMargins(data.priceMargins);
       } catch (callError) {
         const apiError = callError as ApiError;
         console.log("Get Elements In Region: " + apiError.message);
@@ -159,6 +163,7 @@ function MapHome({ ref }: Props) {
             key={station.id}
             gasStation={station}
             onPress={onMarkerSelect}
+            color={getPriceColor(activeGasMargin, station.prices?.[FILTER_TO_PRICE_KEY[activeGasFilter]] || 0)}
           />
         ))}
       </MapView>

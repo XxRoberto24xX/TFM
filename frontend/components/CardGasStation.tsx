@@ -15,9 +15,9 @@ import { useGasStationStore } from "@/stores/useGasStationsStore";
 import { addToFavorites, removeFromFavorites } from "@/services/api";
 import { ApiError } from "@/types/types";
 import { Colors } from "@/constants/colors";
-import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
+import { BRAND_IMAGES, DEFAULT_IMAGE, FILTER_TO_PRICE_KEY } from "@/constants/values";
 
-import { getMarkerGasDisplayInfo } from "@/utils/gasStationsUtils";
+import { getMarkerGasDisplayInfo, getPriceColor } from "@/utils/gasStationsUtils";
 
 function CardGasStation({ style }: PressableProps) {
   /* VARIABLES */
@@ -26,6 +26,7 @@ function CardGasStation({ style }: PressableProps) {
 
   const selectedGasStation = useGasStationStore((state) => state.selectedGasStation);
   const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
+  const activeGasMargin = useGasStationStore((state) => state.getActiveGasMargin());
   const isFavorite = useGasStationStore((state) => state.isFavorite(selectedGasStation?.id));
 
   const imageSource = selectedGasStation ? BRAND_IMAGES[selectedGasStation.brand] || DEFAULT_IMAGE : DEFAULT_IMAGE;
@@ -109,7 +110,19 @@ function CardGasStation({ style }: PressableProps) {
               {selectedGasStation?.municipality}
             </ThemedText>
             <View style={styles.gasView}>
-              {selectedGasStation?.id && <View style={[styles.indicator, { backgroundColor: "green" }]}></View>}
+              {selectedGasStation?.id && (
+                <View
+                  style={[
+                    styles.indicator,
+                    {
+                      backgroundColor: getPriceColor(
+                        activeGasMargin,
+                        selectedGasStation.prices?.[FILTER_TO_PRICE_KEY[activeGasFilter]] || 0,
+                      ),
+                    },
+                  ]}
+                />
+              )}
               <ThemedText size="xl">
                 {selectedGasStation ? getMarkerGasDisplayInfo(selectedGasStation, activeGasFilter) : ""}
               </ThemedText>

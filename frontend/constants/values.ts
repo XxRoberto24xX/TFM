@@ -1,17 +1,19 @@
 import { Dimensions, ImageSourcePropType } from "react-native";
 import { Region } from "react-native-maps";
 
-import { Price } from "@/types/types";
+const FUEL_RELATIONS = [
+  ["E5 95", "gasoline95"],
+  ["E5 98", "gasoline98"],
+  ["Diesel A", "diesel"],
+  ["Diesel Premium", "dieselPremium"],
+  ["E5 95 Premium", "gasoline95Premium"],
+  ["Diesel Renovable", "dieselRenewable"],
+  ["GLP", "glp"],
+] as const;
 
-export const FILTER_TO_PRICE_KEY: Record<string, keyof Omit<Price, "date">> = {
-  "E5 95": "gasoline95",
-  "E5 98": "gasoline98",
-  "Diesel A": "diesel",
-  "Diesel B": "diesel",
-  "Diesel +": "diesel",
-  "Gas Natural": "diesel",
-  Biocombustible: "diesel",
-};
+export const FILTER_TO_PRICE_KEY = Object.fromEntries(FUEL_RELATIONS);
+
+export const PRICE_KEY_TO_FILTER = Object.fromEntries(FUEL_RELATIONS.map(([filter, key]) => [key, filter]));
 
 export const BRAND_IMAGES: Record<string, ImageSourcePropType> = {
   TODOS: require("@/assets/brands/default.png"),
@@ -32,10 +34,10 @@ export const GAS_FILTER_OPTIONS = [
   "E5 95",
   "E5 98",
   "Diesel A",
-  "Diesel B",
-  "Diesel +",
-  "Gas Natural",
-  "Biocombustible",
+  "Diesel Premium",
+  "E5 95 Premium",
+  "Diesel Renovable",
+  "GLP",
 ];
 
 export const BRAND_FILTER_OPTIONS = ["Todos", "Repsol", "Moeve", "Plenergy", "Cepsa", "Shell", "BP", "Galp"];

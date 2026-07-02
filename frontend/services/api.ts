@@ -67,9 +67,10 @@ export async function getGasStationsInRange(
     east,
     west,
   });
+
   return {
     listGasStations: response.data.listGasStations.map(mapGasStationModelToFrontend),
-    priceMargins: response.data.priceMargins,
+    priceMargins: response.data.priceSummary,
   };
 }
 
@@ -83,7 +84,7 @@ export async function getGasStationsInRoute(
   });
   return {
     listGasStations: response.data.listGasStations.map(mapGasStationModelToFrontend),
-    priceMargins: response.data.priceMargins,
+    priceMargins: response.data.priceSummary,
   };
 }
 

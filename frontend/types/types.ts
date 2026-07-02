@@ -73,7 +73,7 @@ export interface GetListFavoritesModel {
 
 export interface GetListGasStationsInRangeModel {
   listGasStations: GasStationModel[];
-  priceMargins: {
+  priceSummary: {
     gasoline95: Margin;
     gasoline98: Margin;
     diesel: Margin;
@@ -130,6 +130,10 @@ export interface Price {
   gasoline95: number;
   gasoline98: number;
   diesel: number;
+  dieselPremium: number;
+  gasoline95Premium: number;
+  dieselRenewable: number;
+  glp: number;
 }
 
 export interface Coordinates {

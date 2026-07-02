@@ -6,14 +6,17 @@ import { useFocusEffect } from "expo-router";
 
 import BottomSheet from "@gorhom/bottom-sheet";
 
+import { useGasStationStore } from "@/stores/useGasStationsStore";
 import { useGoogleAutocompleteStore } from "@/stores/useGoogleAutocompleteStore";
 import { useLocationStore } from "@/stores/useLocationStore";
 
 import { computeRoute, getGasStationsInRoute } from "@/services/api";
 import { GasStation, RouteResponse } from "@/types/types";
-import { DEFAULT_REGION } from "@/constants/values";
+import { DEFAULT_REGION, FILTER_TO_PRICE_KEY } from "@/constants/values";
 
 import MarkerGasStation from "./MarkerGasStation";
+
+import { getPriceColor } from "@/utils/gasStationsUtils";
 
 interface Props {
   bottomSheetRef: RefObject<BottomSheet | null>;
@@ -31,11 +34,38 @@ function MapRoutes({ bottomSheetRef }: Props) {
   const origin = useGoogleAutocompleteStore((state) => state.origin);
   const destiny = useGoogleAutocompleteStore((state) => state.destiny);
 
+  const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
+  const activeBrandFilter = useGasStationStore((state) => state.activeBrandFilter);
+  const activeGasMargin = useGasStationStore((state) => state.getActiveGasMargin());
+
   /* USE MEMO VARIABLES */
   //need to bypasses a rendering bug with the maps library when painting the route
   const safeCoordinates = useMemo(() => {
     return routeResult?.coordinates ? [...routeResult.coordinates] : [];
   }, [routeResult]);
+
+  const paintedGasStations = useMemo(() => {
+    if (!returnedGasStations || returnedGasStations.length === 0) {
+      return [];
+    }
+
+    const filteredStations = returnedGasStations.filter((station) => {
+      const matchesBrand =
+        activeBrandFilter === "Todos" || station.brand.toUpperCase() === activeBrandFilter.toUpperCase();
+
+      const priceKey = FILTER_TO_PRICE_KEY[activeGasFilter];
+
+      const hasPrice = station.prices && station.prices[priceKey] !== undefined && station.prices[priceKey] > 0;
+
+      return matchesBrand && hasPrice;
+    });
+
+    if (filteredStations.length === 0) {
+      console.log("No hay ninguna coincidencia");
+    }
+
+    return filteredStations;
+  }, [returnedGasStations, activeBrandFilter, activeGasFilter]);
 
   /* WATCHERS */
   useEffect(() => {
@@ -55,6 +85,7 @@ function MapRoutes({ bottomSheetRef }: Props) {
           const data = await getGasStationsInRoute(resultantRoute.coordinates, 5000);
           setRouteResult(resultantRoute);
           setReturnedGasStations(data.listGasStations);
+          useGasStationStore.getState().setReturnedMargins(data.priceMargins);
         } catch (error) {
           console.error("Error calculando la ruta:", error);
         }
@@ -170,11 +201,12 @@ function MapRoutes({ bottomSheetRef }: Props) {
         />
       )}
 
-      {returnedGasStations.map((station) => (
+      {paintedGasStations.map((station) => (
         <MarkerGasStation
           key={station.id}
           gasStation={station}
           onPress={onMarkerSelect}
+          color={getPriceColor(activeGasMargin, station.prices?.[FILTER_TO_PRICE_KEY[activeGasFilter]] || 0)}
         />
       ))}
     </MapView>

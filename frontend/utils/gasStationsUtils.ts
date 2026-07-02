@@ -1,4 +1,4 @@
-import { GasStation } from "@/types/types";
+import { GasStation, Margin } from "@/types/types";
 import { FILTER_TO_PRICE_KEY } from "@/constants/values";
 
 export function getMarkerGasDisplayInfo(station: GasStation, gasType: string): string {
@@ -35,3 +35,35 @@ export function formatDuration(minutes: number): string {
   }
   return `${hours} h ${remainingMinutes} min`;
 }
+
+export const getPriceColor = (margin: Margin | null | undefined, currentPrice: number | undefined): string => {
+  if (!margin || margin.max === margin.min || !currentPrice || currentPrice === 0) {
+    return "#8E8E93";
+  }
+
+  const { min, max } = margin;
+
+  const boundedPrice = Math.max(min, Math.min(max, currentPrice));
+
+  const percentage = (boundedPrice - min) / (max - min);
+
+  let r = 0;
+  let g = 0;
+  const b = 0;
+
+  if (percentage < 0.5) {
+    const localPercentage = percentage / 0.5;
+
+    r = Math.floor(255 * localPercentage);
+    g = 215;
+  } else {
+    const localPercentage = (1 - percentage) / 0.5;
+
+    r = 255;
+    g = Math.floor(215 * localPercentage);
+  }
+
+  const toHex = (c: number) => c.toString(16).padStart(2, "0");
+
+  return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
+};

@@ -2,8 +2,6 @@ import { memo, RefObject, useCallback, useEffect, useMemo, useRef, useState } fr
 import { StyleSheet } from "react-native";
 import MapView, { LongPressEvent, Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 
-import { useFocusEffect } from "expo-router";
-
 import BottomSheet from "@gorhom/bottom-sheet";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
@@ -26,7 +24,6 @@ function MapRoutes({ bottomSheetRef }: Props) {
   /* VARIABLES */
   const mapRef = useRef<MapView>(null);
 
-  const [mapKey, setMapKey] = useState(0);
   const [routeResult, setRouteResult] = useState<RouteResponse | null>(null);
   const [returnedGasStations, setReturnedGasStations] = useState<GasStation[]>([]);
 
@@ -39,11 +36,6 @@ function MapRoutes({ bottomSheetRef }: Props) {
   const activeGasMargin = useGasStationStore((state) => state.getActiveGasMargin());
 
   /* USE MEMO VARIABLES */
-  //need to bypasses a rendering bug with the maps library when painting the route
-  const safeCoordinates = useMemo(() => {
-    return routeResult?.coordinates ? [...routeResult.coordinates] : [];
-  }, [routeResult]);
-
   const paintedGasStations = useMemo(() => {
     if (!returnedGasStations || returnedGasStations.length === 0) {
       return [];
@@ -148,23 +140,9 @@ function MapRoutes({ bottomSheetRef }: Props) {
     console.log(gasStation);
   }, []);
 
-  /* ON ACTIVE */
-  //need to bypasses a rendering bug with the maps library when painting markers
-  //when the focus is regained
-  useFocusEffect(
-    useCallback(() => {
-      setMapKey((k) => k + 1);
-
-      return () => {
-        useGoogleAutocompleteStore.getState().resetStore();
-      };
-    }, []),
-  );
-
   return (
     <MapView
       style={StyleSheet.absoluteFill}
-      key={mapKey}
       ref={mapRef}
       provider={PROVIDER_GOOGLE}
       showsUserLocation={true}
@@ -193,9 +171,9 @@ function MapRoutes({ bottomSheetRef }: Props) {
         />
       )}
 
-      {safeCoordinates && (
+      {routeResult && (
         <Polyline
-          coordinates={safeCoordinates}
+          coordinates={routeResult.coordinates}
           strokeColor="#ff0000"
           strokeWidth={4}
         />

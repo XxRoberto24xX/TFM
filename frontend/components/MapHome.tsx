@@ -2,8 +2,6 @@ import { memo, RefObject, useCallback, useEffect, useMemo, useRef, useState } fr
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import MapView, { Details, PROVIDER_GOOGLE, Region } from "react-native-maps";
 
-import { useFocusEffect } from "expo-router";
-
 import MarkerGasStation from "@/components/MarkerGasStation";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
@@ -25,7 +23,6 @@ const LOADING_THRESHOLD_MS = 500;
 function MapHome({ ref }: Props) {
   /* VARIABLES */
   const [returnedGasStations, setReturnedGasStations] = useState<GasStation[]>([]);
-  const [mapKey, setMapKey] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const initialRegion = useLocationStore.getState().lastRegion || DEFAULT_REGION;
@@ -123,15 +120,6 @@ function MapHome({ ref }: Props) {
     return () => cancelAnimationFrame(frame);
   }, [paintedGasStations]);
 
-  /* ON ACTIVE */
-  //need to bypasses a rendering bug with the maps library when painting markers
-  //when the focus is regained
-  useFocusEffect(
-    useCallback(() => {
-      setMapKey((k) => k + 1);
-    }, []),
-  );
-
   /* ON UNMOUNT */
   useEffect(() => {
     return () => {
@@ -146,7 +134,6 @@ function MapHome({ ref }: Props) {
     <View style={StyleSheet.absoluteFill}>
       <MapView
         style={StyleSheet.absoluteFill}
-        key={mapKey}
         ref={ref}
         provider={PROVIDER_GOOGLE}
         showsUserLocation={true}

@@ -76,14 +76,12 @@ public class AuthService
     public void changePassword(ChangePasswordInputDTO changePasswordInputDTO){
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        IUserPasswordProyection dbpassword = userRepository.findPasswordByEmail(email)
+        UserModel user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if(!passwordEncoder.matches(changePasswordInputDTO.getOldPassword(), dbpassword.getPassword()))
-            throw new RuntimeException("Invalid Password");
+        if(!passwordEncoder.matches(changePasswordInputDTO.getOldPassword(), user.getPassword()))
+            throw new RuntimeException("Invalid Original Password");
 
-        UserModel user = new UserModel();
-        user.setEmail(email);
         user.setPassword(passwordEncoder.encode(changePasswordInputDTO.getNewPassword()));
 
         userRepository.save(user);

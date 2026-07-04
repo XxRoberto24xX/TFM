@@ -2,9 +2,13 @@ import { useCallback, useEffect, useRef } from "react";
 import { Linking, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { router } from "expo-router";
+
 import BottomSheet from "@gorhom/bottom-sheet";
 
 import BottomSheetAutocomplete from "@/components/BottomSheetAutocomplete";
+import ChipsFilterBrands from "@/components/ChipsFilterBrands";
+import ChipsFilterGas from "@/components/ChipsFilterGas";
 import FloatingButtonIcon from "@/components/FloatingButtonIcon";
 import MapRoutes from "@/components/MapRoutes";
 import TextInputAutocomplete from "@/components/TextInputAutocomplete";
@@ -37,6 +41,11 @@ export default function Route() {
     } else {
       console.log("No hay ruta que compartir");
     }
+  }, []);
+
+  const onGoBack = useCallback(() => {
+    useGoogleAutocompleteStore.getState().resetStore();
+    router.back();
   }, []);
 
   /* WATCHERS */
@@ -72,11 +81,20 @@ export default function Route() {
         type="destiny"
         placeHolder="Destino"
       />
+      <ChipsFilterBrands />
       <FloatingButtonIcon
         style={styles.googleMapsButton}
         imageSource={require("@/assets/icons/googleMaps.png")}
         onPress={onShareToGoogleMaps}
       />
+      <FloatingButtonIcon
+        style={styles.googleMapsButton}
+        icon="arrow-back"
+        onPress={onGoBack}
+      />
+      <View style={styles.bottomView}>
+        <ChipsFilterGas />
+      </View>
       <BottomSheetAutocomplete bottomSheetRef={bottomSheetRef} />
     </View>
   );
@@ -95,5 +113,8 @@ const styles = StyleSheet.create({
   googleMapsButton: {
     margin: 16,
     alignSelf: "flex-end",
+  },
+  bottomView: {
+    marginTop: "auto",
   },
 });

@@ -26,12 +26,4 @@ function MarkerGasStation({ gasStation, color, onPress }: Props) {
   );
 }
 
-const areEqual = (prevProps: Props, nextProps: Props) => {
-  return (
-    prevProps.color === nextProps.color &&
-    prevProps.gasStation.id === nextProps.gasStation.id &&
-    JSON.stringify(prevProps.gasStation.prices) === JSON.stringify(nextProps.gasStation.prices)
-  );
-};
-
-export default memo(MarkerGasStation, areEqual);
+export default memo(MarkerGasStation);

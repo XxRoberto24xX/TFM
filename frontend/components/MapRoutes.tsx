@@ -31,6 +31,8 @@ function MapRoutes({ bottomSheetRef }: Props) {
   const origin = useGoogleAutocompleteStore((state) => state.origin);
   const destiny = useGoogleAutocompleteStore((state) => state.destiny);
 
+  const mapType = useGasStationStore((state) => state.mapType);
+
   const activeGasFilter = useGasStationStore((state) => state.activeGasFilter);
   const activeBrandFilter = useGasStationStore((state) => state.activeBrandFilter);
   const activeGasMargin = useGasStationStore((state) => state.getActiveGasMargin());
@@ -149,6 +151,7 @@ function MapRoutes({ bottomSheetRef }: Props) {
       showsMyLocationButton={false}
       showsCompass={false}
       toolbarEnabled={false}
+      mapType={mapType}
       onPress={onPressMap}
       onPoiClick={onPressMap}
       onLongPress={onLongPress}

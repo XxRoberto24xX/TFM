@@ -1,8 +1,6 @@
-import { memo, useCallback, useMemo, useRef, useState } from "react";
+import { memo, RefObject, useCallback, useMemo, useState } from "react";
 import { Dimensions, Pressable, StyleSheet, View } from "react-native";
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
-
-import { router } from "expo-router";
 
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
@@ -27,9 +25,12 @@ const favoritesPraceHolder = () => (
   </View>
 );
 
-function BottomSheetFavorites() {
+interface Props {
+  bottomSheetRef: RefObject<BottomSheet | null>;
+}
+
+function BottomSheetFavorites({ bottomSheetRef }: Props) {
   /* VARIABLES */
-  const bottomSheetRef = useRef<BottomSheet>(null);
   const animatedIndex = useSharedValue(0);
 
   const [isExpanded, setIsExpanded] = useState(false);
@@ -50,19 +51,23 @@ function BottomSheetFavorites() {
   /* HANDELERS */
   const onToggleBottomSheet = useCallback(() => {
     if (isExpanded) {
-      bottomSheetRef.current?.snapToIndex(0);
+      bottomSheetRef?.current?.snapToIndex(0);
     } else {
-      bottomSheetRef.current?.expand();
+      bottomSheetRef?.current?.expand();
     }
-  }, [isExpanded]);
+  }, [isExpanded, bottomSheetRef]);
 
   const onBottomSheetChange = useCallback((index: number) => {
     setIsExpanded(index === 1);
   }, []);
 
-  const onFavoriteSelect = useCallback((gasStation: GasStation) => {
-    router.push({ pathname: "[id]", params: { id: gasStation.direction } });
-  }, []);
+  const onFavoriteSelect = useCallback(
+    (gasStation: GasStation) => {
+      useGasStationStore.getState().setSelectedGasStation(gasStation);
+      bottomSheetRef?.current?.snapToIndex(0);
+    },
+    [bottomSheetRef],
+  );
 
   /* ITEMS */
   const renderItem = useCallback(

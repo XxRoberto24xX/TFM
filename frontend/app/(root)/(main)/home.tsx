@@ -5,6 +5,8 @@ import MapView, { Region } from "react-native-maps";
 import { useHeaderHeight } from "expo-router/build/react-navigation";
 import * as SecureStore from "expo-secure-store";
 
+import BottomSheet from "@gorhom/bottom-sheet";
+
 import BottomSheetFavorites from "@/components/BottomSheetFavorites";
 import CardGasStation from "@/components/CardGasStation";
 import ChipsFilterBrands from "@/components/ChipsFilterBrands";
@@ -21,7 +23,10 @@ import { ApiError } from "@/types/types";
 export default function Home() {
   /* VARIABLES */
   const mapRef = useRef<MapView | null>(null);
+  const bottomSheetRef = useRef<BottomSheet>(null);
   const headerHeight = useHeaderHeight();
+
+  const selectedGasStation = useGasStationStore((state) => state.selectedGasStation);
 
   const userLocation = useLocationStore((state) => state.userLocation);
   const isCenteredOnUser = useLocationStore((state) => state.isCenteredOnUser);
@@ -58,6 +63,20 @@ export default function Home() {
     mapTypeChange();
   }, []);
 
+  /* WATCHERS */
+  useEffect(() => {
+    if (selectedGasStation && mapRef.current) {
+      const userRegion: Region = {
+        latitude: selectedGasStation.coordinates.latitude,
+        longitude: selectedGasStation.coordinates.longitude,
+        latitudeDelta: 0.05,
+        longitudeDelta: 0.05,
+      };
+
+      mapRef.current.animateToRegion(userRegion);
+    }
+  }, [selectedGasStation]);
+
   /* ON MOUNT */
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -77,7 +96,10 @@ export default function Home() {
 
   return (
     <View style={styles.mapContainer}>
-      <MapHome ref={mapRef} />
+      <MapHome
+        ref={mapRef}
+        bottomSheetRef={bottomSheetRef}
+      />
       <View style={[styles.mainViewContainer, { paddingTop: headerHeight }]}>
         <ChipsFilterBrands />
         <FloatingButtonIcon
@@ -99,7 +121,7 @@ export default function Home() {
           </View>
         </View>
       </View>
-      <BottomSheetFavorites />
+      <BottomSheetFavorites bottomSheetRef={bottomSheetRef} />
     </View>
   );
 }

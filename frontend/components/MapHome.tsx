@@ -2,6 +2,8 @@ import { memo, RefObject, useCallback, useEffect, useMemo, useRef, useState } fr
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import MapView, { Details, PROVIDER_GOOGLE, Region } from "react-native-maps";
 
+import BottomSheet from "@gorhom/bottom-sheet";
+
 import MarkerGasStation from "@/components/MarkerGasStation";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
@@ -16,11 +18,12 @@ import { getPriceColor } from "@/utils/gasStationsUtils";
 
 interface Props {
   ref?: RefObject<MapView | null>;
+  bottomSheetRef: RefObject<BottomSheet | null>;
 }
 
 const LOADING_THRESHOLD_MS = 500;
 
-function MapHome({ ref }: Props) {
+function MapHome({ ref, bottomSheetRef }: Props) {
   /* VARIABLES */
   const [returnedGasStations, setReturnedGasStations] = useState<GasStation[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -100,12 +103,17 @@ function MapHome({ ref }: Props) {
 
   const onMapPressed = useCallback(() => {
     useGasStationStore.getState().setSelectedGasStation(null);
-  }, []);
+    bottomSheetRef?.current?.snapToIndex(0);
+  }, [bottomSheetRef]);
 
-  const onMarkerSelect = useCallback((gasStation: GasStation) => {
-    useGasStationStore.getState().setSelectedGasStation(gasStation);
-    useLocationStore.getState().setIsCenteredOnUser(false);
-  }, []);
+  const onMarkerSelect = useCallback(
+    (gasStation: GasStation) => {
+      useGasStationStore.getState().setSelectedGasStation(gasStation);
+      bottomSheetRef?.current?.snapToIndex(0);
+      useLocationStore.getState().setIsCenteredOnUser(false);
+    },
+    [bottomSheetRef],
+  );
 
   /* WATCHERS */
   useEffect(() => {
@@ -144,7 +152,8 @@ function MapHome({ ref }: Props) {
         onPress={onMapPressed}
         onPoiClick={onMapPressed}
         onRegionChangeComplete={onRegionChanged}
-        initialRegion={initialRegion}>
+        initialRegion={initialRegion}
+        moveOnMarkerPress={false}>
         {paintedGasStations.map((station) => (
           <MarkerGasStation
             key={station.id}

@@ -12,9 +12,9 @@ public class GetGasStationInfoOutputDTO {
     private String sellingType;
     private String brand;
     private String municipality;
-    private IPriceProyection actualPrices;
+    private IPriceProyection prices;
 
-    public GetGasStationInfoOutputDTO(IGasStationProyection gasStationInfo, IPriceProyection actualPrices) {
+    public GetGasStationInfoOutputDTO(IGasStationProyection gasStationInfo, IPriceProyection prices) {
         this.id = gasStationInfo.getId();
         this.direction = gasStationInfo.getDirection();
         this.hours = gasStationInfo.getHours();
@@ -23,7 +23,7 @@ public class GetGasStationInfoOutputDTO {
         this.sellingType = gasStationInfo.getSellingType();
         this.brand = gasStationInfo.getBrand();
         this.municipality = gasStationInfo.getMunicipality();
-        this.actualPrices = actualPrices;
+        this.prices = prices;
     }
 
     public Long getId() {
@@ -90,11 +90,11 @@ public class GetGasStationInfoOutputDTO {
         this.municipality = municipality;
     }
 
-    public IPriceProyection getActualPrices() {
-        return actualPrices;
+    public IPriceProyection getPrices() {
+        return prices;
     }
 
-    public void setActualPrices(IPriceProyection actualPrices) {
-        this.actualPrices = actualPrices;
+    public void setPrices(IPriceProyection prices) {
+        this.prices = prices;
     }
 }

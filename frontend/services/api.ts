@@ -33,6 +33,16 @@ export async function register(email: string, password: string): Promise<void> {
   return response.data;
 }
 
+export async function changePassword(newPassword: string, oldPassword: string): Promise<void> {
+  const response = await apiClient.post<void>("auth/changePassword", { newPassword, oldPassword });
+  return response.data;
+}
+
+export async function deleteAccount(): Promise<void> {
+  const response = await apiClient.post<void>("auth/delete");
+  return response.data;
+}
+
 export async function passwordResetEmail(email: string): Promise<void> {
   const response = await apiClient.post<void>("/auth/passwordResetEmail", { email });
   return response.data;

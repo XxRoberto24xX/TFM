@@ -64,7 +64,7 @@ export default function Login() {
       contentContainerStyle={styles.container}
       enableOnAndroid={true}
       keyboardShouldPersistTaps="handled"
-      extraScrollHeight={30}
+      extraScrollHeight={50}
       showsVerticalScrollIndicator={false}>
       <Image
         style={styles.backgroundImage}
@@ -159,9 +159,11 @@ const styles = StyleSheet.create({
   },
   emailInput: {
     marginTop: 48,
+    width: "80%",
   },
   passwordInput: {
     marginTop: 24,
+    width: "80%",
   },
   links: {
     textDecorationLine: "underline",

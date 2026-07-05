@@ -174,9 +174,11 @@ const styles = StyleSheet.create({
   },
   emailInput: {
     marginTop: 45,
+    width: "80%",
   },
   passwordInput: {
     marginTop: 20,
+    width: "80%",
   },
   errorMessage: {
     marginTop: 20,

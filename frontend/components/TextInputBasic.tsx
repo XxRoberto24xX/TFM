@@ -60,7 +60,6 @@ const styles = StyleSheet.create({
   inputPlaceholder: {
     flexDirection: "row",
     alignItems: "center",
-    width: "80%",
     borderRadius: 30,
     paddingHorizontal: 25,
     paddingVertical: 2,

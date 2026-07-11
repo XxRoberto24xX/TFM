@@ -20,8 +20,8 @@ const MessagePriceDesviation = ({ type, price }: Props) => {
 
   /* USEMEMO VARIABLES */
   const deviation = useMemo(() => {
-    const fullDeviation = (price - (gasMargins[type].min + gasMargins[type].max) / 2) * 100;
-    return Math.round(fullDeviation * 10) / 10;
+    const fullDeviation = price - (gasMargins[type].min + gasMargins[type].max) / 2;
+    return Math.round(fullDeviation * 1000) / 1000;
   }, [gasMargins, type, price]);
 
   return (
@@ -48,7 +48,7 @@ const MessagePriceDesviation = ({ type, price }: Props) => {
               size="l"
               color={deviation < 0 ? "green" : "red"}
               weight="regular">
-              {deviation + " cts/L"}
+              {deviation + " €/L"}
             </ThemedText>
             <MaterialCommunityIcons
               name={deviation < 0 ? "triangle-down" : "triangle"}

@@ -3,12 +3,14 @@ import polyline from "@mapbox/polyline";
 import {
   AuthResponse,
   Coordinates,
+  GetHistoricalPricesResponseModel,
   GetListFavoritesModel,
   GetListFavoritesResponse,
   GetListGasStationsInRangeModel,
   GetListGasStationsInRangeResponse,
   GetListGasStationsInRouteResponse,
   PlaceAutocompleteResponse,
+  Price,
   RouteModel,
   RouteResponse,
 } from "../types/types";
@@ -62,6 +64,18 @@ export async function addToFavorites(gasStationId: number): Promise<void> {
 
 export async function removeFromFavorites(gasStationId: number): Promise<void> {
   const response = await apiClient.post<void>("/gasStations/removeFromFavorites", { gasStationId });
+  return response.data;
+}
+
+export async function getActualPrices(gasStationId: number) {
+  const response = await apiClient.post<Price>("gasStations/getActualPrices", { gasStationId });
+  return response.data;
+}
+
+export async function getHistoricalPrices(gasStationId: number) {
+  const response = await apiClient.post<GetHistoricalPricesResponseModel>("gasStations/getHistoricalPrices", {
+    gasStationId,
+  });
   return response.data;
 }
 

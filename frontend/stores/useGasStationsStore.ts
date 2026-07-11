@@ -2,7 +2,7 @@ import { MapType } from "react-native-maps";
 
 import { create } from "zustand";
 
-import { GasStation, Margin } from "@/types/types";
+import { GasStation, Margin, Price } from "@/types/types";
 import { FILTER_TO_PRICE_KEY } from "@/constants/values";
 
 interface GasStationState {
@@ -25,6 +25,8 @@ interface GasStationState {
   isFavorite: (id: number | undefined) => boolean;
   isFilterSelected: (value: string) => boolean;
   getActiveGasMargin: () => Margin | null;
+
+  updateSelectedGasStationPrices: (newPrices: Price) => void;
 }
 
 export const useGasStationStore = create<GasStationState>((set, get) => ({
@@ -84,4 +86,16 @@ export const useGasStationStore = create<GasStationState>((set, get) => ({
 
     return null;
   },
+
+  updateSelectedGasStationPrices: (newPrices) =>
+    set((state) => {
+      if (!state.selectedGasStation) return {};
+
+      return {
+        selectedGasStation: {
+          ...state.selectedGasStation,
+          prices: newPrices,
+        },
+      };
+    }),
 }));

@@ -66,14 +66,14 @@ export default function Home() {
   /* WATCHERS */
   useEffect(() => {
     if (selectedGasStation && mapRef.current) {
-      const userRegion: Region = {
+      const gasStationProsition: Region = {
         latitude: selectedGasStation.coordinates.latitude,
         longitude: selectedGasStation.coordinates.longitude,
         latitudeDelta: 0.05,
         longitudeDelta: 0.05,
       };
 
-      mapRef.current.animateToRegion(userRegion);
+      mapRef.current.animateToRegion(gasStationProsition);
     }
   }, [selectedGasStation]);
 

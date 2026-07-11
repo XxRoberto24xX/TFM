@@ -97,6 +97,10 @@ export interface GetListGasStationsInRouteResponseModel {
   };
 }
 
+export interface GetHistoricalPricesResponseModel {
+  historicalPrices: Price[];
+}
+
 export interface GasStationModel {
   id: number;
   hours: string;

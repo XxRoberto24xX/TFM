@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { router } from "expo-router";
@@ -8,15 +8,18 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import CardPrice from "@/components/CardPrice";
 import CardPriceVariant from "@/components/CardPriceVariant";
+import ChartFuelPrice from "@/components/ChartFuelPrice";
 import FloatingButtonIcon from "@/components/FloatingButtonIcon";
 import ThemedText from "@/components/ThemedText";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
 
 import { addToFavorites, getHistoricalPrices, removeFromFavorites } from "@/services/api";
-import { ApiError, Price } from "@/types/types";
+import { ApiError, FuelType, Price } from "@/types/types";
 import { Colors } from "@/constants/colors";
 import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
+
+import { formatDateLabel } from "@/utils/gasStationsUtils";
 
 export default function GasStation() {
   /* VARIABLES */
@@ -28,6 +31,22 @@ export default function GasStation() {
   const imageSource = gasStation ? BRAND_IMAGES[gasStation.brand] || DEFAULT_IMAGE : DEFAULT_IMAGE;
 
   const [historicalPrices, setHistoricalPrices] = useState<Price[]>([]);
+  const [selectedFuel, setSelectedFuel] = useState<FuelType>("diesel");
+
+  /* USEMEMO VARIABLES */
+  const chartData = useMemo(() => {
+    const sortedPrices = [...historicalPrices].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    const validPrices = sortedPrices.filter((p) => p[selectedFuel] > 0);
+
+    const last14Days = validPrices.slice(-14);
+
+    return last14Days.map((item) => ({
+      value: item[selectedFuel],
+      label: formatDateLabel(item.date),
+      dataPointText: `${item[selectedFuel].toFixed(3)} €/L`,
+    }));
+  }, [historicalPrices, selectedFuel]);
 
   /* HANDLERS */
   const onBackPress = useCallback(() => {
@@ -75,7 +94,9 @@ export default function GasStation() {
   }, [gasStation]);
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <ScrollView
+      style={[styles.container, { paddingTop: insets.top }]}
+      contentContainerStyle={styles.contenContainer}>
       <View style={styles.upperContainer}>
         <FloatingButtonIcon
           style={styles.backButton}
@@ -167,15 +188,21 @@ export default function GasStation() {
         type="glp"
         price={gasStation.prices?.glp ?? 0}
       />
-    </View>
+      <ChartFuelPrice
+        style={styles.chart}
+        data={chartData}
+      />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: 16,
     paddingHorizontal: 16,
+  },
+  contenContainer: {
+    gap: 16,
   },
   upperContainer: {
     flexDirection: "row",
@@ -214,6 +241,8 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
   },
+  chart: {
+    marginTop: 16,
+    marginBottom: 60,
+  },
 });
-
-//calendar-month-outline

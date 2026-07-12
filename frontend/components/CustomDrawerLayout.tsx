@@ -2,6 +2,7 @@ import React, { memo, ReactNode, useEffect, useRef } from "react";
 import { Dimensions } from "react-native";
 import ReanimatedDrawerLayout, {
   DrawerLayoutMethods,
+  DrawerLockMode,
   DrawerPosition,
   DrawerType,
 } from "react-native-gesture-handler/ReanimatedDrawerLayout";
@@ -40,6 +41,7 @@ function CustomDrawerLayout({ children }: CustomDrawerLayoutProps) {
       drawerWidth={DRAWER_WIDTH}
       drawerPosition={DrawerPosition.LEFT}
       drawerType={DrawerType.FRONT}
+      drawerLockMode={DrawerLockMode.LOCKED_CLOSED}
       renderNavigationView={() => <DrawerContent />}
       hideStatusBar={false}
       overlayColor="rgba(0, 0, 0, 0.5)"

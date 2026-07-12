@@ -67,3 +67,9 @@ export const getPriceColor = (margin: Margin | null | undefined, currentPrice: n
 
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
 };
+
+export const formatDateLabel = (dateStr: string): string => {
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return dateStr;
+  return date.toLocaleDateString("es-ES", { day: "2-digit", month: "short" });
+};

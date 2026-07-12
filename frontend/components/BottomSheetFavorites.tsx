@@ -2,7 +2,7 @@ import { memo, RefObject, useCallback, useMemo, useState } from "react";
 import { Dimensions, Pressable, StyleSheet, View } from "react-native";
 import Animated, { interpolate, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 
 import ListItemFavorite from "@/components/ListItemFavorite";
@@ -93,9 +93,9 @@ function BottomSheetFavorites({ bottomSheetRef }: Props) {
           style={styles.iconContainer}
           onPress={onToggleBottomSheet}>
           <Animated.View style={iconStyle}>
-            <Ionicons
-              name="chevron-up"
-              size={30}
+            <MaterialCommunityIcons
+              name={"chevron-up"}
+              size={40}
               color={Colors.textPrimary}
             />
           </Animated.View>

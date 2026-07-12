@@ -1,7 +1,7 @@
 import { memo, useCallback } from "react";
 import { Image, Pressable, StyleSheet, View } from "react-native";
 
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 
 import ThemedText from "@/components/ThemedText";
 
@@ -61,9 +61,9 @@ function ListItemFavorite({ gasStation, onPress }: Props) {
           color={Colors.textPrimary}
         />
       </Pressable>
-      <Ionicons
-        name={"chevron-forward"}
-        size={30}
+      <MaterialIcons
+        name={"chevron-right"}
+        size={40}
         color={Colors.textPrimary}
       />
     </ListItem>

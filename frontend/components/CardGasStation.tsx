@@ -6,7 +6,7 @@ import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-na
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 
-import { Ionicons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 
 import ThemedText from "@/components/ThemedText";
 
@@ -130,16 +130,16 @@ function CardGasStation({ style }: PressableProps) {
           </View>
           <View style={styles.markersView}>
             <Pressable onPress={onToggleFavorite}>
-              <Ionicons
+              <MaterialIcons
                 name={isFavorite ? "bookmark" : "bookmark-outline"}
-                size={30}
+                size={35}
                 color={Colors.textPrimary}
               />
             </Pressable>
-            <Ionicons
+            <MaterialIcons
               style={{ marginTop: "auto" }}
-              name={"chevron-forward"}
-              size={30}
+              name={"chevron-right"}
+              size={40}
               color={Colors.textPrimary}
             />
           </View>
@@ -184,11 +184,10 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   infoView: {
-    flexDirection: "column",
     flex: 1,
   },
   markersView: {
-    flexDirection: "column",
+    alignItems: "center",
   },
   imageView: {
     alignSelf: "flex-start",

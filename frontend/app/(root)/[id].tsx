@@ -55,17 +55,13 @@ export default function GasStation() {
     }
   }, []);
 
-  /* WATCHERS */
-  useEffect(() => {
-    useGasStationStore.getState().updateSelectedGasStationPrices(historicalPrices[0]);
-  }, [historicalPrices]);
-
   /* ON MOUNT */
   useEffect(() => {
     const getGasStationHistoricalPrices = async () => {
       try {
         const responseHistoricalPrices = await getHistoricalPrices(gasStation.id);
         setHistoricalPrices(responseHistoricalPrices.historicalPrices);
+        useGasStationStore.getState().updateSelectedGasStationPrices(responseHistoricalPrices.historicalPrices[0]);
       } catch (error) {
         const apiError = error as ApiError;
         console.log("Gas Station Details: " + apiError.message);

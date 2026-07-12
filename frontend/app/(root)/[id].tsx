@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
+import { Image, Linking, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { router } from "expo-router";
@@ -18,6 +18,14 @@ import { addToFavorites, getHistoricalPrices, removeFromFavorites } from "@/serv
 import { ApiError, Price } from "@/types/types";
 import { Colors } from "@/constants/colors";
 import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
+
+const openGoogleMaps = (latitude: number, longitude: number) => {
+  const url = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+
+  Linking.openURL(url).catch((err) => {
+    console.log("Error: No se pudo abrir Google Maps. Asegúrate de tener la app instalada.");
+  });
+};
 
 export default function GasStation() {
   /* VARIABLES */
@@ -54,6 +62,10 @@ export default function GasStation() {
       }
     }
   }, []);
+
+  const onShareToGoogleMaps = useCallback(() => {
+    openGoogleMaps(gasStation.coordinates.latitude, gasStation.coordinates.longitude);
+  }, [gasStation.coordinates.latitude, gasStation.coordinates.longitude]);
 
   /* ON MOUNT */
   useEffect(() => {
@@ -125,6 +137,11 @@ export default function GasStation() {
               {gasStation.hours}
             </ThemedText>
           </View>
+          <FloatingButtonIcon
+            style={styles.googleMapsButton}
+            imageSource={require("@/assets/icons/googleMaps.png")}
+            onPress={onShareToGoogleMaps}
+          />
         </View>
       </View>
 
@@ -222,5 +239,8 @@ const styles = StyleSheet.create({
   chart: {
     marginTop: 16,
     marginBottom: 60,
+  },
+  googleMapsButton: {
+    marginLeft: "auto",
   },
 });

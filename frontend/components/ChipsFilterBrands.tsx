@@ -9,7 +9,7 @@ import { BRAND_FILTER_OPTIONS, BRAND_IMAGES } from "@/constants/values";
 import Chip from "./Chip";
 import ChipsFilter from "./layouts/ChipsFilter";
 
-function FilterChipBrands() {
+function ChipsFilterBrands() {
   /* HANDLERS */
   const onChipPress = useCallback((option: string) => {
     useGasStationStore.getState().setActiveBrandFilter(option);
@@ -30,4 +30,4 @@ function FilterChipBrands() {
   );
 }
 
-export default memo(FilterChipBrands);
+export default memo(ChipsFilterBrands);

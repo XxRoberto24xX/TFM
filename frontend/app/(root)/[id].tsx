@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -15,11 +15,9 @@ import ThemedText from "@/components/ThemedText";
 import { useGasStationStore } from "@/stores/useGasStationsStore";
 
 import { addToFavorites, getHistoricalPrices, removeFromFavorites } from "@/services/api";
-import { ApiError, FuelType, Price } from "@/types/types";
+import { ApiError, Price } from "@/types/types";
 import { Colors } from "@/constants/colors";
 import { BRAND_IMAGES, DEFAULT_IMAGE } from "@/constants/values";
-
-import { formatDateLabel } from "@/utils/gasStationsUtils";
 
 export default function GasStation() {
   /* VARIABLES */
@@ -31,22 +29,6 @@ export default function GasStation() {
   const imageSource = gasStation ? BRAND_IMAGES[gasStation.brand] || DEFAULT_IMAGE : DEFAULT_IMAGE;
 
   const [historicalPrices, setHistoricalPrices] = useState<Price[]>([]);
-  const [selectedFuel, setSelectedFuel] = useState<FuelType>("diesel");
-
-  /* USEMEMO VARIABLES */
-  const chartData = useMemo(() => {
-    const sortedPrices = [...historicalPrices].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-    const validPrices = sortedPrices.filter((p) => p[selectedFuel] > 0);
-
-    const last14Days = validPrices.slice(-14);
-
-    return last14Days.map((item) => ({
-      value: item[selectedFuel],
-      label: formatDateLabel(item.date),
-      dataPointText: `${item[selectedFuel].toFixed(3)} €/L`,
-    }));
-  }, [historicalPrices, selectedFuel]);
 
   /* HANDLERS */
   const onBackPress = useCallback(() => {
@@ -91,7 +73,7 @@ export default function GasStation() {
     };
 
     getGasStationHistoricalPrices();
-  }, [gasStation]);
+  }, [gasStation.id]);
 
   return (
     <ScrollView
@@ -190,7 +172,7 @@ export default function GasStation() {
       />
       <ChartFuelPrice
         style={styles.chart}
-        data={chartData}
+        historicalPrices={historicalPrices}
       />
     </ScrollView>
   );

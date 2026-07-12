@@ -4,12 +4,14 @@ import * as SecureStore from "expo-secure-store";
 
 import { useGasStationStore } from "@/stores/useGasStationsStore";
 
-import { GAS_FILTER_OPTIONS } from "@/constants/values";
-
-import Chip from "./Chip";
+import ChipAlternative from "./ChipAlternative";
 import ChipsFilter from "./layouts/ChipsFilter";
 
-function ChipsFilterGas() {
+interface Props {
+  availableFuelLabels: string[];
+}
+
+function ChipsFilterChart({ availableFuelLabels }: Props) {
   /* HANDLERS */
   const onChipPress = useCallback((option: string) => {
     useGasStationStore.getState().setActiveGasFilter(option);
@@ -18,8 +20,8 @@ function ChipsFilterGas() {
 
   return (
     <ChipsFilter>
-      {GAS_FILTER_OPTIONS.map((option) => (
-        <Chip
+      {availableFuelLabels.map((option) => (
+        <ChipAlternative
           key={option}
           option={option}
           onPress={onChipPress}
@@ -29,4 +31,4 @@ function ChipsFilterGas() {
   );
 }
 
-export default memo(ChipsFilterGas);
+export default memo(ChipsFilterChart);

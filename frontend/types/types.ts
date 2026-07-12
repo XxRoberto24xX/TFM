@@ -1,12 +1,6 @@
 export type AutocompleteType = "origin" | "destiny";
 export type FuelType =
-  | "gasoline95"
-  | "gasoline98"
-  | "diesel"
-  | "dieselPremium"
-  | "gasoline95Premium"
-  | "dieselRenewable"
-  | "glp";
+  "gasoline95" | "gasoline98" | "diesel" | "dieselPremium" | "gasoline95Premium" | "dieselRenewable" | "glp";
 
 export interface ApiError {
   message: string;

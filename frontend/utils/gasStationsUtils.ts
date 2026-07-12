@@ -4,8 +4,8 @@ import { FILTER_TO_PRICE_KEY } from "@/constants/values";
 export function getMarkerGasDisplayInfo(station: GasStation, gasType: string): string {
   const priceKey = FILTER_TO_PRICE_KEY[gasType];
   const price = station.prices?.[priceKey];
-  if (price === undefined) {
-    return `${gasType}: N/A`;
+  if (price === undefined || price === 0) {
+    return `${gasType}: No Disponible`;
   }
   return `${gasType}: ${price}€`;
 }

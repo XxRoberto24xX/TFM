@@ -4,6 +4,7 @@ import {
   AuthResponse,
   Coordinates,
   GetHistoricalPricesResponseModel,
+  GetListCarsModel,
   GetListFavoritesModel,
   GetListFavoritesResponse,
   GetListGasStationsInRangeModel,
@@ -64,6 +65,28 @@ export async function addToFavorites(gasStationId: number): Promise<void> {
 
 export async function removeFromFavorites(gasStationId: number): Promise<void> {
   const response = await apiClient.post<void>("/gasStations/removeFromFavorites", { gasStationId });
+  return response.data;
+}
+
+export async function getListCars() {
+  const response = await apiClient.get<GetListCarsModel>("/cars/listUserCars");
+  return response.data;
+}
+
+export async function saveCar(plate: string, consumption: number, brand: string, model: string): Promise<void> {
+  const response = await apiClient.post<void>("/cars/saveCar", {
+    plate,
+    consumption,
+    brand,
+    model,
+  });
+  return response.data;
+}
+
+export async function deleteCar(plate: string): Promise<void> {
+  const response = await apiClient.delete<void>("/cars/deleteCar", {
+    data: { plate },
+  });
   return response.data;
 }
 

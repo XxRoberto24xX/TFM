@@ -3,8 +3,6 @@ import { Image, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, Stack } from "expo-router";
 
-import { MaterialIcons } from "@expo/vector-icons";
-
 import FloatingButtonIcon from "@/components/FloatingButtonIcon";
 import ThemedText from "@/components/ThemedText";
 
@@ -87,16 +85,7 @@ export default function MainLayout() {
       <Stack.Screen
         name="cars"
         options={{
-          title: "Coches",
-          headerRight: () => {
-            return (
-              <MaterialIcons
-                name="add"
-                size={30}
-                color={Colors.textPrimary}
-              />
-            );
-          },
+          headerShown: false,
         }}
       />
       <Stack.Screen

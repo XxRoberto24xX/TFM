@@ -64,6 +64,13 @@ export interface PlaceDetailsResponse {
   status: string;
 }
 
+export interface RouteResponse {
+  coordinates: Coordinates[];
+  distanceKm: number;
+  durationMinutes: number;
+  durationText: string;
+}
+
 /*
  *
  * API RESPONSE MODELS
@@ -71,6 +78,10 @@ export interface PlaceDetailsResponse {
  */
 export interface GetListFavoritesModel {
   gasStations: GasStationModel[];
+}
+
+export interface GetListCarsModel {
+  cars: Car[];
 }
 
 export interface GetListGasStationsInRangeModel {
@@ -113,6 +124,22 @@ export interface GasStationModel {
   sellingType: string;
   municipality: string;
   prices?: Price;
+}
+
+export interface RouteModel {
+  routes: {
+    polyline: {
+      encodedPolyline: string;
+    };
+    distanceMeters: number;
+    duration: string;
+    legs: {
+      startLocation: Coordinates;
+      endLocation: Coordinates;
+      distanceMeters: number;
+      duration: string;
+    }[];
+  }[];
 }
 
 /*
@@ -162,25 +189,9 @@ export interface Margin {
   max: number;
 }
 
-export interface RouteModel {
-  routes: {
-    polyline: {
-      encodedPolyline: string;
-    };
-    distanceMeters: number;
-    duration: string;
-    legs: {
-      startLocation: Coordinates;
-      endLocation: Coordinates;
-      distanceMeters: number;
-      duration: string;
-    }[];
-  }[];
-}
-
-export interface RouteResponse {
-  coordinates: Coordinates[];
-  distanceKm: number;
-  durationMinutes: number;
-  durationText: string;
+export interface Car {
+  plate: string;
+  consumption: number;
+  brand: string;
+  model: string;
 }

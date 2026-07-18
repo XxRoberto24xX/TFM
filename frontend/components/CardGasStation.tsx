@@ -3,7 +3,6 @@ import { GestureResponderEvent, Image, Pressable, StyleSheet, View } from "react
 import { PressableProps } from "react-native-gesture-handler";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 
 import { MaterialIcons } from "@expo/vector-icons";
@@ -16,6 +15,8 @@ import { addToFavorites, removeFromFavorites } from "@/services/api";
 import { ApiError } from "@/types/types";
 import { Colors } from "@/constants/colors";
 import { BRAND_IMAGES, DEFAULT_IMAGE, FILTER_TO_PRICE_KEY } from "@/constants/values";
+
+import ClickableCard from "./layouts/ClickableCard";
 
 import { getMarkerGasDisplayInfo, getPriceColor } from "@/utils/gasStationsUtils";
 
@@ -82,18 +83,10 @@ function CardGasStation({ style }: PressableProps) {
 
   return (
     <Animated.View style={[animatedStyle, { pointerEvents: selectedGasStation ? "auto" : "none" }]}>
-      <Pressable
-        style={({ pressed }) => [
-          styles.container,
-          pressed && styles.previewPressed,
-          typeof style === "function" ? style({ pressed }) : style,
-        ]}
+      <ClickableCard
+        style={style}
         onPress={onCardClick}>
-        <LinearGradient
-          style={styles.gradient}
-          colors={[Colors.primaryOrange, Colors.primaryPink]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}>
+        <View style={styles.clickable}>
           {selectedGasStation?.id && (
             <View style={styles.imageView}>
               <Image
@@ -143,8 +136,8 @@ function CardGasStation({ style }: PressableProps) {
               color={Colors.textPrimary}
             />
           </View>
-        </LinearGradient>
-      </Pressable>
+        </View>
+      </ClickableCard>
     </Animated.View>
   );
 }
@@ -152,35 +145,10 @@ function CardGasStation({ style }: PressableProps) {
 export default memo(CardGasStation);
 
 const styles = StyleSheet.create({
-  container: {
-    overflow: "hidden",
-    borderRadius: 15,
-
-    shadowColor: Colors.black,
-
-    // Shadow for IOS
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-
-    // Shadow for Android
-    elevation: 5,
-  },
-  previewPressed: {
-    transform: [{ scale: 0.96 }],
-
-    // Shadow for IOS
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.18,
-    shadowRadius: 1.0,
-
-    // Shadow for Android
-    elevation: 2,
-  },
-  gradient: {
+  clickable: {
     flexDirection: "row",
     justifyContent: "flex-start",
-    padding: 10,
+    padding: 8,
     gap: 8,
   },
   infoView: {

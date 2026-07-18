@@ -26,6 +26,15 @@ export const BRAND_IMAGES: Record<string, ImageSourcePropType> = {
   MOEVE: require("@/assets/brands/moeve.png"),
 };
 
+export const CAR_BRANDS_IAMGES: Record<string, ImageSourcePropType> = {
+  TOYOTA: require("@/assets/carBrands/toyota.png"),
+  RENAULT: require("@/assets/carBrands/renault.png"),
+  OPEL: require("@/assets/carBrands/opel.png"),
+  AUDI: require("@/assets/carBrands/audi.png"),
+  PEUGEOT: require("@/assets/carBrands/peugeot.png"),
+  SEAT: require("@/assets/carBrands/seat.png"),
+};
+
 export const DEFAULT_IMAGE = require("@/assets/brands/default.png");
 
 export const MAX_LATITUDE_DELTA_FOR_MARKERS = 1;

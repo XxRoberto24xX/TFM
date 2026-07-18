@@ -39,7 +39,9 @@ function ListItemFavorite({ gasStation, onPress }: Props) {
   };
 
   return (
-    <ListItem onPress={onPressItem}>
+    <ListItem
+      style={styles.container}
+      onPress={onPressItem}>
       <View style={styles.imageView}>
         <Image
           style={styles.image}
@@ -73,6 +75,9 @@ function ListItemFavorite({ gasStation, onPress }: Props) {
 export default memo(ListItemFavorite);
 
 const styles = StyleSheet.create({
+  container: {
+    padding: 8,
+  },
   infoView: {
     flexDirection: "column",
     flex: 1,

@@ -8,6 +8,7 @@ interface CarsState {
 
   setListCars: (listCars: Car[]) => void;
   setSelectedCar: (car: Car | null) => void;
+  removeCar: (plate: string) => void;
 }
 
 export const useCarStore = create<CarsState>((set) => ({
@@ -16,4 +17,9 @@ export const useCarStore = create<CarsState>((set) => ({
 
   setListCars: (listCars) => set({ listCars: listCars }),
   setSelectedCar: (car) => set({ selectedCar: car }),
+
+  removeCar: (plate) =>
+    set((state) => ({
+      listCars: state.listCars.filter((car) => car.plate !== plate),
+    })),
 }));

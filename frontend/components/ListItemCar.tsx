@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 
 import { Car } from "@/types/types";
 import { Colors } from "@/constants/colors";
@@ -11,9 +11,10 @@ import ThemedText from "./ThemedText";
 interface Props {
   car: Car;
   onPress: (car: Car) => void;
+  style?: StyleProp<ViewStyle>;
 }
 
-function ListItemCar({ car, onPress }: Props) {
+function ListItemCar({ car, style, onPress }: Props) {
   /* VARIABLES */
   const imageSource = CAR_BRANDS_IAMGES[car.brand.toUpperCase()] || DEFAULT_IMAGE;
 
@@ -23,7 +24,9 @@ function ListItemCar({ car, onPress }: Props) {
   };
 
   return (
-    <ClickableCard onPress={onPressItem}>
+    <ClickableCard
+      style={style}
+      onPress={onPressItem}>
       <View style={styles.container}>
         <View style={styles.imageContiner}>
           <Image

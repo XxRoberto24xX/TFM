@@ -9,13 +9,13 @@ import Card from "./layouts/Card";
 import ThemedText from "./ThemedText";
 
 interface Props {
-  car: Car | null;
+  car: Car;
 }
 
 function CardCar({ car }: Props) {
   /* USEMEMO VARIBALES */
   const imageSource = useMemo(() => {
-    return car ? CAR_BRANDS_IAMGES[car.brand.toUpperCase()] || DEFAULT_IMAGE : DEFAULT_IMAGE;
+    return CAR_BRANDS_IAMGES[car.brand.toUpperCase()] || DEFAULT_IMAGE;
   }, [car]);
 
   return (
@@ -31,20 +31,20 @@ function CardCar({ car }: Props) {
           <ThemedText
             size="h2"
             color={Colors.textTertiary}>
-            {`${car?.brand} ${car?.model}`}
+            {`${car.brand} ${car.model}`}
           </ThemedText>
           <ThemedText
             size="l"
             weight="medium"
             color={Colors.textTertiary}>
-            {car?.plate}
+            {car.plate}
           </ThemedText>
           <ThemedText
             weight="regular"
             style={styles.consumptionText}
             size="l"
             color={Colors.textTertiary}>
-            {`Consumo: ${car?.consumption} €/100Km`}
+            {`Consumo: ${car.consumption} €/100Km`}
           </ThemedText>
         </View>
       </View>

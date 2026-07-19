@@ -73,3 +73,8 @@ export const formatDateLabel = (dateStr: string): string => {
   if (isNaN(date.getTime())) return dateStr;
   return date.toLocaleDateString("es-ES", { day: "2-digit", month: "short" });
 };
+
+export const capitalizeFirstLetter = (text: string): string => {
+  if (!text) return "";
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};

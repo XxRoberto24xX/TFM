@@ -6,12 +6,12 @@ import * as Haptics from "expo-haptics";
 import { Ionicons } from "@expo/vector-icons";
 
 import { Colors } from "../constants/colors";
+import ThemedText from "./ThemedText";
 
 interface Props extends TextInputProps {
-  placeholder: string;
-  placeholderTextColor?: string;
   icon?: boolean;
   hideContent?: boolean;
+  suffix?: string;
 }
 
 function TextInputBasic({
@@ -19,6 +19,7 @@ function TextInputBasic({
   placeholderTextColor = Colors.textSecondary,
   icon = false,
   hideContent = false,
+  suffix,
   style,
   ...TextInputProps
 }: Props) {
@@ -38,6 +39,15 @@ function TextInputBasic({
         secureTextEntry={hide}
         {...TextInputProps}
       />
+
+      {suffix && TextInputProps.value !== "" && (
+        <ThemedText
+          size="l"
+          weight="regular"
+          color={Colors.textSecondary}>
+          {suffix}
+        </ThemedText>
+      )}
 
       {icon && (
         <Pressable

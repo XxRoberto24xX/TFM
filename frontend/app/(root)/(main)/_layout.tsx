@@ -89,6 +89,12 @@ export default function MainLayout() {
         }}
       />
       <Stack.Screen
+        name="carInfo"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
         name="account"
         options={{
           title: "Cuenta",

@@ -26,11 +26,13 @@ export default function Cars() {
   }, []);
 
   const onAdd = useCallback(() => {
-    console.log("hola");
+    useCarStore.getState().setSelectedCar(null);
+    router.push("/carInfo");
   }, []);
 
   const onCarSelect = useCallback((car: Car) => {
-    console.log(car.plate);
+    useCarStore.getState().setSelectedCar(car);
+    router.push("/carInfo");
   }, []);
 
   /* ON MOUNT */

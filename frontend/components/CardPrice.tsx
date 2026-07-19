@@ -1,9 +1,9 @@
 import React, { memo } from "react";
-import { StyleSheet, View } from "react-native";
 
 import { Colors } from "@/constants/colors";
 import { PRICE_KEY_TO_FILTER } from "@/constants/values";
 
+import Card from "./layouts/Card";
 import MessagePriceDesviation from "./MessagePriceDesviation";
 import ThemedText from "./ThemedText";
 
@@ -14,7 +14,7 @@ interface Props {
 
 const CardPrice = ({ type, price }: Props) => {
   return (
-    <View style={styles.container}>
+    <Card>
       <ThemedText
         size="m"
         color={Colors.textTertiary}
@@ -40,26 +40,8 @@ const CardPrice = ({ type, price }: Props) => {
         type={type}
         price={price}
       />
-    </View>
+    </Card>
   );
 };
 
 export default memo(CardPrice);
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "white",
-    padding: 12,
-    borderRadius: 16,
-
-    shadowColor: Colors.black,
-
-    // Shadow for IOS
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-
-    // Shadow for Android
-    elevation: 5,
-  },
-});

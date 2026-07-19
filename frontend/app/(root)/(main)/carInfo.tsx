@@ -95,6 +95,7 @@ export default function CarInfo() {
     try {
       const parsedConsumption = Number(consumption);
       await saveCar(plate, isNaN(parsedConsumption) ? 0 : parsedConsumption, brand, model);
+      useCarStore.getState().addCar(modifiedCar);
       router.back();
     } catch (callError) {
       const apiError = callError as ApiError;
@@ -103,7 +104,7 @@ export default function CarInfo() {
     } finally {
       setLoading(false);
     }
-  }, [brand, consumption, model, plate]);
+  }, [brand, consumption, model, plate, modifiedCar]);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>

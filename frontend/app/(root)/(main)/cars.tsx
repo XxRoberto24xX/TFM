@@ -41,8 +41,8 @@ export default function Cars() {
   const onPressDelete = useCallback(
     (plate: string) => async () => {
       try {
-        await deleteCar(plate);
         useCarStore.getState().removeCar(plate);
+        await deleteCar(plate);
       } catch (callError) {
         const apiError = callError as ApiError;
         console.log("Save Car: " + apiError.message);
